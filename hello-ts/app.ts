@@ -1,36 +1,59 @@
+var numStars = 2000
+
 console.log('I am an initial TS app!!!1');
 
-var c = document.getElementById("myCanvas") as HTMLCanvasElement;
-var ctx = c.getContext("2d");
+var canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
+var ctx = canvas.getContext("2d");
 
 ctx.fillStyle = "#000000";
-ctx.fillRect(0, 0, c.width, c.height);
-
-ctx.strokeStyle = "#FFFFFF"
-ctx.moveTo(0, 0);
-ctx.lineTo(400, 400);
-ctx.stroke();
-
-ctx.beginPath();
-ctx.arc(95, 50, 40, 0, 2 * Math.PI);
-ctx.stroke();
+ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 ctx.font = "30px Arial";
 ctx.fillStyle = "#FFFFFF";
 ctx.fillText("Hello TypeScript!!!1", 10, 50);
 
-setInterval(drawDots, 500)
+var stars = makeStars();
+setInterval(tick, 20)
 
-function drawDots() {
-    console.log("drawDots")
+function tick() {
+    stars.forEach(function(star, i, stars) {
+        star.x = (star.x - 1 / star.distance);
+        if (star.x < 0) {
+            star.x += canvas.width;
+        }
+    });
 
-    for (var i = 0; i < 100; i++) {
-        drawDot(ctx, Math.random() * c.width, Math.random() * c.height);
-    }
+    drawStars();
 }
 
-function drawDot(ctx: CanvasRenderingContext2D, x: number, y: number) {
-    var brightness = Math.random() * 256
+function makeStars() {
+    let stars = [];
+
+    for (var i = 0; i < numStars; i++) {
+        var star = {
+            "x": Math.random() * canvas.width,
+            "y": Math.random() * canvas.height,
+            "distance": Math.random() * 10
+        }
+        stars.push(star);
+    }
+
+    return stars;
+}
+
+function drawStars() {
+    console.log("drawDots")
+
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    stars.forEach(function(value, index, array) {
+        drawStar(ctx, value);
+    });
+}
+
+function drawStar(ctx: CanvasRenderingContext2D, dot) {
+    var brightness = 256 / dot.distance
     ctx.fillStyle = "rgb(" + brightness + "," + brightness + "," + brightness + ")";
-    ctx.fillRect(x, y, 1, 1);
+    ctx.fillRect(dot.x, dot.y, 1, 1);
 }
