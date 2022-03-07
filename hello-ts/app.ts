@@ -1,4 +1,4 @@
-var numStars = 2000
+const numStars = 20000;
 
 console.log('I am an initial TS app!!!1');
 
@@ -14,6 +14,18 @@ ctx.fillText("Hello TypeScript!!!1", 10, 50);
 
 var stars = makeStars();
 setInterval(tick, 20)
+
+function openFullscreen() {
+    if (canvas.requestFullscreen) {
+        canvas.requestFullscreen();
+    } else if (canvas.webkitRequestFullscreen) {
+        /* Safari */
+        canvas.webkitRequestFullscreen();
+    } else if (canvas.msRequestFullscreen) {
+        /* IE11 */
+        canvas.msRequestFullscreen();
+  }
+}
 
 function tick() {
     stars.forEach(function(star, i, stars) {
@@ -54,6 +66,6 @@ function drawStars() {
 
 function drawStar(ctx: CanvasRenderingContext2D, dot) {
     var brightness = 256 / dot.distance
-    ctx.fillStyle = "rgb(" + brightness + "," + brightness + "," + brightness + ")";
+    ctx.fillStyle = `rgb(${brightness},${brightness},${brightness})`;
     ctx.fillRect(dot.x, dot.y, 1, 1);
 }
