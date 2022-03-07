@@ -1,4 +1,4 @@
-const numStars = 20000;
+const numStars = 10000;
 
 console.log('I am an initial TS app!!!1');
 
@@ -45,7 +45,7 @@ function makeStars() {
         var star = {
             "x": Math.random() * canvas.width,
             "y": Math.random() * canvas.height,
-            "distance": Math.random() * 10
+            "distance": Math.random() * 10 + 1
         }
         stars.push(star);
     }
@@ -65,7 +65,14 @@ function drawStars() {
 }
 
 function drawStar(ctx: CanvasRenderingContext2D, dot) {
-    var brightness = 256 / dot.distance
+    var brightness = 255.0 / (dot.distance)
+    // ctx.fillRect(dot.x, dot.y, 2, 2);
+
+    const r = Math.min(1/dot.distance, 3);
+
+    ctx.beginPath();
+    ctx.arc(dot.x, dot.y, r, 0, 2*Math.PI);
     ctx.fillStyle = `rgb(${brightness},${brightness},${brightness})`;
-    ctx.fillRect(dot.x, dot.y, 1, 1);
+    ctx.fill();
+  
 }
