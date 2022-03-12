@@ -38,21 +38,20 @@ function openFullscreen() {
 }
 
 function tick() {
-    stars.forEach(function(star, i, stars) {
+    if (keysDown['a']) {
+        vx += 0.01;
+    }
+    if (keysDown['w']) {
+        vy += 0.01;
+    }
+    if (keysDown['d']) {
+        vx -= 0.01;
+    }
+    if (keysDown['s']) {
+        vy -= 0.01;
+    }
 
-        if (keysDown['a']) {
-            vx += 0.00001;
-        }
-        if (keysDown['w']) {
-            vy += 0.00001;
-        }
-        if (keysDown['d']) {
-            vx -= 0.00001;
-        }
-        if (keysDown['s']) {
-            vy -= 0.00001;
-        }
-
+    for (const star of stars) {
         star.x = (star.x + vx / star.z);
         star.y = (star.y + vy / star.z);
         if (star.x < 0) {
@@ -67,7 +66,7 @@ function tick() {
         if (star.y >= canvas.height) {
             star.y -= canvas.height;
         }
-    });
+    }
 
     drawStars();
 }
@@ -79,10 +78,12 @@ function makeStars() {
         const star = {
             "x": Math.random() * canvas.width,
             "y": Math.random() * canvas.height,
-            "z": Math.random() * 10 + 1
+            "z": Math.random() * 10 + 0.5
         }
         stars.push(star);
     }
+
+    stars.sort((a, b) => b.z - a.z )
 
     return stars;
 }
@@ -91,18 +92,28 @@ function drawStars() {
     ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    stars.forEach(function(value, index, array) {
+    stars.forEach(function(value, _index, _array) {
         drawStar(ctx, value);
     });
 }
 
-function drawStar(ctx: CanvasRenderingContext2D, dot) {
-    drawDot(dot.x, dot.y, 255.0 / (dot.z), Math.min(1/dot.z, 3));
+function drawStar(_ctx: CanvasRenderingContext2D, dot) {
+    drawDot(dot.x, dot.y, Math.max(255.0 / (dot.z), 25), Math.max(1/dot.z, 2));
 }
 
 function drawDot(x: number, y: number, brightness: number, r: number) {
+
+    // brightness = 255;
+    // r = 10;
+
+
     ctx.beginPath();
     ctx.arc(x, y, r, 0, 2*Math.PI);
     ctx.fillStyle = `rgb(${brightness},${brightness},${brightness})`;
     ctx.fill();
+
+    // // brightness = Math.max(brightness, 50);
+    // ctx.fillStyle = `rgb(${brightness},${brightness},${brightness})`;
+    // ctx.font = "30px Arial";
+    // ctx.fillText("" + r + " " + brightness, x, y);
 }
