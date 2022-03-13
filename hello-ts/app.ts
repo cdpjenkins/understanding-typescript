@@ -119,16 +119,20 @@ function makeStars() {
     let stars = [];
 
     for (var i = 0; i < numStars; i++) {
+        const spectralClass = randomSpectralClass()
+        const z = Math.random() * 10 + 0.5
         const star = {
-            "x": Math.random() * canvas.width,
-            "y": Math.random() * canvas.height,
-            "z": Math.random() * 10 + 0.5,
-            "spectralClass": randomSpectralClass()
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            z: z,
+            spectralClass: spectralClass,
+            rgb: rgbForStar(spectralClasses[spectralClass], z),
+            radius: radiusForStar(z)
         }
         stars.push(star);
     }
 
-    stars.sort((a, b) => b.z - a.z )
+    stars.sort((a, b) => b.z - a.z);
 
     return stars;
 }
@@ -136,8 +140,6 @@ function makeStars() {
 function randomSpectralClass() {
     let keys = Object.keys(spectralClasses)
     const randomElement = keys[Math.floor(Math.random() * keys.length)];
-
-    console.log(randomElement);
 
     return randomElement;
 }
@@ -151,32 +153,31 @@ function drawStars() {
     });
 }
 
-function drawStar(_ctx: CanvasRenderingContext2D, star) {
-    const spectralClass = spectralClasses[star.spectralClass];
-    const brightness = Math.max(255.0 / (star.z), 25);
-    const r = spectralClass.r * brightness / 255;
-    const g = spectralClass.g * brightness / 255;
-    const b = spectralClass.b * brightness / 255;
-    const rgb = `rgb(${r},${g},${b})`;
+function drawStar(ctx: CanvasRenderingContext2D, star) {
+    drawDot(star.x, star.y, star.rgb, star.radius);
+}
 
-    console.log(rgb);
+function radiusForStar(z) {
+    return Math.min(Math.max(2 / z, 1), 20);
+}
 
-    drawDot(star.x, star.y, rgb, Math.min(Math.max(2 / star.z, 1), 2));
+function rgbForStar(spectralClass, z: number) {
+    const brightness = Math.min(Math.max(1 / (z), 0.001), 1);
+    const r = spectralClass.r * brightness;
+    const g = spectralClass.g * brightness;
+    const b = spectralClass.b * brightness;
+
+    return `rgb(${r},${g},${b})`;
 }
 
 function drawDot(x: number, y: number, rgb: string, r: number) {
-
-    // brightness = 255;
-    // r = 10;
-
-
     ctx.beginPath();
     ctx.arc(x, y, r, 0, 2*Math.PI);
     ctx.fillStyle = rgb;
     ctx.fill();
 
-    // // brightness = Math.max(brightness, 50);
-    // ctx.fillStyle = `rgb(${brightness},${brightness},${brightness})`;
+    // const brightness = "#FFFFFF";
+    // ctx.fillStyle = brightness;
     // ctx.font = "30px Arial";
-    // ctx.fillText("" + r + " " + brightness, x, y);
+    // ctx.fillText(`${rgb} ${r}`, x, y);
 }
