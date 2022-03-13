@@ -1,4 +1,48 @@
 const numStars = 10000;
+const spectralClasses = {
+    "O": {
+        r: 0x0b,
+        g: 0xb0,
+        b: 0xff,
+        colour: "#9bb0ff"
+    },
+    "B": {
+        r: 0xaa,
+        g: 0xbf,
+        b: 0xff,
+        colour: "#aabfff"
+    },
+    "A": {
+        r: 0xca,
+        g: 0xd7,
+        b: 0xff,
+        colour: "#cad7ff"
+    },
+    "F": {
+        r: 0xf8,
+        g: 0xf7,
+        b: 0xff,
+        colour: "#f8f7ff"
+    },
+    "G": {
+        r: 0xff,
+        g: 0xf4,
+        b: 0xea,
+        colour: "#fff4ea"
+    },
+    "K": {
+        r: 0xff,
+        g: 0xd2,
+        b: 0xa1,
+        colour: "#ffd2a1"
+    },
+    "M": {
+        r: 0xff,
+        g: 0xcc,
+        b: 0x6f,
+        colour: "#ffcc6f"
+    },
+}
 
 let vx = 0;
 let vy = 0;
@@ -78,7 +122,8 @@ function makeStars() {
         const star = {
             "x": Math.random() * canvas.width,
             "y": Math.random() * canvas.height,
-            "z": Math.random() * 10 + 0.5
+            "z": Math.random() * 10 + 0.5,
+            "spectralClass": randomSpectralClass()
         }
         stars.push(star);
     }
@@ -86,6 +131,15 @@ function makeStars() {
     stars.sort((a, b) => b.z - a.z )
 
     return stars;
+}
+
+function randomSpectralClass() {
+    let keys = Object.keys(spectralClasses)
+    const randomElement = keys[Math.floor(Math.random() * keys.length)];
+
+    console.log(randomElement);
+
+    return randomElement;
 }
 
 function drawStars() {
@@ -97,11 +151,20 @@ function drawStars() {
     });
 }
 
-function drawStar(_ctx: CanvasRenderingContext2D, dot) {
-    drawDot(dot.x, dot.y, Math.max(255.0 / (dot.z), 25), Math.max(1/dot.z, 2));
+function drawStar(_ctx: CanvasRenderingContext2D, star) {
+    const spectralClass = spectralClasses[star.spectralClass];
+    const brightness = Math.max(255.0 / (star.z), 25);
+    const r = spectralClass.r * brightness / 255;
+    const g = spectralClass.g * brightness / 255;
+    const b = spectralClass.b * brightness / 255;
+    const rgb = `rgb(${r},${g},${b})`;
+
+    console.log(rgb);
+
+    drawDot(star.x, star.y, rgb, Math.min(Math.max(2 / star.z, 1), 2));
 }
 
-function drawDot(x: number, y: number, brightness: number, r: number) {
+function drawDot(x: number, y: number, rgb: string, r: number) {
 
     // brightness = 255;
     // r = 10;
@@ -109,7 +172,7 @@ function drawDot(x: number, y: number, brightness: number, r: number) {
 
     ctx.beginPath();
     ctx.arc(x, y, r, 0, 2*Math.PI);
-    ctx.fillStyle = `rgb(${brightness},${brightness},${brightness})`;
+    ctx.fillStyle = rgb;
     ctx.fill();
 
     // // brightness = Math.max(brightness, 50);
