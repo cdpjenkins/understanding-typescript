@@ -1,5 +1,14 @@
 const numStars = 10000;
 
+type Star = {
+    x: number,
+    y: number,
+    z: number,
+    spectralClass: SpectralClass,
+    rgb: string,
+    radius: number
+};
+
 type SpectralClassDetails = {
     r: number,
     g: number,
@@ -54,8 +63,8 @@ const spectralClasses = {
     },
 }
 
-let vx = 0;
-let vy = 0;
+let vx = -0.3;
+let vy = 0.01;
 
 let keysDown = {};
 
@@ -126,25 +135,31 @@ function tick() {
 }
 
 function makeStars() {
-    let stars = [];
+    let stars: Star[] = [];
 
+    // wish I could work out precisely how map works in JS so as to avoid doing this
     for (var i = 0; i < numStars; i++) {
-        const spectralClass = randomSpectralClass()
-        const z = Math.random() * 10 + 0.5
-        const star = {
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            z: z,
-            spectralClass: spectralClass,
-            rgb: rgbForStar(spectralClasses[spectralClass], z),
-            radius: radiusForStar(z)
-        }
-        stars.push(star);
+        stars.push(makeRandomStar());
     }
 
     stars.sort((a, b) => b.z - a.z);
 
     return stars;
+}
+
+function makeRandomStar(): Star {
+    const spectralClass = randomSpectralClass()
+    const z = Math.random() * 10 + 0.5
+    const star = {
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        z: z,
+        spectralClass: spectralClass,
+        rgb: rgbForStar(spectralClass, z),
+        radius: radiusForStar(z)
+    }
+
+    return star;
 }
 
 function randomSpectralClass(): SpectralClass {
@@ -158,36 +173,31 @@ function drawStars() {
     ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    stars.forEach(function(value, _index, _array) {
-        drawStar(ctx, value);
-    });
+    stars.forEach((star, _index, _array) => drawStar(star));
 }
 
-function drawStar(ctx: CanvasRenderingContext2D, star) {
-    drawDot(star.x, star.y, star.rgb, star.radius);
+function drawStar(star: Star) {
+    drawCircle(star.x, star.y, star.rgb, star.radius);
 }
 
-function radiusForStar(z) {
+function radiusForStar(z: number) {
     return Math.min(Math.max(2 / z, 1), 20);
 }
 
-function rgbForStar(spectralClass, z: number) {
+function rgbForStar(spectralClass: SpectralClass, z: number) {
+    const spectralClassDetails = spectralClasses[spectralClass]
+
     const brightness = Math.min(Math.max(1 / (z), 0.001), 1);
-    const r = spectralClass.r * brightness;
-    const g = spectralClass.g * brightness;
-    const b = spectralClass.b * brightness;
+    const r = spectralClassDetails.r * brightness;
+    const g = spectralClassDetails.g * brightness;
+    const b = spectralClassDetails.b * brightness;
 
     return `rgb(${r},${g},${b})`;
 }
 
-function drawDot(x: number, y: number, rgb: string, r: number) {
+function drawCircle(x: number, y: number, rgb: string, r: number) {
     ctx.beginPath();
     ctx.arc(x, y, r, 0, 2*Math.PI);
     ctx.fillStyle = rgb;
     ctx.fill();
-
-    // const brightness = "#FFFFFF";
-    // ctx.fillStyle = brightness;
-    // ctx.font = "30px Arial";
-    // ctx.fillText(`${rgb} ${r}`, x, y);
 }
