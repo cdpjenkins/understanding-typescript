@@ -1,4 +1,14 @@
 const numStars = 10000;
+
+type SpectralClassDetails = {
+    r: number,
+    g: number,
+    b: number,
+    colour: string
+};
+
+type SpectralClass =  "O" | "B" | "A" | "F" | "G" | "K" | "M" ;
+
 const spectralClasses = {
     "O": {
         r: 0x0b,
@@ -137,11 +147,11 @@ function makeStars() {
     return stars;
 }
 
-function randomSpectralClass() {
+function randomSpectralClass(): SpectralClass {
     let keys = Object.keys(spectralClasses)
     const randomElement = keys[Math.floor(Math.random() * keys.length)];
 
-    return randomElement;
+    return randomElement as SpectralClass;
 }
 
 function drawStars() {
