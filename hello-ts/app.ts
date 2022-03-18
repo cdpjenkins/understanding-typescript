@@ -1,4 +1,6 @@
-const numStars = 10000;
+const numStars = 1000;
+const acceleration = 0.05;
+
 
 type Star = {
     x: number,
@@ -102,16 +104,16 @@ function openFullscreen() {
 
 function tick() {
     if (keysDown.get('a')) {
-        vx += 0.01;
+        vx += acceleration;
     }
     if (keysDown.get('w')) {
-        vy += 0.01;
+        vy += acceleration;
     }
     if (keysDown.get('d')) {
-        vx -= 0.01;
+        vx -= acceleration;
     }
     if (keysDown.get('s')) {
-        vy -= 0.01;
+        vy -= acceleration;
     }
 
     for (const star of stars) {
@@ -146,7 +148,7 @@ function makeStars() {
 
 function makeRandomStar(): Star {
     const spectralClass = randomSpectralClass()
-    const z = Math.random() * 1.5 + 0.5
+    const z = Math.random() * 15 + 4
     const star = {
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
@@ -178,13 +180,13 @@ function drawStar(star: Star) {
 }
 
 function radiusForStar(z: number) {
-    return Math.min(Math.max(2 / z, 1), 20);
+    return Math.min(Math.max(20 / z, 1), 20);
 }
 
 function rgbForStar(spectralClass: SpectralClass, z: number) {
     const spectralClassDetails = spectralClasses[spectralClass]
 
-    const brightness = Math.min(Math.max(1 / (z), 0.0001), 1);
+    const brightness = Math.min(Math.max(10 / z, 0.0001), 1);
     const r = spectralClassDetails.r * brightness;
     const g = spectralClassDetails.g * brightness;
     const b = spectralClassDetails.b * brightness;
