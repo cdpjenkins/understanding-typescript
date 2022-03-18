@@ -66,17 +66,17 @@ const spectralClasses = {
 let vx = -0.3;
 let vy = 0.01;
 
-let keysDown = {};
+let keysDown = new Map<string, boolean>();
 
 var canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 document.addEventListener('keydown', function(e) {
-    keysDown[e.key] = true;
+    keysDown.set(e.key, true);
 }, false);
 document.addEventListener('keyup', function(e) {
-    keysDown[e.key] = false;
+    keysDown.set(e.key, false);
 }, false);
 
-var ctx = canvas.getContext("2d");
+var ctx = canvas.getContext("2d")!;
 
 ctx.fillStyle = "#000000";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -101,16 +101,16 @@ function openFullscreen() {
 }
 
 function tick() {
-    if (keysDown['a']) {
+    if (keysDown.get('a')) {
         vx += 0.01;
     }
-    if (keysDown['w']) {
+    if (keysDown.get('w')) {
         vy += 0.01;
     }
-    if (keysDown['d']) {
+    if (keysDown.get('d')) {
         vx -= 0.01;
     }
-    if (keysDown['s']) {
+    if (keysDown.get('s')) {
         vy -= 0.01;
     }
 
@@ -137,10 +137,7 @@ function tick() {
 function makeStars() {
     let stars: Star[] = [];
 
-    // wish I could work out precisely how map works in JS so as to avoid doing this
-    for (var i = 0; i < numStars; i++) {
-        stars.push(makeRandomStar());
-    }
+    stars = Array(numStars).fill(0).map((_v, _i, _a) => makeRandomStar());
 
     stars.sort((a, b) => b.z - a.z);
 
@@ -149,7 +146,7 @@ function makeStars() {
 
 function makeRandomStar(): Star {
     const spectralClass = randomSpectralClass()
-    const z = Math.random() * 10 + 0.5
+    const z = Math.random() * 1.5 + 0.5
     const star = {
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
@@ -187,7 +184,7 @@ function radiusForStar(z: number) {
 function rgbForStar(spectralClass: SpectralClass, z: number) {
     const spectralClassDetails = spectralClasses[spectralClass]
 
-    const brightness = Math.min(Math.max(1 / (z), 0.001), 1);
+    const brightness = Math.min(Math.max(1 / (z), 0.0001), 1);
     const r = spectralClassDetails.r * brightness;
     const g = spectralClassDetails.g * brightness;
     const b = spectralClassDetails.b * brightness;
@@ -200,4 +197,7 @@ function drawCircle(x: number, y: number, rgb: string, r: number) {
     ctx.arc(x, y, r, 0, 2*Math.PI);
     ctx.fillStyle = rgb;
     ctx.fill();
+
+    // ctx.fillStyle = "rgb(255, 255, 255)";
+    // ctx.fillText(`${rgb}, ${r}`, x, y);
 }
