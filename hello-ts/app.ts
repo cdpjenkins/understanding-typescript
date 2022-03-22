@@ -1,6 +1,5 @@
-const numStars = 1000;
-const acceleration = 0.05;
-
+const numStars = 4000;
+const acceleration = 0.5;
 
 type Star = {
     x: number,
@@ -22,10 +21,10 @@ type SpectralClass =  "O" | "B" | "A" | "F" | "G" | "K" | "M" ;
 
 const spectralClasses = {
     "O": {
-        r: 0x0b,
-        g: 0xb0,
+        r: 0xa0,
+        g: 0xd0,
         b: 0xff,
-        colour: "#9bb0ff"
+        colour: "#abd0ff"
     },
     "B": {
         r: 0xaa,
@@ -37,7 +36,7 @@ const spectralClasses = {
         r: 0xca,
         g: 0xd7,
         b: 0xff,
-        colour: "#cad7ff"
+        colour: "#dcd7ff"
     },
     "F": {
         r: 0xf8,
@@ -49,24 +48,24 @@ const spectralClasses = {
         r: 0xff,
         g: 0xf4,
         b: 0xea,
-        colour: "#fff4ea"
+        colour: "#fff4fa"
     },
     "K": {
         r: 0xff,
-        g: 0xd2,
-        b: 0xa1,
+        g: 0xe2,
+        b: 0xc1,
         colour: "#ffd2a1"
     },
     "M": {
         r: 0xff,
-        g: 0xcc,
-        b: 0x6f,
+        g: 0xec,
+        b: 0xaf,
         colour: "#ffcc6f"
     },
 }
 
-let vx = -0.3;
-let vy = 0.01;
+let vx = -30;
+let vy = 1;
 
 let keysDown = new Map<string, boolean>();
 
@@ -117,8 +116,8 @@ function tick() {
     }
 
     for (const star of stars) {
-        star.x = (star.x + vx / star.z);
-        star.y = (star.y + vy / star.z);
+        star.x = (star.x + vx / (star.z * 10));
+        star.y = (star.y + vy / (star.z * 10));
         if (star.x < 0) {
             star.x += canvas.width;
         }
@@ -180,7 +179,7 @@ function drawStar(star: Star) {
 }
 
 function radiusForStar(z: number) {
-    return Math.min(Math.max(20 / z, 1), 20);
+    return Math.min(Math.max(10 / z, 1), 10);
 }
 
 function rgbForStar(spectralClass: SpectralClass, z: number) {
@@ -194,9 +193,9 @@ function rgbForStar(spectralClass: SpectralClass, z: number) {
     return `rgb(${r},${g},${b})`;
 }
 
-function drawCircle(x: number, y: number, rgb: string, r: number) {
+function drawCircle(x: number, y: number, rgb: string, radius: number) {
     ctx.beginPath();
-    ctx.arc(x, y, r, 0, 2*Math.PI);
+    ctx.arc(x, y, radius, 0, 2*Math.PI);
     ctx.fillStyle = rgb;
     ctx.fill();
 
