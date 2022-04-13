@@ -17,67 +17,61 @@ class Star {
         this.rgb = rgb;
         this.radius = radius;
     }
+
+    draw() {
+        drawCircle(this.x, this.y, this.rgb, this.radius);
+    }
+
+    update(vx: number, vy: number) {
+        this.x = (this.x + vx / (this.z * 10));
+        this.y = (this.y + vy / (this.z * 10));
+        if (this.x < 0) {
+            this.x += canvas.width;
+        }
+        if (this.x >= canvas.width) {
+            this.x -= canvas.width;
+        }
+        if (this.y < 0) {
+            this.y += canvas.height;
+        }
+        if (this.y >= canvas.height) {
+            this.y -= canvas.height;
+        }
+
+    }
 };
 
 class SpectralClassDetails {
     r: number;
     g: number;
     b: number;
-    colour: string;
 
-    constructor(r: number, g: number, b: number, colour: string) {
+    constructor(r: number, g: number, b: number) {
         this.r = r;
         this.g = g;
         this.b = b;
-        this.colour = colour;
+    }
+
+    rgbString(z: number) {
+        const brightness = Math.min(Math.max(10 / z, 0.0001), 1);
+        const r = this.r * brightness;
+        const g = this.g * brightness;
+        const b = this.b * brightness;
+
+        return `rgb(${r},${g},${b})`;
     }
 };
 
 type SpectralClass =  "O" | "B" | "A" | "F" | "G" | "K" | "M" ;
 
 const spectralClasses = {
-    "O": {
-        r: 0xa0,
-        g: 0xd0,
-        b: 0xff,
-        colour: "#abd0ff"
-    },
-    "B": {
-        r: 0xaa,
-        g: 0xbf,
-        b: 0xff,
-        colour: "#aabfff"
-    },
-    "A": {
-        r: 0xca,
-        g: 0xd7,
-        b: 0xff,
-        colour: "#dcd7ff"
-    },
-    "F": {
-        r: 0xf8,
-        g: 0xf7,
-        b: 0xff,
-        colour: "#f8f7ff"
-    },
-    "G": {
-        r: 0xff,
-        g: 0xf4,
-        b: 0xea,
-        colour: "#fff4fa"
-    },
-    "K": {
-        r: 0xff,
-        g: 0xe2,
-        b: 0xc1,
-        colour: "#ffd2a1"
-    },
-    "M": {
-        r: 0xff,
-        g: 0xec,
-        b: 0xaf,
-        colour: "#ffcc6f"
-    },
+    "O": new SpectralClassDetails(0xa0, 0xd0, 0xff),
+    "B": new SpectralClassDetails(0xaa, 0xbf, 0xff),
+    "A": new SpectralClassDetails(0xca, 0xd7, 0xff),
+    "F": new SpectralClassDetails(0xf8, 0xf7, 0xff),
+    "G": new SpectralClassDetails(0xff, 0xf4, 0xea),
+    "K": new SpectralClassDetails(0xff, 0xe2, 0xc1),
+    "M": new SpectralClassDetails(0xff, 0xec, 0xaf),
 }
 
 let vx = -30;
@@ -95,13 +89,6 @@ document.addEventListener('keyup', function(e) {
 
 var ctx = canvas.getContext("2d")!;
 
-ctx.fillStyle = "#000000";
-ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-ctx.font = "30px Arial";
-ctx.fillStyle = "#FFFFFF";
-ctx.fillText("Hello TypeScript!!!1", 10, 50);
-
 var stars = makeStars();
 setInterval(tick, 20)
 
@@ -118,6 +105,18 @@ function openFullscreen() {
 }
 
 function tick() {
+    handleKeys();
+    updateStars();
+    draw();
+}
+
+function updateStars() {
+    for (const star of stars) {
+        star.update(vx, vy);
+    }
+}
+
+function handleKeys() {
     if (keysDown.get('a')) {
         vx += acceleration;
     }
@@ -130,25 +129,6 @@ function tick() {
     if (keysDown.get('s')) {
         vy -= acceleration;
     }
-
-    for (const star of stars) {
-        star.x = (star.x + vx / (star.z * 10));
-        star.y = (star.y + vy / (star.z * 10));
-        if (star.x < 0) {
-            star.x += canvas.width;
-        }
-        if (star.x >= canvas.width) {
-            star.x -= canvas.width;
-        }
-        if (star.y < 0) {
-            star.y += canvas.height;
-        }
-        if (star.y >= canvas.height) {
-            star.y -= canvas.height;
-        }
-    }
-
-    drawStars();
 }
 
 function makeStars() {
@@ -167,7 +147,7 @@ function makeRandomStar(): Star {
     const y = Math.random() * canvas.height;
     const z = Math.random() * 60 + 2
     const spectralClass = randomSpectralClass()
-    const rgb = rgbForStar(spectralClass, z);
+    const rgb = spectralClasses[spectralClass].rgbString(z);
     const radius = radiusForStar(z);
 
     return new Star(
@@ -187,30 +167,21 @@ function randomSpectralClass(): SpectralClass {
     return randomElement as SpectralClass;
 }
 
-function drawStars() {
+function clear() {
     ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    stars.forEach((star, _index, _array) => drawStar(star));
 }
 
-function drawStar(star: Star) {
-    drawCircle(star.x, star.y, star.rgb, star.radius);
+function draw() {
+    clear();
+
+    for (const star of stars) {
+        star.draw();
+    }
 }
 
 function radiusForStar(z: number) {
     return Math.min(Math.max(10 / z, 1), 2);
-}
-
-function rgbForStar(spectralClass: SpectralClass, z: number) {
-    const spectralClassDetails = spectralClasses[spectralClass]
-
-    const brightness = Math.min(Math.max(10 / z, 0.0001), 1);
-    const r = spectralClassDetails.r * brightness;
-    const g = spectralClassDetails.g * brightness;
-    const b = spectralClassDetails.b * brightness;
-
-    return `rgb(${r},${g},${b})`;
 }
 
 function drawCircle(x: number, y: number, rgb: string, radius: number) {
