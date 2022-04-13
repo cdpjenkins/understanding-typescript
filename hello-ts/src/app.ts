@@ -1,20 +1,36 @@
 const numStars = 4000;
 const acceleration = 0.5;
 
-type Star = {
-    x: number,
-    y: number,
-    z: number,
-    spectralClass: SpectralClass,
-    rgb: string,
-    radius: number
+class Star {
+    x: number;
+    y: number;
+    z: number;
+    spectralClass: SpectralClass;
+    rgb: string;
+    radius: number;
+
+    constructor(x: number, y: number, z: number, spectralClass: SpectralClass, rgb: string, radius: number) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.spectralClass = spectralClass;
+        this.rgb = rgb;
+        this.radius = radius;
+    }
 };
 
-type SpectralClassDetails = {
-    r: number,
-    g: number,
-    b: number,
-    colour: string
+class SpectralClassDetails {
+    r: number;
+    g: number;
+    b: number;
+    colour: string;
+
+    constructor(r: number, g: number, b: number, colour: string) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.colour = colour;
+    }
 };
 
 type SpectralClass =  "O" | "B" | "A" | "F" | "G" | "K" | "M" ;
@@ -136,9 +152,10 @@ function tick() {
 }
 
 function makeStars() {
-    let stars: Star[] = [];
-
-    stars = Array(numStars).fill(0).map((_v, _i, _a) => makeRandomStar());
+    let stars: Star[] =
+        Array(numStars)
+            .fill(0)
+            .map((_v, _i, _a) => makeRandomStar());
 
     stars.sort((a, b) => b.z - a.z);
 
@@ -146,18 +163,21 @@ function makeStars() {
 }
 
 function makeRandomStar(): Star {
+    const x = Math.random() * canvas.width;
+    const y = Math.random() * canvas.height;
+    const z = Math.random() * 60 + 2
     const spectralClass = randomSpectralClass()
-    const z = Math.random() * 15 + 4
-    const star = {
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        z: z,
-        spectralClass: spectralClass,
-        rgb: rgbForStar(spectralClass, z),
-        radius: radiusForStar(z)
-    }
+    const rgb = rgbForStar(spectralClass, z);
+    const radius = radiusForStar(z);
 
-    return star;
+    return new Star(
+        x,
+        y,
+        z,
+        spectralClass,
+        rgb,
+        radius
+    );
 }
 
 function randomSpectralClass(): SpectralClass {
@@ -179,7 +199,7 @@ function drawStar(star: Star) {
 }
 
 function radiusForStar(z: number) {
-    return Math.min(Math.max(10 / z, 1), 10);
+    return Math.min(Math.max(10 / z, 1), 2);
 }
 
 function rgbForStar(spectralClass: SpectralClass, z: number) {
@@ -200,5 +220,5 @@ function drawCircle(x: number, y: number, rgb: string, radius: number) {
     ctx.fill();
 
     // ctx.fillStyle = "rgb(255, 255, 255)";
-    // ctx.fillText(`${rgb}, ${r}`, x, y);
+    // ctx.fillText(`${rgb}, ${radius}`, x+10, y-10);
 }
