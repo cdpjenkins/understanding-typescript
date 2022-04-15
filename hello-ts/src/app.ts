@@ -3,12 +3,11 @@ const acceleration = 0.5;
 
 class Star {
     constructor(
-        private x: number,
+        private  x: number,
         private y: number,
-        private z: number,
-        private spectralClass: SpectralClass,
-        private rgb: string,
-        private radius: number
+        public readonly z: number,       // this is only needed for comparison... need to find out the idiomatic way to do this in JS/TS
+        private readonly rgb: string,
+        private readonly radius: number
     ) {}
 
     draw() {
@@ -34,7 +33,11 @@ class Star {
 };
 
 class SpectralClassDetails {
-    constructor(private r: number, private g: number, private b: number) {}
+    constructor(
+        private readonly r: number,
+        private readonly g: number,
+        private readonly b: number
+    ) {}
 
     rgbString(z: number) {
         const brightness = Math.min(Math.max(10 / z, 0.0001), 1);
@@ -138,7 +141,6 @@ function makeRandomStar(): Star {
         x,
         y,
         z,
-        spectralClass,
         rgb,
         radius
     );
