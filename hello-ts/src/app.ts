@@ -30,6 +30,23 @@ class Star {
             this.y -= canvas.height;
         }
     }
+
+    static makeRandom(): Star { 
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const z = Math.random() * 60 + 2
+        const spectralClass = randomSpectralClass()
+        const rgb = spectralClasses[spectralClass].rgbString(z);
+        const radius = radiusForStar(z);
+
+        return new Star(
+            x,
+            y,
+            z,
+            rgb,
+            radius
+        );
+    }
 };
 
 class SpectralClassDetails {
@@ -122,28 +139,11 @@ function makeStars() {
     let stars: Star[] =
         Array(numStars)
             .fill(0)
-            .map((_v, _i, _a) => makeRandomStar());
+            .map((_v, _i, _a) => Star.makeRandom());
 
     stars.sort((a, b) => b.z - a.z);
 
     return stars;
-}
-
-function makeRandomStar(): Star {
-    const x = Math.random() * canvas.width;
-    const y = Math.random() * canvas.height;
-    const z = Math.random() * 60 + 2
-    const spectralClass = randomSpectralClass()
-    const rgb = spectralClasses[spectralClass].rgbString(z);
-    const radius = radiusForStar(z);
-
-    return new Star(
-        x,
-        y,
-        z,
-        rgb,
-        radius
-    );
 }
 
 function randomSpectralClass(): SpectralClass {
