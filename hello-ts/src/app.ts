@@ -2,21 +2,14 @@ const numStars = 4000;
 const acceleration = 0.5;
 
 class Star {
-    x: number;
-    y: number;
-    z: number;
-    spectralClass: SpectralClass;
-    rgb: string;
-    radius: number;
-
-    constructor(x: number, y: number, z: number, spectralClass: SpectralClass, rgb: string, radius: number) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.spectralClass = spectralClass;
-        this.rgb = rgb;
-        this.radius = radius;
-    }
+    constructor(
+        private x: number,
+        private y: number,
+        private z: number,
+        private spectralClass: SpectralClass,
+        private rgb: string,
+        private radius: number
+    ) {}
 
     draw() {
         drawCircle(this.x, this.y, this.rgb, this.radius);
@@ -37,20 +30,11 @@ class Star {
         if (this.y >= canvas.height) {
             this.y -= canvas.height;
         }
-
     }
 };
 
 class SpectralClassDetails {
-    r: number;
-    g: number;
-    b: number;
-
-    constructor(r: number, g: number, b: number) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-    }
+    constructor(private r: number, private g: number, private b: number) {}
 
     rgbString(z: number) {
         const brightness = Math.min(Math.max(10 / z, 0.0001), 1);
