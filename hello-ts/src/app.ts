@@ -1,15 +1,7 @@
 const numStars = 4000;
 const acceleration = 0.5;
 
-const dude: Dude = {
-    update() {
-        console.log("dude!");
-    },
-
-    draw() {
-        console.log("draw!");
-    }
-}
+const player: Player = new Player();
 
 class Star {
     constructor(
@@ -101,7 +93,7 @@ document.addEventListener('keyup', function(e) {
     keysDown.set(e.key, false);
 }, false);
 
-var ctx = canvas.getContext("2d")!;
+var ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
 var stars = makeStars();
 setInterval(tick, 20)
@@ -120,10 +112,10 @@ function openFullscreen() {
 
 function tick() {
     handleKeys();
-    dude.update();
+    player.update();
     updateStars();
     draw();
-    dude.draw();
+    player.draw(ctx);
 }
 
 function updateStars() {
