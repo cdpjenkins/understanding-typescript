@@ -99,12 +99,12 @@ setInterval(tick, 20)
 function openFullscreen() {
     if (canvas.requestFullscreen) {
         canvas.requestFullscreen();
-    } else if (canvas.webkitRequestFullscreen) {
+    } else if ((<any> canvas).webkitRequestFullscreen) {
         /* Safari */
-        canvas.webkitRequestFullscreen();
-    } else if (canvas.msRequestFullscreen) {
+        (<any> canvas).webkitRequestFullscreen();
+    } else if ((<any> canvas).msRequestFullscreen) {
         /* IE11 */
-        canvas.msRequestFullscreen();
+        (<any> canvas).msRequestFullscreen();
   }
 }
 
