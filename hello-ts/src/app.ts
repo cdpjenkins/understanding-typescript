@@ -1,6 +1,16 @@
 const numStars = 4000;
 const acceleration = 0.5;
 
+const dude: Dude = {
+    update() {
+        console.log("dude!");
+    },
+
+    draw() {
+        console.log("draw!");
+    }
+}
+
 class Star {
     constructor(
         private  x: number,
@@ -110,8 +120,10 @@ function openFullscreen() {
 
 function tick() {
     handleKeys();
+    dude.update();
     updateStars();
     draw();
+    dude.draw();
 }
 
 function updateStars() {
