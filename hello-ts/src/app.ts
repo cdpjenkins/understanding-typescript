@@ -1,7 +1,9 @@
 const numStars = 4000;
 const acceleration = 0.5;
 
+// must figure out how to use stuff from other source files properly...
 const player: Player = new Player();
+const baddie: Baddie = new Baddie();
 
 class Star {
     constructor(
@@ -113,9 +115,11 @@ function openFullscreen() {
 function tick() {
     handleKeys();
     player.update();
+    baddie.update();
     updateStars();
     draw();
     player.draw(ctx);
+    baddie.draw(ctx);
 }
 
 function updateStars() {
