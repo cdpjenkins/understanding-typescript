@@ -145,6 +145,22 @@ canvas.onmousedown = (e) => {
         mandie.zoomOutTo(e.x, e.y);
     }
 };
+
+function setIterationDepth(newIterationDepth: number) {
+    mandie.iterationDepth = newIterationDepth;
+    mandie.draw();
+}
+
+(<HTMLInputElement>document.getElementById("iterationDepth")).onkeydown = (e) => {
+    if (e.key == "Enter") {
+        const target = e.target as HTMLInputElement;
+        const iterationDepthString = target.value
+        const newIterationDepth = parseInt(iterationDepthString);
+
+        setIterationDepth(newIterationDepth)
+    }
+}
+
 canvas.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
 let ctx = canvas.getContext("2d")!;
 let mandie = new MandelbrotRenderer(ctx);
