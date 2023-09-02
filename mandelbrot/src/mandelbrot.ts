@@ -62,6 +62,26 @@ class MandelbrotRenderer {
         console.timeEnd("mandie_timer");
     }
 
+    zoomInTo(x: number, y: number) {
+        this.centre = this.screenToComplex(x, y);
+        this.scale *= 1.25;
+        this.draw();
+    }
+
+    zoomOutTo(x: number, y: number) {
+        this.centre = this.screenToComplex(x, y);
+        this.scale /= 1.25;
+        this.draw();
+    }
+
+    private screenToComplex(x: number, y: number) {
+        let re = this.screenXToComplexRe(x);
+        let im = this.screenYToComplexIm(y);
+
+        const z = new Complex(re, im);
+        return z;
+    }
+
     private mandelbrotSetContains(kre: number, kim: number): boolean {
         let zre = 0;
         let zim = 0;
@@ -87,8 +107,12 @@ function magnitudeSquared(re: number, im: number): number {
 }
 
 let canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
-canvas.onmousedown = (event) => {
-    console.log(`down (${event.clientX}}, ${event.clientY}) ${event.button}`)
+canvas.onmousedown = (e) => {
+    if (e.button == 0) {
+        mandie.zoomInTo(e.x, e.y);
+    } else if (e.button == 2) {
+        mandie.zoomOutTo(e.x, e.y);
+    }
 };
 canvas.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
 let ctx = canvas.getContext("2d")!;
