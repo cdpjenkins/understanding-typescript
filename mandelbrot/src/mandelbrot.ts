@@ -5,6 +5,31 @@ class Complex {
     ) {}
 }
 
+function hsvToRgb(h: number, s: number, v: number): [number, number, number] {
+    const HUE_PERIOD: number = 360;
+
+    let c = v * s;
+    let h1 = (h % HUE_PERIOD) / (HUE_PERIOD / 6);
+    let x = c * (1 - Math.abs((h1 % 2) - 1));
+
+    if (h1 < 1) {
+        return [c, x, 0];
+    } else if (h1 < 2) {
+        return [x, c, 0];
+    } else if (h1 < 3) {
+        return [0, c, x];
+    } else if (h1 < 4) {
+        return [0, x, c];
+    } else if (h1 < 5) {
+        return [x, 0, c];
+    } else if (h1 < 6) {
+        return [c, 0, x];
+    } else {
+        // this should never be hit but it'll be obvious if we do hit it...
+        return [1, 1, 1];
+    }
+}
+
 class MandelbrotRenderer {
     centre: Complex = new Complex(0, 0);
     scale: number = 0.5;
@@ -15,6 +40,9 @@ class MandelbrotRenderer {
 
     width: number;
     height: number;
+
+    colourSaturation: number = 0.8;
+    colourValue: number = 1;
 
     constructor(ctx: CanvasRenderingContext2D) {
         this.ctx = ctx;
@@ -42,15 +70,18 @@ class MandelbrotRenderer {
                 let re = this.screenXToComplexRe(x);
                 let im = this.screenYToComplexIm(y);
     
-                if (this.mandelbrotSetContains(re, im)) {
+                let iterations = this.mandelbrotIterations(re, im);
+                if (iterations == -1) {
                     this.canvasData.data[i+0] = 0x00;
                     this.canvasData.data[i+1] = 0x00;
                     this.canvasData.data[i+2] = 0x00;
                     this.canvasData.data[i+3] = 0xFF;
                 } else {
-                    this.canvasData.data[i+0] = 0xFF;
-                    this.canvasData.data[i+1] = 0xFF;
-                    this.canvasData.data[i+2] = 0xFF;
+                    let [r, g, b] = hsvToRgb(iterations, this.colourSaturation, this.colourValue);
+
+                    this.canvasData.data[i+0] = r*255;
+                    this.canvasData.data[i+1] = g*255;
+                    this.canvasData.data[i+2] = b*255;
                     this.canvasData.data[i+3] = 0xFF;
                 }
     
@@ -82,7 +113,7 @@ class MandelbrotRenderer {
         return z;
     }
 
-    private mandelbrotSetContains(kre: number, kim: number): boolean {
+    private mandelbrotIterations(kre: number, kim: number): number {
         let zre = 0;
         let zim = 0;
 
@@ -94,11 +125,11 @@ class MandelbrotRenderer {
             zim = z2im;
 
             if (magnitudeSquared(zre, zim) >= 4) {
-                return false;
+                return i;
             }
         }
 
-        return true;
+        return -1;
     }
 }
 
