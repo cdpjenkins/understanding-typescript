@@ -7,7 +7,7 @@ class Complex {
 
 class MandelbrotRenderer {
     centre: Complex = new Complex(0, 0);
-    scale: number = 1;
+    scale: number = 0.5;
     iterationDepth: number = 1000;
 
     ctx: CanvasRenderingContext2D;
@@ -19,46 +19,17 @@ class MandelbrotRenderer {
     }
 
     draw() {
-        this.drawByPlottingPixels();
-    }
-
-    drawByPlottingPixels() {
         console.time("mandie_timer");
 
-        let width = canvas.width;
-        let height = canvas.height;
+        let width = this.canvasData.width;
+        let height = this.canvasData.height;
     
         let i = 0;
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++, i += 4) {
-                let re = -2 + (4 / width) * x;
-                let im = -2 + (4 / height) * y;
-    
-                if (this.mandelbrotSetContains(re, im)) {
-                    this.ctx.fillStyle = "#000000";
-                } else {
-                    this.ctx.fillStyle = "#FFFFFF";
-                }
-    
-                this.ctx.fillRect(x, y, 1, 1);
-            }
-        }
-    
-        console.timeEnd("mandie_timer");
-    }
 
-    drawUsingCanvasData() {
-        console.time("mandie_timer");
-
-        let width = canvas.width;
-        let height = canvas.height;
-
-    
-        let i = 0;
-        for (let y = 0; y < height; y++) {
-            for (let x = 0; x < width; x++, i += 4) {
-                let re = -2 + (4 / width) * x;
-                let im = -2 + (4 / height) * y;
+                let re = this.centre.re + (x - width/2) / (this.scale * width/2);
+                let im = this.centre.im + (y - height/2) / (this.scale * height/2);
     
                 if (this.mandelbrotSetContains(re, im)) {
                     this.canvasData.data[i+0] = 0x00;
