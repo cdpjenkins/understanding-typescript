@@ -152,24 +152,46 @@ canvas.onmousedown = (e) => {
     }
 };
 
+let iterationDepthTextInput = <HTMLInputElement>document.getElementById("iterationDepth");
+let realInput = <HTMLInputElement>document.getElementById("real");
+let imaginaryInput = <HTMLInputElement>document.getElementById("imaginary");
+
 function setIterationDepth(newIterationDepth: number) {
     mandie.iterationDepth = newIterationDepth;
     mandie.draw();
 }
 
 function updateUI(mandie: MandelbrotRenderer) {
-    (<HTMLInputElement>document.getElementById("iterationDepth")).value = mandie.iterationDepth.toString();
-    (<HTMLInputElement>document.getElementById("centre")).value = `${mandie.centre.re.toString()} + ${mandie.centre.re.toString()}i`;
-
+    iterationDepthTextInput.value = mandie.iterationDepth.toString();
+    realInput.value = `${mandie.centre.re.toString()}`;
+    imaginaryInput.value = `${mandie.centre.im.toString()}`;
 }
 
-(<HTMLInputElement>document.getElementById("iterationDepth")).onkeydown = (e) => {
+iterationDepthTextInput.onkeydown = (e) => {
     if (e.key == "Enter") {
         const target = e.target as HTMLInputElement;
         const iterationDepthString = target.value
         const newIterationDepth = parseInt(iterationDepthString);
 
         setIterationDepth(newIterationDepth)
+    }
+}
+
+realInput.onkeydown = (e) => {
+    if (e.key == "Enter") {
+        const target = e.target as HTMLInputElement;
+        mandie.centre.re = parseFloat(target.value);
+
+        mandie.draw();
+    }
+}
+
+imaginaryInput.onkeydown = (e) => {
+    if (e.key == "Enter") {
+        const target = e.target as HTMLInputElement;
+        mandie.centre.im = parseFloat(target.value);
+
+        mandie.draw();
     }
 }
 
