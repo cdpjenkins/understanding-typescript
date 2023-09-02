@@ -96,12 +96,18 @@ class MandelbrotRenderer {
     zoomInTo(x: number, y: number) {
         this.centre = this.screenToComplex(x, y);
         this.scale *= 1.25;
+
+        updateUI(this);
+
         this.draw();
     }
 
     zoomOutTo(x: number, y: number) {
         this.centre = this.screenToComplex(x, y);
         this.scale /= 1.25;
+
+        updateUI(this);
+
         this.draw();
     }
 
@@ -151,6 +157,12 @@ function setIterationDepth(newIterationDepth: number) {
     mandie.draw();
 }
 
+function updateUI(mandie: MandelbrotRenderer) {
+    (<HTMLInputElement>document.getElementById("iterationDepth")).value = mandie.iterationDepth.toString();
+    (<HTMLInputElement>document.getElementById("centre")).value = `${mandie.centre.re.toString()} + ${mandie.centre.re.toString()}i`;
+
+}
+
 (<HTMLInputElement>document.getElementById("iterationDepth")).onkeydown = (e) => {
     if (e.key == "Enter") {
         const target = e.target as HTMLInputElement;
@@ -165,5 +177,6 @@ canvas.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
 let ctx = canvas.getContext("2d")!;
 let mandie = new MandelbrotRenderer(ctx);
 
+updateUI(mandie);
 mandie.draw();
 
