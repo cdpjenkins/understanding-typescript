@@ -13,23 +13,34 @@ class MandelbrotRenderer {
     ctx: CanvasRenderingContext2D;
     canvasData: ImageData;
 
+    width: number;
+    height: number;
+
     constructor(ctx: CanvasRenderingContext2D) {
         this.ctx = ctx;
         this.canvasData = this.ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        this.width = this.canvasData.width;
+        this.height = this.canvasData.height;
+    }
+
+    screenXToComplexRe(x: number) {
+        return this.centre.re + (x - this.width/2) / (this.scale * this.width/2);
+    }
+
+    screenYToComplexIm(y: number) {
+        return this.centre.im + (y - this.height/2) / (this.scale * this.height/2);
     }
 
     draw() {
         console.time("mandie_timer");
-
-        let width = this.canvasData.width;
-        let height = this.canvasData.height;
     
         let i = 0;
-        for (let y = 0; y < height; y++) {
-            for (let x = 0; x < width; x++, i += 4) {
+        for (let y = 0; y < this.height; y++) {
+            for (let x = 0; x < this.width; x++, i += 4) {
 
-                let re = this.centre.re + (x - width/2) / (this.scale * width/2);
-                let im = this.centre.im + (y - height/2) / (this.scale * height/2);
+                let re = this.screenXToComplexRe(x);
+                let im = this.screenYToComplexIm(y);
     
                 if (this.mandelbrotSetContains(re, im)) {
                     this.canvasData.data[i+0] = 0x00;
@@ -51,7 +62,7 @@ class MandelbrotRenderer {
         console.timeEnd("mandie_timer");
     }
 
-    mandelbrotSetContains(kre: number, kim: number): boolean {
+    private mandelbrotSetContains(kre: number, kim: number): boolean {
         let zre = 0;
         let zim = 0;
 
@@ -76,6 +87,10 @@ function magnitudeSquared(re: number, im: number): number {
 }
 
 let canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
+canvas.onmousedown = (event) => {
+    console.log(`down (${event.clientX}}, ${event.clientY}) ${event.button}`)
+};
+canvas.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
 let ctx = canvas.getContext("2d")!;
 let mandie = new MandelbrotRenderer(ctx);
 
