@@ -158,7 +158,7 @@ let iterationDepthTextInput = <HTMLInputElement>document.getElementById("iterati
 let scaleTextInput = <HTMLInputElement>document.getElementById("scale");
 let realInput = <HTMLInputElement>document.getElementById("real");
 let imaginaryInput = <HTMLInputElement>document.getElementById("imaginary");
-let timeInput = <HTMLInputElement>document.getElementById("time");
+let timeToRenderSpan = <HTMLSpanElement>document.getElementById("timeToRenderSpan");
 
 // TODO - maybe all these set functions could live in the MandelbrotRenderer class
 function setIterationDepth(newIterationDepth: number) {
@@ -176,7 +176,7 @@ function updateUI(mandie: MandelbrotRenderer) {
     scaleTextInput.value = mandie.scale.toString();
     realInput.value = `${mandie.centre.re.toString()}`;
     imaginaryInput.value = `${mandie.centre.im.toString()}`;
-    timeInput.value = `${mandie.timeToRender.toFixed(2)}ms`;
+    timeToRenderSpan.innerHTML = `${mandie.timeToRender.toFixed(2)}ms`;
 }
 
 iterationDepthTextInput.onkeydown = (e) => {
