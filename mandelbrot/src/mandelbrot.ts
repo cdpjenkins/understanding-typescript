@@ -176,7 +176,7 @@ function updateUI(mandie: MandelbrotRenderer) {
     scaleTextInput.value = mandie.scale.toString();
     realInput.value = `${mandie.centre.re.toString()}`;
     imaginaryInput.value = `${mandie.centre.im.toString()}`;
-    timeToRenderSpan.innerHTML = `${mandie.timeToRender.toFixed(2)}ms`;
+    timeToRenderSpan.textContent = `${mandie.timeToRender.toFixed(2)}ms`;
 }
 
 iterationDepthTextInput.onkeydown = (e) => {
