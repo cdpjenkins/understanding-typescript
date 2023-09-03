@@ -34,6 +34,7 @@ class MandelbrotRenderer {
     centre: Complex = new Complex(0, 0);
     scale: number = 0.5;
     iterationDepth: number = 1000;
+    timeToRender: number = -1;
 
     ctx: CanvasRenderingContext2D;
     canvasData: ImageData;
@@ -53,44 +54,45 @@ class MandelbrotRenderer {
     }
 
     screenXToComplexRe(x: number) {
-        return this.centre.re + (x - this.width/2) / (this.scale * this.width/2);
+        return this.centre.re + (x - this.width / 2) / (this.scale * this.width / 2);
     }
 
     screenYToComplexIm(y: number) {
-        return this.centre.im + (y - this.height/2) / (this.scale * this.height/2);
+        return this.centre.im + (y - this.height / 2) / (this.scale * this.height / 2);
     }
 
     draw() {
-        console.time("mandie_timer");
-    
+        const startTime = performance.now();
+
         let i = 0;
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++, i += 4) {
 
                 let re = this.screenXToComplexRe(x);
                 let im = this.screenYToComplexIm(y);
-    
+
                 let iterations = this.mandelbrotIterations(re, im);
                 if (iterations == -1) {
-                    this.canvasData.data[i+0] = 0x00;
-                    this.canvasData.data[i+1] = 0x00;
-                    this.canvasData.data[i+2] = 0x00;
-                    this.canvasData.data[i+3] = 0xFF;
+                    this.canvasData.data[i + 0] = 0x00;
+                    this.canvasData.data[i + 1] = 0x00;
+                    this.canvasData.data[i + 2] = 0x00;
+                    this.canvasData.data[i + 3] = 0xFF;
                 } else {
                     let [r, g, b] = hsvToRgb(iterations, this.colourSaturation, this.colourValue);
 
-                    this.canvasData.data[i+0] = r*255;
-                    this.canvasData.data[i+1] = g*255;
-                    this.canvasData.data[i+2] = b*255;
-                    this.canvasData.data[i+3] = 0xFF;
+                    this.canvasData.data[i + 0] = r * 255;
+                    this.canvasData.data[i + 1] = g * 255;
+                    this.canvasData.data[i + 2] = b * 255;
+                    this.canvasData.data[i + 3] = 0xFF;
                 }
-    
+
             }
         }
 
         this.ctx.putImageData(this.canvasData, 0, 0);
-    
-        console.timeEnd("mandie_timer");
+
+        const endTime = performance.now();
+        this.timeToRender = endTime - startTime;        
     }
 
     zoomInTo(x: number, y: number) {
@@ -124,8 +126,8 @@ class MandelbrotRenderer {
         let zim = 0;
 
         for (let i = 0; i < this.iterationDepth; i++) {
-            let z2re = zre*zre - zim*zim + kre;
-            let z2im = 2*zre*zim + kim;
+            let z2re = zre * zre - zim * zim + kre;
+            let z2im = 2 * zre * zim + kim;
 
             zre = z2re;
             zim = z2im;
@@ -140,7 +142,7 @@ class MandelbrotRenderer {
 }
 
 function magnitudeSquared(re: number, im: number): number {
-    return re*re + im*im;
+    return re * re + im * im;
 }
 
 let canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
@@ -153,18 +155,28 @@ canvas.onmousedown = (e) => {
 };
 
 let iterationDepthTextInput = <HTMLInputElement>document.getElementById("iterationDepth");
+let scaleTextInput = <HTMLInputElement>document.getElementById("scale");
 let realInput = <HTMLInputElement>document.getElementById("real");
 let imaginaryInput = <HTMLInputElement>document.getElementById("imaginary");
+let timeInput = <HTMLInputElement>document.getElementById("time");
 
+// TODO - maybe all these set functions could live in the MandelbrotRenderer class
 function setIterationDepth(newIterationDepth: number) {
     mandie.iterationDepth = newIterationDepth;
     mandie.draw();
 }
 
+function setScale(newScale: number) {
+    mandie.scale = newScale;
+    mandie.draw();
+}
+
 function updateUI(mandie: MandelbrotRenderer) {
     iterationDepthTextInput.value = mandie.iterationDepth.toString();
+    scaleTextInput.value = mandie.scale.toString();
     realInput.value = `${mandie.centre.re.toString()}`;
     imaginaryInput.value = `${mandie.centre.im.toString()}`;
+    timeInput.value = `${mandie.timeToRender.toFixed(2)}ms`;
 }
 
 iterationDepthTextInput.onkeydown = (e) => {
@@ -174,6 +186,16 @@ iterationDepthTextInput.onkeydown = (e) => {
         const newIterationDepth = parseInt(iterationDepthString);
 
         setIterationDepth(newIterationDepth)
+    }
+}
+
+scaleTextInput.onkeydown = (e) => {
+    if (e.key == "Enter") {
+        const target = e.target as HTMLInputElement;
+        const scaleString = target.value
+        const newScale = parseFloat(scaleString);
+
+        setScale(newScale)
     }
 }
 
@@ -199,6 +221,6 @@ canvas.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
 let ctx = canvas.getContext("2d")!;
 let mandie = new MandelbrotRenderer(ctx);
 
-updateUI(mandie);
 mandie.draw();
+updateUI(mandie);
 
