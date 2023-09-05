@@ -95,6 +95,18 @@ class MandelbrotRenderer {
         this.timeToRender = endTime - startTime;        
     }
 
+    zoomIn() {
+        this.scale *= 1.25;
+        updateUI(this);
+        this.draw();
+    }
+
+    zoomOut() {
+        this.scale /= 1.25;
+        updateUI(this);
+        this.draw();
+    }
+
     zoomInTo(x: number, y: number) {
         this.centre = this.screenToComplex(x, y);
         this.scale *= 1.25;
@@ -177,6 +189,30 @@ function updateUI(mandie: MandelbrotRenderer) {
     realInput.value = `${mandie.centre.re.toString()}`;
     imaginaryInput.value = `${mandie.centre.im.toString()}`;
     timeToRenderSpan.textContent = `${mandie.timeToRender.toFixed(2)}ms`;
+}
+
+function increaseIterationDepth() {
+    mandie.iterationDepth += 100;
+    updateUI(mandie);
+    mandie.draw();
+}
+
+function decreaseIterationDepth() {
+    mandie.iterationDepth -= 100;
+    updateUI(mandie);
+    mandie.draw();
+}
+
+function zoomIn() {
+    mandie.zoomIn();
+    updateUI(mandie);
+    mandie.draw();
+}
+
+function zoomOut() {
+    mandie.zoomOut();
+    updateUI(mandie);
+    mandie.draw();
 }
 
 iterationDepthTextInput.onkeydown = (e) => {
