@@ -95,6 +95,30 @@ class MandelbrotRenderer {
         this.timeToRender = endTime - startTime;        
     }
 
+    scrollLeft() {
+        this.centre.re -= 0.01 / 0.1/this.scale;
+        updateUI(this);
+        this.draw();
+    }
+
+    scrollRight() {
+        this.centre.re += 0.01 / 0.1/this.scale;
+        updateUI(this);
+        this.draw();
+    }
+
+    scrollDown() {
+        this.centre.im += 0.01 / 0.1/this.scale;
+        updateUI(this);
+        this.draw();
+    }
+
+    scrollUp() {
+        this.centre.im -= 0.01 / 0.1/this.scale;
+        updateUI(this);
+        this.draw();
+    }
+
     zoomIn() {
         this.scale *= 1.25;
         updateUI(this);

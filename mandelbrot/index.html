@@ -15,28 +15,49 @@
   </canvas>
   <table>
     <tr>
-      <td>Iteration depth</td>
-      <td><input type="text" id="iterationDepth" name="Iteration depth"></td>
-      <td><button onclick="decreaseIterationDepth();">-100</button></td>
-      <td><button onclick="increaseIterationDepth();">+100</button></td>
-
-    </tr>
-    <tr>
-      <td>Scale</td>
-      <td><input type="text" id="scale" name="Scale"></td>
-      <td><button onclick="zoomIn();">Zoom in</button></td>
-      <td><button onclick="zoomOut();">Zoom out</button></td>
-    </tr>
-    <tr>
-      <td>Real</td>
-      <td><input type="text" id="real" name="Real"></td>
-    </tr>
-    <tr>
-      <td>Imaginary</td>
-      <td><input type="text" id="imaginary" name="Imaginary"></td>
-    </tr>    <tr>
-      <td>Time to render:</td>
-      <td><span id="timeToRenderSpan">Cheese-ston</span></td>
+      <td>
+        <table>
+          <tr>
+            <td>Iteration depth</td>
+            <td><input type="text" id="iterationDepth" name="Iteration depth"></td>
+            <td><button onclick="decreaseIterationDepth();">-100</button></td>
+            <td><button onclick="increaseIterationDepth();">+100</button></td>
+    
+          </tr>
+          <tr>
+            <td>Scale</td>
+            <td><input type="text" id="scale" name="Scale"></td>
+            <td><button onclick="zoomIn();">Zoom in</button></td>
+            <td><button onclick="zoomOut();">Zoom out</button></td>
+          </tr>
+          <tr>
+            <td>Real</td>
+            <td><input type="text" id="real" name="Real"></td>
+          </tr>
+          <tr>
+            <td>Imaginary</td>
+            <td><input type="text" id="imaginary" name="Imaginary"></td>
+          </tr>
+          <tr>
+            <td>Time to render:</td>
+            <td><span id="timeToRenderSpan">Cheese-ston</span></td>
+          </tr>
+        </table>
+      </td>
+      <td>
+        <table>
+          <tr>
+          <td></td><td><button onclick="mandie.scrollUp();">↑</button></td><td></td>
+          </tr>
+          <tr>
+            <td><button onclick="mandie.scrollLeft();">←</button></td><td></td><td><button onclick="mandie.scrollRight();">→</button></td>
+          </tr>
+          <tr>
+            <td></td><td><button onclick="mandie.scrollDown();">↓</button></td><td></td>
+          </tr>
+          </tr>
+        </table>
+      </td>
     </tr>
   </table>
 </body>
