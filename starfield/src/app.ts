@@ -11,7 +11,6 @@ class Star {
         public r: number,
         public g: number,
         public b: number,
-        private readonly radius: number
     ) {}
 
     draw() {
@@ -22,7 +21,13 @@ class Star {
         const g = this.g / this.z;
         const b = this.b / this.z;
 
-        drawCircle(x, y, `rgb(${r},${g},${b})`, this.radius);
+        const radius = Math.min(
+            Math.max(
+                4 / this.z,
+                1),
+            2);
+
+        drawCircle(x, y, `rgb(${r},${g},${b})`, radius);
     }
 
     update(vx: number, vy: number) {
@@ -42,7 +47,6 @@ class Star {
         const z = Math.random() * Star.MAX_Z;
         const spectralClass = randomSpectralClass()
         const [r, g, b] = spectralClasses[spectralClass].makeRGB(z);
-        const radius = radiusForStar(z);
 
         return new Star(
             x,
@@ -50,9 +54,8 @@ class Star {
             z,
             r,
             g,
-            b,
-            radius
-        );
+            b
+            );
     }
 };
 
@@ -64,7 +67,6 @@ class SpectralClassDetails {
     ) {}
 
     makeRGB(z: number): [number, number, number] {
-        // const brightness = Math.min(Math.max(10 / z, 0.0001), 1);
         const brightness = 1;
         const r = this.r * brightness;
         const g = this.g * brightness;
@@ -172,10 +174,6 @@ function draw() {
     for (const star of stars) {
         star.draw();
     }
-}
-
-function radiusForStar(z: number) {
-    return Math.min(Math.max(10 / z, 1), 2);
 }
 
 function drawCircle(x: number, y: number, rgb: string, radius: number) {
