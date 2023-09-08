@@ -1,4 +1,4 @@
-const numStars = 10000;
+const numStars = 1000;
 const acceleration = 0.5;
 
 class Star {
@@ -30,7 +30,7 @@ class Star {
         drawCircle(x, y, `rgb(${r},${g},${b})`, radius);
     }
 
-    update(vx: number, vy: number) {
+    update() {
 
         this.z -= 0.01;
 
@@ -46,7 +46,7 @@ class Star {
         const y = ((Math.random() * canvas.height) - canvas.height/2) * ston;
         const z = Math.random() * Star.MAX_Z;
         const spectralClass = randomSpectralClass()
-        const [r, g, b] = spectralClasses[spectralClass].makeRGB(z);
+        const [r, g, b] = spectralClasses[spectralClass].makeRGB();
 
         return new Star(
             x,
@@ -66,7 +66,7 @@ class SpectralClassDetails {
         private readonly b: number
     ) {}
 
-    makeRGB(z: number): [number, number, number] {
+    makeRGB(): [number, number, number] {
         const brightness = 1;
         const r = this.r * brightness;
         const g = this.g * brightness;
@@ -126,7 +126,7 @@ function tick() {
 
 function updateStars() {
     for (const star of stars) {
-        star.update(vx, vy);
+        star.update();
     }
 }
 
