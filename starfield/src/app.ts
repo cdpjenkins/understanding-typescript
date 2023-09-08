@@ -1,4 +1,4 @@
-const numStars = 1000;
+const numStars = 5000;
 const acceleration = 0.5;
 
 class Star {
@@ -11,12 +11,13 @@ class Star {
         public r: number,
         public g: number,
         public b: number,
-    ) {}
+        public sx: number,
+        public sy: number
+    ) {
+        this.project();
+    }
 
     draw() {
-        const x = this.x / this.z + canvas.width/2;
-        const y = this.y / this.z + canvas.height/2;
-
         const r = this.r / this.z;
         const g = this.g / this.z;
         const b = this.b / this.z;
@@ -27,12 +28,27 @@ class Star {
                 1),
             2);
 
-        drawCircle(x, y, `rgb(${r},${g},${b})`, radius);
+        drawCircle(this.sx, this.sy, `rgb(${r},${g},${b})`, radius);
+    }
+
+    project() {
+        this.sx = this.x / this.z + canvas.width/2;
+        this.sy = this.y / this.z + canvas.height/2;
+    }
+
+    isVisible(): boolean {
+        return this.sx >= 0 && this.sx < canvas.width ||
+                this.sy >= 0 && this.sy < canvas.height;
     }
 
     update() {
-
         this.z -= 0.01;
+
+        this.project();
+
+        if (!this.isVisible) {
+            this.z += Star.MAX_Z;
+        }
 
         if (this.z <= 0) {
             this.z += Star.MAX_Z;
@@ -54,8 +70,9 @@ class Star {
             z,
             r,
             g,
-            b
-            );
+            b,
+            -1,
+            -1);
     }
 };
 
@@ -149,7 +166,11 @@ function makeStars() {
     let stars: Star[] =
         Array(numStars)
             .fill(0)
-            .map((_v, _i, _a) => Star.makeRandom());
+            .map((_v, _i, _a) => Star.makeRandom())
+            .filter((star) => star.isVisible());
+
+
+    console.log(`${stars.length} stars`);
 
     stars.sort((a, b) => b.z - a.z);
 
@@ -181,7 +202,4 @@ function drawCircle(x: number, y: number, rgb: string, radius: number) {
     ctx.arc(x, y, radius, 0, 2*Math.PI);
     ctx.fillStyle = rgb;
     ctx.fill();
-
-    // ctx.fillStyle = "rgb(255, 255, 255)";
-    // ctx.fillText(`${rgb}, ${radius}`, x+10, y-10);
 }
