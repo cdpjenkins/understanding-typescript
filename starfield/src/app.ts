@@ -1,6 +1,19 @@
 const numStars = 10000;
 const acceleration = 0.5;
 
+class Matrix2D {
+    constructor(public m11: number, public m21: number,
+                public m12: number, public m22: number) {}
+
+    transformVector(x: number, y: number) {
+        return [matrix.m11 * x + matrix.m21 * y,
+                matrix.m12 * x + matrix.m22 * y];
+    }
+}
+
+let theta: number = 0;
+let matrix = new Matrix2D(1, 0, 0, 1);
+
 class Star {
     static MAX_Z: number = 10;
 
@@ -17,7 +30,8 @@ class Star {
         public screen_x: number,
         public screen_y: number
     ) {
-        this.project();
+        this.transform_world_to_view();
+        this.project_view_to_screen();
     }
 
     draw() {
@@ -31,25 +45,27 @@ class Star {
                 1),
             2);
 
-        drawCircle(this.screen_x, this.screen_y, `rgb(${r},${g},${b})`, radius);
+        drawCircle(this.screen_x + canvas.width/2, this.screen_y + canvas.height/2, `rgb(${r},${g},${b})`, radius);
     }
 
-    project() {
-        this.view_x = this.x / this.z
-        this.view_y = this.y / this.z
+    transform_world_to_view() {
+        [this.view_x,this.view_y] = matrix.transformVector(this.x, this.y);
+    }
 
-        this.screen_x = this.view_x + canvas.width/2;
-        this.screen_y = this.view_y + canvas.height/2;
+    project_view_to_screen() {
+        this.screen_x = this.view_x / this.z;
+        this.screen_y = this.view_y / this.z;
     }
 
     isVisible(): boolean {
-        return this.view_x * this.view_x + this.view_y * this.view_y < canvas.width * canvas.width / 4;
+        return this.screen_x * this.screen_x + this.screen_y * this.screen_y < canvas.width * canvas.width / 4;
     }
 
     update() {
         this.z -= 0.01;
 
-        this.project();
+        this.transform_world_to_view();
+        this.project_view_to_screen();
 
         if (!this.isVisible) {
             this.z += Star.MAX_Z;
@@ -61,7 +77,7 @@ class Star {
     }
 
     static makeRandom(): Star {
-        const ston = 4;
+        const ston = 8;
 
         const x = ((Math.random() * canvas.width) - canvas.width/2) * ston;
         const y = ((Math.random() * canvas.height) - canvas.height/2) * ston;
@@ -79,7 +95,8 @@ class Star {
             -1,
             -1);
 
-        star.project();
+        star.transform_world_to_view();
+        star.project_view_to_screen();
 
         return star;
     }
@@ -145,9 +162,19 @@ function openFullscreen() {
 }
 
 function tick() {
+    let startTime = performance.now();
+
     handleKeys();
+    theta += 1/512;
+    matrix = new Matrix2D(Math.cos(theta), - Math.sin(theta),
+                            Math.sin(theta), Math.cos(theta));
+
+    if (theta >= 2 * Math.PI) theta -= 2 * Math.PI;
     updateStars();
     draw();
+
+    let endTime = performance.now();
+    // console.log(`tick took ${endTime - startTime}ms`)
 }
 
 function updateStars() {
