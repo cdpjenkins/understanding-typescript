@@ -15,7 +15,7 @@ let theta: number = 0;
 let matrix = new Matrix2D(1, 0, 0, 1);
 
 class Star {
-    static MAX_Z: number = 10;
+    static MAX_Z: number = 6;
 
     view_x: number = 0;
     view_y: number = 0;
@@ -162,7 +162,7 @@ function openFullscreen() {
 }
 
 function tick() {
-    let startTime = performance.now();
+    // let startTime = performance.now();
 
     handleKeys();
     theta += 1/512;
@@ -173,7 +173,7 @@ function tick() {
     updateStars();
     draw();
 
-    let endTime = performance.now();
+    // let endTime = performance.now();
     // console.log(`tick took ${endTime - startTime}ms`)
 }
 
