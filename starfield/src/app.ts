@@ -1,8 +1,11 @@
-const numStars = 5000;
+const numStars = 10000;
 const acceleration = 0.5;
 
 class Star {
-    static MAX_Z: number = 4;
+    static MAX_Z: number = 10;
+
+    view_x: number = 0;
+    view_y: number = 0;
 
     constructor(
         private x: number,
@@ -11,8 +14,8 @@ class Star {
         public r: number,
         public g: number,
         public b: number,
-        public sx: number,
-        public sy: number
+        public screen_x: number,
+        public screen_y: number
     ) {
         this.project();
     }
@@ -28,17 +31,19 @@ class Star {
                 1),
             2);
 
-        drawCircle(this.sx, this.sy, `rgb(${r},${g},${b})`, radius);
+        drawCircle(this.screen_x, this.screen_y, `rgb(${r},${g},${b})`, radius);
     }
 
     project() {
-        this.sx = this.x / this.z + canvas.width/2;
-        this.sy = this.y / this.z + canvas.height/2;
+        this.view_x = this.x / this.z
+        this.view_y = this.y / this.z
+
+        this.screen_x = this.view_x + canvas.width/2;
+        this.screen_y = this.view_y + canvas.height/2;
     }
 
     isVisible(): boolean {
-        return this.sx >= 0 && this.sx < canvas.width ||
-                this.sy >= 0 && this.sy < canvas.height;
+        return this.view_x * this.view_x + this.view_y * this.view_y < canvas.width * canvas.width / 4;
     }
 
     update() {
@@ -64,7 +69,7 @@ class Star {
         const spectralClass = randomSpectralClass()
         const [r, g, b] = spectralClasses[spectralClass].makeRGB();
 
-        return new Star(
+        const star = new Star(
             x,
             y,
             z,
@@ -73,6 +78,10 @@ class Star {
             b,
             -1,
             -1);
+
+        star.project();
+
+        return star;
     }
 };
 
@@ -84,7 +93,7 @@ class SpectralClassDetails {
     ) {}
 
     makeRGB(): [number, number, number] {
-        const brightness = 1;
+        const brightness = Math.random();
         const r = this.r * brightness;
         const g = this.g * brightness;
         const b = this.b * brightness;
