@@ -110,7 +110,7 @@ class SpectralClassDetails {
     ) {}
 
     makeRGB(): [number, number, number] {
-        const brightness = Math.random();
+        const brightness = 1;
         const r = this.r * brightness;
         const g = this.g * brightness;
         const b = this.b * brightness;
