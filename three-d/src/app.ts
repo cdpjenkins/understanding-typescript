@@ -57,13 +57,18 @@ class Matrix3D {
 // y points up
 // z points forwards
 
-function projectViewToScreen(s: Vector3D): Vector2D {
+const PROJECTION_DEPTH = 300;
 
-    // TODO this projection function isn't quite right yet. We should cause it to take into account
-    // the width/height of the screen and the projection depth (distance from observer to screen)
+function projectViewToScreen(viewPos: Vector3D): Vector2D {
+    // by similar triangles:
+    //     screenX / projectionDepth = viewX / z
+    // ==> screenX = viewX * projectionDepth / z
+    //             = viewX * projectionDepth / z
 
-    let projectedX = s.x / s.z;
-    let projectedY = s.y / s.z;
+    let factor = PROJECTION_DEPTH / viewPos.z;
+
+    let projectedX = viewPos.x * factor;
+    let projectedY = viewPos.y * factor;
 
     let screenX = canvas.width / 2 + projectedX;
     let screenY = canvas.height / 2 + projectedY;
@@ -90,7 +95,7 @@ var ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
 // in screen coords
 // TODO how do we use the type system to differentiate between different coordinate systems?
-let circlePos: Vector3D = new Vector3D(0, 0, 1);
+let circlePos: Vector3D = new Vector3D(0, 0, 300);
 
 setInterval(tick, 20)
 
@@ -120,10 +125,10 @@ function handleKeys() {
         circlePos = circlePos.translate(new Vector3D(0, 1, 0));
     }
     if (keysDown.get('r')) {
-        circlePos = circlePos.translate(new Vector3D(0, 0, 0.01));
+        circlePos = circlePos.translate(new Vector3D(0, 0, 1));
     }
     if (keysDown.get('f')) {
-        circlePos = circlePos.translate(new Vector3D(0, 0, -0.01));
+        circlePos = circlePos.translate(new Vector3D(0, 0, -1));
     }
 }
 
@@ -145,10 +150,11 @@ function draw() {
 }
 
 function drawCircle(pos: Vector3D, rgb: string, radius: number) {
-    console.log(`${pos.x}, ${pos.y}, ${pos.z}`);
-
     let screenPos = projectViewToScreen(pos);
-    radius /= pos.z;
+
+    // It's not great to have to compute the radius here (slightly incrrectly if the circle is actually
+    // supposed to be a sphere) but hopefully something better will fall out eventually.
+    radius = radius * PROJECTION_DEPTH / pos.z;
 
     ctx.beginPath();
     ctx.arc(screenPos.x, screenPos.y, radius, 0, 2*Math.PI);
