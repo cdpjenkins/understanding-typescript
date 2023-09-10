@@ -16,12 +16,23 @@
 // y points up
 // z points forwards
 
-class Particle {
+abstract class Object3D {
+    abstract transformObjectToWorld(): void;
+}
+
+class Particle extends Object3D {
+    public viewPos: Vector3D = Vector3D.ZERO;
+
     constructor(
         public worldPos: Vector3D,
-        public viewPos: Vector3D,
         public radius: number
-    ) {}
+    ) {
+        super();
+    }
+
+    override transformObjectToWorld(): void {
+        // this is a NOP given that a particle is only a single point
+    }
 
     transformWorldToView(observerPos: Vector3D, observerCoordinateTransformMatrix: Matrix3D) {
         const translatedPos = this.worldPos.minus(observerPos);
@@ -30,6 +41,12 @@ class Particle {
         this.viewPos =  rotatedPos;
     }
 }
+
+// class CompoundParticleObject extends Object3D {
+//     override transformObjectToWorld(): void {
+//         // TODO
+//     }
+// }
 
 class Observer {
     readonly PROJECTION_DEPTH = 300;

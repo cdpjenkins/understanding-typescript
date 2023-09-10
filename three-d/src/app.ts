@@ -29,7 +29,6 @@ for (let theta = 0; theta < Math.PI*2; theta += Math.PI / NUM_PARTICLES) {
                 Math.cos(theta) * 500 + 300,
                 700
             ),
-            Vector3D.ZERO,
             5
         )
     )
@@ -44,7 +43,6 @@ for (let x = 0; x < 10; x++) {
                     0,
                     (z) * 500
                 ),
-                Vector3D.ZERO,
                 5
             )
         )
