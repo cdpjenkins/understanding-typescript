@@ -189,9 +189,10 @@ document.addEventListener('keyup', function(e) {
 
 var ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
-// let particles: Particle[] = [new Particle(new Vector3D(0, 0, 300), new Vector3D(0, 0, 0), 10)];
+const NUM_PARTICLES = 50;
+
 let particles: Particle[] = [];
-for (let theta = 0; theta < Math.PI*2; theta += Math.PI / 10) {
+for (let theta = 0; theta < Math.PI*2; theta += Math.PI / NUM_PARTICLES) {
     particles.push(
         new Particle(
             new Vector3D(
