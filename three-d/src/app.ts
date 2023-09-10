@@ -18,6 +18,14 @@ class Vector3D {
             this.z + that.z
         );
     }
+
+    minus(that: Vector3D): Vector3D {
+        return new Vector3D(
+            this.x - that.x,
+            this.y - that.y,
+            this.z - that.z
+        )
+    }
 }
 
 class Vector2D {
@@ -76,6 +84,17 @@ function projectViewToScreen(viewPos: Vector3D): Vector2D {
     return new Vector2D(screenX, screenY);
 }
 
+class Particle {
+    constructor(
+        public worldPos: Vector3D,
+        public viewPos: Vector3D,
+        public radius: number
+    ) {}
+
+    transformWorldToView(observerPos: Vector3D) {
+        this.viewPos = this.worldPos.minus(observerPos);
+    }
+}
 
 //
 // Application stuff here
@@ -93,9 +112,8 @@ document.addEventListener('keyup', function(e) {
 
 var ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
-// in screen coords
-// TODO how do we use the type system to differentiate between different coordinate systems?
-let circlePos: Vector3D = new Vector3D(0, 0, 300);
+let particles: Particle[] = [new Particle(new Vector3D(0, 0, 300), new Vector3D(0, 0, 0), 10)];
+let observerPos: Vector3D = new Vector3D(0, 0, 0);
 
 setInterval(tick, 20)
 
@@ -113,22 +131,22 @@ function openFullscreen() {
 
 function handleKeys() {
     if (keysDown.get('a')) {
-        circlePos = circlePos.translate(new Vector3D(-1, 0, 0));
+        observerPos = observerPos.translate(new Vector3D(-1, 0, 0));
     }
     if (keysDown.get('w')) {
-        circlePos = circlePos.translate(new Vector3D(0, -1, 0));
+        observerPos = observerPos.translate(new Vector3D(0, -1, 0));
     }
     if (keysDown.get('d')) {
-        circlePos = circlePos.translate(new Vector3D(1, 0, 0));
+        observerPos = observerPos.translate(new Vector3D(1, 0, 0));
     }
     if (keysDown.get('s')) {
-        circlePos = circlePos.translate(new Vector3D(0, 1, 0));
+        observerPos = observerPos.translate(new Vector3D(0, 1, 0));
     }
     if (keysDown.get('r')) {
-        circlePos = circlePos.translate(new Vector3D(0, 0, 1));
+        observerPos = observerPos.translate(new Vector3D(0, 0, 1));
     }
     if (keysDown.get('f')) {
-        circlePos = circlePos.translate(new Vector3D(0, 0, -1));
+        observerPos = observerPos.translate(new Vector3D(0, 0, -1));
     }
 }
 
@@ -146,7 +164,11 @@ function clear() {
 function draw() {
     clear();
 
-    drawCircle(circlePos, "rgb(255, 255, 255)", 10);
+    for (const particle of particles) {
+        particle.transformWorldToView(observerPos);
+
+        drawCircle(particle.viewPos, "rgb(255, 255, 255)", 10);
+    }
 }
 
 function drawCircle(pos: Vector3D, rgb: string, radius: number) {
