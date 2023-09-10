@@ -41,14 +41,36 @@ function makeVerticalCircle(pos: Vector3D): CompoundParticleObject {
     );
 }
 
-function setupObjects(): Object3D[] {
+function makeFloor(): CompoundParticleObject {
 
+    let childObjects: Object3D[] = [];
+    for (let x = 0; x < 10; x++) {
+        for (let z = 0; z < 10; z++) {
+            childObjects.push(
+                new Particle(
+                    new Vector3D(
+                        (x - 5) * 500,
+                        0,
+                        (z) * 500
+                    ),
+                    5
+                )
+            )
+        }
+    }
+
+    return new CompoundParticleObject(
+        Vector3D.ZERO,
+        childObjects
+    );
+}
+
+function setupObjects(): Object3D[] {
     let objects: Object3D[] = [];
 
     objects.push(makeVerticalCircle(new Vector3D(0, 300, 700)));
     objects.push(makeVerticalCircle(new Vector3D(0, 300, 500)));
     objects.push(makeVerticalCircle(new Vector3D(0, 300, 300)));
-
 
     let weirdTotemPoleThingie = new CompoundParticleObject(
         new Vector3D(0, 0, 1000),
@@ -61,6 +83,8 @@ function setupObjects(): Object3D[] {
     );
 
     objects.push(weirdTotemPoleThingie);
+
+    objects.push(makeFloor());
 
     return objects;
 }
