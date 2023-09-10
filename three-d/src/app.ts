@@ -28,6 +28,10 @@ class Vector3D {
             this.z - that.z
         )
     }
+
+    times(factor: number): Vector3D {
+        return new Vector3D(this.x * factor, this.y * factor, this.z * factor);
+    }
 }
 
 class Vector2D {
@@ -47,6 +51,44 @@ class Matrix3D {
         public m12: number, public m22: number, public m32: number,
         public m13: number, public m23: number, public m33: number
     ) {}
+
+    static IDENTITY: Matrix3D = new Matrix3D(
+        1, 0, 0,
+        0, 1, 0,
+        0, 0, 1
+    );
+
+    static geometricTransformRotationAroundYAxis(theta: number) {
+        return new Matrix3D(
+            Math.cos(theta), 0, -Math.sin(theta),
+            0, 1, 0,
+            Math.sin(theta), 0, Math.cos(theta)
+        );
+    }
+
+    static coordinateTransformRotationAroundYAxis(theta: number) {
+        return new Matrix3D(
+            Math.cos(theta), 0, Math.sin(theta),
+            0, 1, 0,
+            -Math.sin(theta), 0, Math.cos(theta)
+        );
+    }
+
+    transformVector(v: Vector3D): Vector3D {
+        return new Vector3D(
+            this.m11 * v.x + this.m21 * v.y + this.m31 * v.z,
+            this.m12 * v.x + this.m22 * v.y + this.m32 * v.z,
+            this.m13 * v.x + this.m23 * v.y + this.m33 * v.z            
+        )
+    }
+
+    get zVector(): Vector3D {
+        return new Vector3D(this.m13, this.m23, this.m33);
+    }
+
+    get xVector(): Vector3D {
+        return new Vector3D(this.m11, this.m21, this.m31);
+    }
 }
 
 //
@@ -93,8 +135,41 @@ class Particle {
         public radius: number
     ) {}
 
-    transformWorldToView(observerPos: Vector3D) {
-        this.viewPos = this.worldPos.minus(observerPos);
+    transformWorldToView(observerPos: Vector3D, observerCoordinateTransformMatrix: Matrix3D) {
+        const translatedPos = this.worldPos.minus(observerPos);
+        const rotatedPos = observerCoordinateTransformMatrix.transformVector(translatedPos);
+
+        this.viewPos =  rotatedPos;
+    }
+}
+
+class Observer {
+    constructor(
+        public pos: Vector3D,
+        public theta: number,
+        public coordinateTransform: Matrix3D
+    ) {}
+
+    rotate(dTheta: number) {
+        this.theta += dTheta;
+
+        this.coordinateTransform = Matrix3D.coordinateTransformRotationAroundYAxis(this.theta);
+    }
+
+    moveForwards(displacement: number) {
+        this.pos = this.pos.translate(this.coordinateTransform.zVector.times(displacement));
+    }
+
+    moveBackwards(displacement: number) {
+        this.pos = this.pos.minus(this.coordinateTransform.zVector.times(displacement));
+    }
+
+    moveLeft(displacement: number) {
+        this.pos = this.pos.minus(this.coordinateTransform.xVector.times(displacement));
+    }
+
+    moveRight(displacement: number) {
+        this.pos = this.pos.translate(this.coordinateTransform.xVector.times(displacement));
     }
 }
 
@@ -120,9 +195,9 @@ for (let theta = 0; theta < Math.PI*2; theta += Math.PI / 10) {
     particles.push(
         new Particle(
             new Vector3D(
-                Math.sin(theta) * 50,
-                Math.cos(theta) * 50,
-                300
+                Math.sin(theta) * 500,
+                Math.cos(theta) * 500,
+                700
             ),
             Vector3D.ZERO,
             5
@@ -130,7 +205,11 @@ for (let theta = 0; theta < Math.PI*2; theta += Math.PI / 10) {
     )
 }
 
-let observerPos: Vector3D = new Vector3D(0, 0, 0);
+let observer: Observer = new Observer(
+    new Vector3D(0, 0, 0),
+    0,
+    Matrix3D.IDENTITY
+)
 
 setInterval(tick, 20)
 
@@ -148,22 +227,22 @@ function openFullscreen() {
 
 function handleKeys() {
     if (keysDown.get('a')) {
-        observerPos = observerPos.translate(new Vector3D(-1, 0, 0));
-    }
-    if (keysDown.get('w')) {
-        observerPos = observerPos.translate(new Vector3D(0, -1, 0));
+        observer.rotate(Math.PI / 512);
     }
     if (keysDown.get('d')) {
-        observerPos = observerPos.translate(new Vector3D(1, 0, 0));
+        observer.rotate(-Math.PI / 512);
+    }
+    if (keysDown.get('w')) {
+        observer.moveForwards(4);
     }
     if (keysDown.get('s')) {
-        observerPos = observerPos.translate(new Vector3D(0, 1, 0));
+        observer.moveBackwards(4);
     }
-    if (keysDown.get('r')) {
-        observerPos = observerPos.translate(new Vector3D(0, 0, 1));
+    if (keysDown.get('z')) {
+        observer.moveLeft(4);
     }
-    if (keysDown.get('f')) {
-        observerPos = observerPos.translate(new Vector3D(0, 0, -1));
+    if (keysDown.get('x')) {
+        observer.moveRight(4);
     }
 }
 
@@ -181,10 +260,14 @@ function clear() {
 function draw() {
     clear();
 
-    for (const particle of particles) {
-        particle.transformWorldToView(observerPos);
+    const coordinateTransformMatrix = Matrix3D.coordinateTransformRotationAroundYAxis(observer.theta);
 
-        drawCircle(particle.viewPos, "rgb(255, 255, 255)", particle.radius);
+    for (const particle of particles) {
+        particle.transformWorldToView(observer.pos, coordinateTransformMatrix);
+
+        if (particle.viewPos.z > 0) {
+            drawCircle(particle.viewPos, "rgb(255, 255, 255)", particle.radius);
+        }
     }
 }
 
