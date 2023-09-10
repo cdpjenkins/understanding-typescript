@@ -11,6 +11,8 @@ class Vector3D {
         public z: number
     ) {}
 
+    static ZERO: Vector3D = new Vector3D(0, 0, 0);
+
     translate(that: Vector3D): Vector3D {
         return new Vector3D(
             this.x + that.x,
@@ -112,7 +114,22 @@ document.addEventListener('keyup', function(e) {
 
 var ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
-let particles: Particle[] = [new Particle(new Vector3D(0, 0, 300), new Vector3D(0, 0, 0), 10)];
+// let particles: Particle[] = [new Particle(new Vector3D(0, 0, 300), new Vector3D(0, 0, 0), 10)];
+let particles: Particle[] = [];
+for (let theta = 0; theta < Math.PI*2; theta += Math.PI / 10) {
+    particles.push(
+        new Particle(
+            new Vector3D(
+                Math.sin(theta) * 50,
+                Math.cos(theta) * 50,
+                300
+            ),
+            Vector3D.ZERO,
+            5
+        )
+    )
+}
+
 let observerPos: Vector3D = new Vector3D(0, 0, 0);
 
 setInterval(tick, 20)
@@ -167,7 +184,7 @@ function draw() {
     for (const particle of particles) {
         particle.transformWorldToView(observerPos);
 
-        drawCircle(particle.viewPos, "rgb(255, 255, 255)", 10);
+        drawCircle(particle.viewPos, "rgb(255, 255, 255)", particle.radius);
     }
 }
 
