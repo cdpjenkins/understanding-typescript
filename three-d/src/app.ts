@@ -20,7 +20,7 @@ var ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
 const NUM_PARTICLES = 50;
 
-let particles: Particle[] = [];
+let particles: Object3D[] = [];
 for (let theta = 0; theta < Math.PI*2; theta += Math.PI / NUM_PARTICLES) {
     particles.push(
         new Particle(
@@ -48,6 +48,18 @@ for (let x = 0; x < 10; x++) {
         )
     }
 }
+
+let weirdTotemPoleThingie = new CompoundParticleObject(
+    new Vector3D(0, 0, 1000),
+    [
+        new Particle(new Vector3D(0, 0, 0), 100),
+        new Particle(new Vector3D(0, 200, 0), 100),
+        new Particle(new Vector3D(0, 400, 0), 100),
+        new Particle(new Vector3D(0, 600, 0), 100),
+    ]
+);
+
+particles.push(weirdTotemPoleThingie);
 
 let observer: Observer = new Observer(
     new Vector3D(0, 300, 0),
@@ -113,7 +125,7 @@ function draw() {
         particle.transformToViewSpace(transform);
 
         if (particle.viewPos.z > 0) {
-            drawCircle(particle.viewPos, "rgb(255, 255, 255)", particle.radius);
+            particle.draw();
         }
     }
 }

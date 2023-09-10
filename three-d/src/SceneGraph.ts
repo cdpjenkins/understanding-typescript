@@ -17,31 +17,57 @@
 // z points forwards
 
 abstract class Object3D {
-    abstract transformToViewSpace(transform: Matrix4x3): void;
-}
-
-class Particle extends Object3D {
     public viewPos: Vector3D = Vector3D.ZERO;
 
     constructor(
-        public worldPos: Vector3D,
+        public worldPos: Vector3D
+    ) {}
+
+    abstract transformToViewSpace(transform: Matrix4x3): void;
+    abstract draw(): void;
+}
+
+class Particle extends Object3D {
+    constructor(
+        worldPos: Vector3D,
         public radius: number
     ) {
-        super();
+        super(worldPos);
     }
 
-    override transformToViewSpace(transform: Matrix4x3): void {
-        const rotatedPos = transform.transformVector(this.worldPos);
+    override transformToViewSpace(parentTransform: Matrix4x3): void {
+        this.viewPos = parentTransform.transformVector(this.worldPos);
+    }
 
-        this.viewPos =  rotatedPos;
+    override draw(): void {
+        drawCircle(this.viewPos, "rgb(255, 255, 255)", this.radius);
     }
 }
 
-// class CompoundParticleObject extends Object3D {
-//     override transformObjectToWorld(): void {
-//         // TODO
-//     }
-// }
+class CompoundParticleObject extends Object3D {
+    constructor(
+        worldPos: Vector3D,
+        public children: Object3D[]
+    ) {
+        super(worldPos);
+    }
+
+    override transformToViewSpace(parentTransform: Matrix4x3): void {
+        this.viewPos = parentTransform.transformVector(this.worldPos);
+
+        const thisTransform = parentTransform.transformMatrix(Matrix4x3.translation(this.worldPos));
+
+        this.children.forEach( (child) => {
+            child.transformToViewSpace(thisTransform);
+        });
+    }
+
+    override draw(): void {
+        this.children.forEach( (child) => {
+            child.draw();
+        });
+    }
+}
 
 class Observer {
     readonly PROJECTION_DEPTH = 300;
