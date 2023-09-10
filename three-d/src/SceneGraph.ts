@@ -30,7 +30,7 @@ function projectViewToScreen(viewPos: Vector3D): Vector2D {
     let projectedY = viewPos.y * factor;
 
     let screenX = canvas.width / 2 + projectedX;
-    let screenY = canvas.height / 2 + projectedY;
+    let screenY = canvas.height / 2 - projectedY;
 
     return new Vector2D(screenX, screenY);
 }

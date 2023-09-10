@@ -26,7 +26,7 @@ for (let theta = 0; theta < Math.PI*2; theta += Math.PI / NUM_PARTICLES) {
         new Particle(
             new Vector3D(
                 Math.sin(theta) * 500,
-                Math.cos(theta) * 500,
+                Math.cos(theta) * 500 + 300,
                 700
             ),
             Vector3D.ZERO,
@@ -41,7 +41,7 @@ for (let x = 0; x < 10; x++) {
             new Particle(
                 new Vector3D(
                     (x - 5) * 500,
-                    300,
+                    0,
                     (z) * 500
                 ),
                 Vector3D.ZERO,
@@ -52,7 +52,7 @@ for (let x = 0; x < 10; x++) {
 }
 
 let observer: Observer = new Observer(
-    new Vector3D(0, 0, 0),
+    new Vector3D(0, 300, 0),
     0,
     Matrix3D.IDENTITY
 )
