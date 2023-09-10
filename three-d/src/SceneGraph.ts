@@ -40,7 +40,9 @@ class Particle extends Object3D {
     }
 
     override draw(): void {
-        drawCircle(this.viewPos, "rgb(255, 255, 255)", this.radius);
+        if (this.viewPos.z > 0) {
+            drawCircle(this.viewPos, "rgb(255, 255, 255)", this.radius);
+        }
     }
 }
 

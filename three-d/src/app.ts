@@ -18,48 +18,51 @@ document.addEventListener('keyup', function(e) {
 
 var ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
-const NUM_PARTICLES = 50;
+function makeVerticalCircle(pos: Vector3D): CompoundParticleObject {
+    const NUM_PARTICLES = 50;
 
-let particles: Object3D[] = [];
-for (let theta = 0; theta < Math.PI*2; theta += Math.PI / NUM_PARTICLES) {
-    particles.push(
-        new Particle(
-            new Vector3D(
-                Math.sin(theta) * 500,
-                Math.cos(theta) * 500 + 300,
-                700
-            ),
-            5
-        )
-    )
-}
-
-for (let x = 0; x < 10; x++) {
-    for (let z = 0; z < 10; z++) {
-        particles.push(
+    let childObjects: Object3D[] = [];
+    for (let theta = 0; theta < Math.PI*2; theta += Math.PI / NUM_PARTICLES) {
+        childObjects.push(
             new Particle(
                 new Vector3D(
-                    (x - 5) * 500,
-                    0,
-                    (z) * 500
+                    Math.sin(theta) * 500,
+                    Math.cos(theta) * 500,
+                    0
                 ),
                 5
             )
         )
     }
+
+    return new CompoundParticleObject(
+        pos,
+        childObjects
+    );
 }
 
-let weirdTotemPoleThingie = new CompoundParticleObject(
-    new Vector3D(0, 0, 1000),
-    [
-        new Particle(new Vector3D(0, 0, 0), 100),
-        new Particle(new Vector3D(0, 200, 0), 100),
-        new Particle(new Vector3D(0, 400, 0), 100),
-        new Particle(new Vector3D(0, 600, 0), 100),
-    ]
-);
+function setupObjects(): Object3D[] {
 
-particles.push(weirdTotemPoleThingie);
+    let objects: Object3D[] = [];
+
+    objects.push(makeVerticalCircle(new Vector3D(0, 300, 700)));
+
+    let weirdTotemPoleThingie = new CompoundParticleObject(
+        new Vector3D(0, 0, 1000),
+        [
+            new Particle(new Vector3D(0, 0, 0), 100),
+            new Particle(new Vector3D(0, 200, 0), 100),
+            new Particle(new Vector3D(0, 400, 0), 100),
+            new Particle(new Vector3D(0, 600, 0), 100),
+        ]
+    );
+
+    objects.push(weirdTotemPoleThingie);
+
+    return objects;
+}
+
+let objects = setupObjects();
 
 let observer: Observer = new Observer(
     new Vector3D(0, 300, 0),
@@ -104,7 +107,6 @@ function handleKeys() {
 
 function tick() {
     handleKeys();
-    // updateStars();
     draw();
 }
 
@@ -121,12 +123,10 @@ function draw() {
 
     const transform = rotationMatrix.transformMatrix(translationMatrix);
 
-    for (const particle of particles) {
+    for (const particle of objects) {
         particle.transformToViewSpace(transform);
 
-        if (particle.viewPos.z > 0) {
-            particle.draw();
-        }
+        particle.draw();
     }
 }
 
