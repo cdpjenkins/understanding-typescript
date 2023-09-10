@@ -52,7 +52,7 @@ for (let x = 0; x < 10; x++) {
 let observer: Observer = new Observer(
     new Vector3D(0, 300, 0),
     0,
-    Matrix3D.IDENTITY
+    Matrix4x3.IDENTITY
 )
 
 setInterval(tick, 20)
@@ -104,7 +104,7 @@ function clear() {
 function draw() {
     clear();
 
-    const coordinateTransformMatrix = Matrix3D.coordinateTransformRotationAroundYAxis(observer.theta);
+    const coordinateTransformMatrix = Matrix4x3.coordinateTransformRotationAroundYAxis(observer.theta);
 
     for (const particle of particles) {
         particle.transformWorldToView(observer.pos, coordinateTransformMatrix);

@@ -34,7 +34,7 @@ class Particle extends Object3D {
         // this is a NOP given that a particle is only a single point
     }
 
-    transformWorldToView(observerPos: Vector3D, observerCoordinateTransformMatrix: Matrix3D) {
+    transformWorldToView(observerPos: Vector3D, observerCoordinateTransformMatrix: Matrix4x3) {
         const translatedPos = this.worldPos.minus(observerPos);
         const rotatedPos = observerCoordinateTransformMatrix.transformVector(translatedPos);
 
@@ -54,13 +54,13 @@ class Observer {
     constructor(
         public pos: Vector3D,
         public theta: number,
-        public coordinateTransform: Matrix3D
+        public coordinateTransform: Matrix4x3
     ) {}
 
     rotate(dTheta: number) {
         this.theta += dTheta;
 
-        this.coordinateTransform = Matrix3D.coordinateTransformRotationAroundYAxis(this.theta);
+        this.coordinateTransform = Matrix4x3.coordinateTransformRotationAroundYAxis(this.theta);
     }
 
     moveForwards(displacement: number) {
