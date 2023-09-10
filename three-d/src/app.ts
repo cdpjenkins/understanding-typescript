@@ -104,10 +104,13 @@ function clear() {
 function draw() {
     clear();
 
-    const coordinateTransformMatrix = Matrix4x3.coordinateTransformRotationAroundYAxis(observer.theta);
+    const translationMatrix = Matrix4x3.translation(observer.pos.negate());
+    const rotationMatrix = Matrix4x3.coordinateTransformRotationAroundYAxis(observer.theta);
+
+    const transform = rotationMatrix.transformMatrix(translationMatrix);
 
     for (const particle of particles) {
-        particle.transformWorldToView(observer.pos, coordinateTransformMatrix);
+        particle.transformToViewSpace(transform);
 
         if (particle.viewPos.z > 0) {
             drawCircle(particle.viewPos, "rgb(255, 255, 255)", particle.radius);

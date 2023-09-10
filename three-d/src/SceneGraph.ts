@@ -17,7 +17,7 @@
 // z points forwards
 
 abstract class Object3D {
-    abstract transformObjectToWorld(): void;
+    abstract transformToViewSpace(transform: Matrix4x3): void;
 }
 
 class Particle extends Object3D {
@@ -30,13 +30,8 @@ class Particle extends Object3D {
         super();
     }
 
-    override transformObjectToWorld(): void {
-        // this is a NOP given that a particle is only a single point
-    }
-
-    transformWorldToView(observerPos: Vector3D, observerCoordinateTransformMatrix: Matrix4x3) {
-        const translatedPos = this.worldPos.minus(observerPos);
-        const rotatedPos = observerCoordinateTransformMatrix.transformVector(translatedPos);
+    override transformToViewSpace(transform: Matrix4x3): void {
+        const rotatedPos = transform.transformVector(this.worldPos);
 
         this.viewPos =  rotatedPos;
     }

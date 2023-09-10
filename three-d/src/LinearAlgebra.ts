@@ -32,6 +32,10 @@ class Vector3D {
     times(factor: number): Vector3D {
         return new Vector3D(this.x * factor, this.y * factor, this.z * factor);
     }
+
+    negate(): Vector3D {
+        return new Vector3D(-this.x, -this.y, -this.z);
+    }
 }
 
 class Vector2D {
@@ -63,6 +67,14 @@ class Matrix4x3 {
         0, 0, 1, 0
     );
 
+    static translation(vector: Vector3D): Matrix4x3 {
+        return new Matrix4x3(
+            1, 0, 0, vector.x,
+            0, 1, 0, vector.y,
+            0, 0, 1, vector.z
+        );
+    }
+
     get zVector(): Vector3D {
         return new Vector3D(this.m13, this.m23, this.m33);
     }
@@ -93,5 +105,24 @@ class Matrix4x3 {
             this.m12 * v.x + this.m22 * v.y + this.m32 * v.z + this.m42,
             this.m13 * v.x + this.m23 * v.y + this.m33 * v.z + this.m43            
         )
+    }
+
+    transformMatrix(that: Matrix4x3): Matrix4x3 {
+        return new Matrix4x3(
+            this.m11 * that.m11 + this.m21 * that.m12 + this.m31 * that.m13,
+            this.m11 * that.m21 + this.m21 * that.m22 + this.m31 * that.m23,
+            this.m11 * that.m31 + this.m21 * that.m32 + this.m31 * that.m33,
+            this.m11 * that.m41 + this.m21 * that.m42 + this.m31 * that.m43 + this.m41,
+
+            this.m12 * that.m11 + this.m22 * that.m12 + this.m32 * that.m13,
+            this.m12 * that.m21 + this.m22 * that.m22 + this.m32 * that.m23,
+            this.m12 * that.m31 + this.m22 * that.m32 + this.m32 * that.m33,
+            this.m12 * that.m41 + this.m22 * that.m42 + this.m32 * that.m43 + this.m42,
+
+            this.m13 * that.m11 + this.m23 * that.m12 + this.m33 * that.m13,
+            this.m13 * that.m21 + this.m23 * that.m22 + this.m33 * that.m23,
+            this.m13 * that.m31 + this.m23 * that.m32 + this.m33 * that.m33,
+            this.m13 * that.m41 + this.m23 * that.m42 + this.m33 * that.m43 + this.m43
+        );
     }
 }
