@@ -16,25 +16,6 @@
 // y points up
 // z points forwards
 
-const PROJECTION_DEPTH = 300;
-
-function projectViewToScreen(viewPos: Vector3D): Vector2D {
-    // by similar triangles:
-    //     screenX / projectionDepth = viewX / z
-    // ==> screenX = viewX * projectionDepth / z
-    //             = viewX * projectionDepth / z
-
-    let factor = PROJECTION_DEPTH / viewPos.z;
-
-    let projectedX = viewPos.x * factor;
-    let projectedY = viewPos.y * factor;
-
-    let screenX = canvas.width / 2 + projectedX;
-    let screenY = canvas.height / 2 - projectedY;
-
-    return new Vector2D(screenX, screenY);
-}
-
 class Particle {
     constructor(
         public worldPos: Vector3D,
@@ -51,6 +32,8 @@ class Particle {
 }
 
 class Observer {
+    readonly PROJECTION_DEPTH = 300;
+
     constructor(
         public pos: Vector3D,
         public theta: number,
@@ -78,4 +61,22 @@ class Observer {
     moveRight(displacement: number) {
         this.pos = this.pos.translate(this.coordinateTransform.xVector.times(displacement));
     }
+
+    public projectViewToScreen(viewPos: Vector3D): Vector2D {
+        // by similar triangles:
+        //     screenX / projectionDepth = viewX / z
+        // ==> screenX = viewX * projectionDepth / z
+        //             = viewX * projectionDepth / z
+
+        let factor = this.PROJECTION_DEPTH / viewPos.z;
+
+        let projectedX = viewPos.x * factor;
+        let projectedY = viewPos.y * factor;
+
+        let screenX = canvas.width / 2 + projectedX;
+        let screenY = canvas.height / 2 - projectedY;
+
+        return new Vector2D(screenX, screenY);
+    }
+
 }

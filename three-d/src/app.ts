@@ -118,11 +118,11 @@ function draw() {
 }
 
 function drawCircle(pos: Vector3D, rgb: string, radius: number) {
-    let screenPos = projectViewToScreen(pos);
+    let screenPos = observer.projectViewToScreen(pos);
 
     // It's not great to have to compute the radius here (slightly incrrectly if the circle is actually
     // supposed to be a sphere) but hopefully something better will fall out eventually.
-    radius = radius * PROJECTION_DEPTH / pos.z;
+    radius = radius * observer.PROJECTION_DEPTH / pos.z;
 
     ctx.beginPath();
     ctx.arc(screenPos.x, screenPos.y, radius, 0, 2*Math.PI);
