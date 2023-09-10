@@ -70,10 +70,10 @@ function openFullscreen() {
 }
 
 function handleKeys() {
-    if (keysDown.get('a')) {
+    if (keysDown.get('q')) {
         observer.rotate(Math.PI / 512);
     }
-    if (keysDown.get('d')) {
+    if (keysDown.get('e')) {
         observer.rotate(-Math.PI / 512);
     }
     if (keysDown.get('w')) {
@@ -82,10 +82,10 @@ function handleKeys() {
     if (keysDown.get('s')) {
         observer.moveBackwards(4);
     }
-    if (keysDown.get('z')) {
+    if (keysDown.get('a')) {
         observer.moveLeft(4);
     }
-    if (keysDown.get('x')) {
+    if (keysDown.get('d')) {
         observer.moveRight(4);
     }
 }
