@@ -10,6 +10,14 @@ class Vector3D {
         public y: number,
         public z: number
     ) {}
+
+    translate(that: Vector3D): Vector3D {
+        return new Vector3D(
+            this.x + that.x,
+            this.y + that.y,
+            this.z + that.z
+        );
+    }
 }
 
 class Vector2D {
@@ -50,6 +58,10 @@ class Matrix3D {
 // z points forwards
 
 function projectViewToScreen(s: Vector3D): Vector2D {
+
+    // TODO this projection function isn't quite right yet. We should cause it to take into account
+    // the width/height of the screen and the projection depth (distance from observer to screen)
+
     let projectedX = s.x / s.z;
     let projectedY = s.y / s.z;
 
@@ -78,7 +90,7 @@ var ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
 // in screen coords
 // TODO how do we use the type system to differentiate between different coordinate systems?
-let circlePos: Vector2D = new Vector2D(canvas.width/2, canvas.height/2);
+let circlePos: Vector3D = new Vector3D(0, 0, 1);
 
 setInterval(tick, 20)
 
@@ -96,19 +108,22 @@ function openFullscreen() {
 
 function handleKeys() {
     if (keysDown.get('a')) {
-        circlePos = circlePos.translate(new Vector2D(-1, 0));
+        circlePos = circlePos.translate(new Vector3D(-1, 0, 0));
     }
     if (keysDown.get('w')) {
-        circlePos = circlePos.translate(new Vector2D(0, -1));
+        circlePos = circlePos.translate(new Vector3D(0, -1, 0));
     }
     if (keysDown.get('d')) {
-        circlePos = circlePos.translate(new Vector2D(1, 0));
+        circlePos = circlePos.translate(new Vector3D(1, 0, 0));
     }
     if (keysDown.get('s')) {
-        circlePos = circlePos.translate(new Vector2D(0, 1));
+        circlePos = circlePos.translate(new Vector3D(0, 1, 0));
+    }
+    if (keysDown.get('r')) {
+        circlePos = circlePos.translate(new Vector3D(0, 0, 0.01));
     }
     if (keysDown.get('f')) {
-        openFullscreen();
+        circlePos = circlePos.translate(new Vector3D(0, 0, -0.01));
     }
 }
 
@@ -129,11 +144,14 @@ function draw() {
     drawCircle(circlePos, "rgb(255, 255, 255)", 10);
 }
 
-function drawCircle(pos: Vector2D, rgb: string, radius: number) {
-    console.log(`${pos.x}, ${pos.y}`);
+function drawCircle(pos: Vector3D, rgb: string, radius: number) {
+    console.log(`${pos.x}, ${pos.y}, ${pos.z}`);
+
+    let screenPos = projectViewToScreen(pos);
+    radius /= pos.z;
 
     ctx.beginPath();
-    ctx.arc(pos.x, pos.y, radius, 0, 2*Math.PI);
+    ctx.arc(screenPos.x, screenPos.y, radius, 0, 2*Math.PI);
     ctx.fillStyle = rgb;
     ctx.fill();
 }
