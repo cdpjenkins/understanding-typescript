@@ -46,6 +46,9 @@ function setupObjects(): Object3D[] {
     let objects: Object3D[] = [];
 
     objects.push(makeVerticalCircle(new Vector3D(0, 300, 700)));
+    objects.push(makeVerticalCircle(new Vector3D(0, 300, 500)));
+    objects.push(makeVerticalCircle(new Vector3D(0, 300, 300)));
+
 
     let weirdTotemPoleThingie = new CompoundParticleObject(
         new Vector3D(0, 0, 1000),
