@@ -35,6 +35,22 @@ for (let theta = 0; theta < Math.PI*2; theta += Math.PI / NUM_PARTICLES) {
     )
 }
 
+for (let x = 0; x < 10; x++) {
+    for (let z = 0; z < 10; z++) {
+        particles.push(
+            new Particle(
+                new Vector3D(
+                    (x - 5) * 500,
+                    300,
+                    (z) * 500
+                ),
+                Vector3D.ZERO,
+                5
+            )
+        )
+    }
+}
+
 let observer: Observer = new Observer(
     new Vector3D(0, 0, 0),
     0,
