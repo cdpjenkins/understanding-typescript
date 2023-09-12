@@ -74,10 +74,10 @@ function setupObjects(): Object3D[] {
     let weirdTotemPoleThingie = new ObjectWithVertices(
         new Vector3D(0, 0, 1000),
         [
-            new Vector3D(0, 0, 0),
-            new Vector3D(0, 200, 0),
-            new Vector3D(0, 400, 0),
-            new Vector3D(0, 600, 0),
+            new Vertex(new Vector3D(0, 0, 0)),
+            new Vertex(new Vector3D(0, 200, 0)),
+            new Vertex(new Vector3D(0, 400, 0)),
+            new Vertex(new Vector3D(0, 600, 0)),
         ]
     );
 

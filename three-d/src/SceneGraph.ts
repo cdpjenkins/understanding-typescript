@@ -27,17 +27,20 @@ abstract class Object3D {
     abstract draw(): void;
 }
 
+class Vertex {
+    constructor(
+        public pos: Vector3D,
+        public viewPos: Vector3D = Vector3D.ZERO,
+        public screenPos: Vector2D = Vector2D.ZERO
+    ) {}
+}
+
 class ObjectWithVertices extends Object3D {
-
-    private verticesViewPoses: Vector3D[];
-
     constructor(
         worldPos: Vector3D,
-        public vertices: Vector3D[]
+        public vertices: Vertex[]
     ) {
         super(worldPos);
-
-        this.verticesViewPoses = vertices.map((v) => v);
     }
 
     override transformToViewSpace(parentTransform: Matrix4x3): void {
@@ -45,7 +48,9 @@ class ObjectWithVertices extends Object3D {
 
         const thisTransform = parentTransform.transformMatrix(Matrix4x3.translation(this.worldPos));
 
-        this.verticesViewPoses = this.vertices.map ( (v) => thisTransform.transformVector(v) );
+        this.vertices.forEach ((v) => {
+            v.viewPos = thisTransform.transformVector(v.pos);
+         });
     }
     
     override draw(): void {
@@ -55,11 +60,9 @@ class ObjectWithVertices extends Object3D {
 
         console.log(this);
 
-        this.verticesViewPoses.forEach((v) => {
-            if (v.z > 0) {
-                console.log(`${v.z}`)   
-
-                drawCircle(v, "rgb(255, 255, 255)", 100);
+        this.vertices.forEach((vertex) => {
+            if (vertex.viewPos.z > 0) {
+                drawCircle(vertex.viewPos, "rgb(255, 255, 255)", 100);
             }
         });
     }

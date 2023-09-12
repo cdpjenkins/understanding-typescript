@@ -11,7 +11,7 @@ class Vector3D {
         public z: number
     ) {}
 
-    static ZERO: Vector3D = new Vector3D(0, 0, 0);
+    static readonly ZERO: Vector3D = new Vector3D(0, 0, 0);
 
     translate(that: Vector3D): Vector3D {
         return new Vector3D(
@@ -47,6 +47,8 @@ class Vector2D {
     translate(that: Vector2D): Vector2D {
         return new Vector2D(this.x + that.x, this.y + that.y);
     }
+
+    static readonly ZERO: Vector2D = new Vector2D(0, 0);
 }
 
 // 
