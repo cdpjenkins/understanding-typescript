@@ -29,7 +29,8 @@ function makeVerticalCircle(pos: Vector3D): CompoundParticleObject {
                     Math.cos(theta) * 500,
                     0
                 ),
-                5
+                5,
+                Vector2D.ZERO
             )
         )
     }
@@ -52,7 +53,8 @@ function makeFloor(): CompoundParticleObject {
                         0,
                         (z) * 500
                     ),
-                    5
+                    5,
+                    Vector2D.ZERO
                 )
             )
         }

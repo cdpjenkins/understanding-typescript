@@ -24,6 +24,7 @@ abstract class Object3D {
     ) {}
 
     abstract transformToViewSpace(transform: Matrix4x3): void;
+    abstract projectToScreen(observer: Observer): void;
     abstract draw(): void;
 }
 
@@ -77,6 +78,14 @@ class ObjectWithVertices extends Object3D {
             v.viewPos = thisTransform.transformVector(v.pos);
          });
     }
+
+    override projectToScreen(): void {
+        this.vertices.forEach ((v) => {
+            v.screenPos = observer.projectViewToScreen(v.viewPos);
+        });
+
+    }
+
     
     override draw(): void {
         // if (this.viewPos.z > 0) {
@@ -95,13 +104,18 @@ class ObjectWithVertices extends Object3D {
 class Particle extends Object3D {
     constructor(
         worldPos: Vector3D,
-        public radius: number
+        public radius: number,
+        public screenPos: Vector2D
     ) {
         super(worldPos);
     }
 
     override transformToViewSpace(parentTransform: Matrix4x3): void {
         this.viewPos = parentTransform.transformVector(this.worldPos);
+    }
+
+    override projectToScreen(observer: Observer): void {
+        this.screenPos = observer.projectViewToScreen(this.viewPos)
     }
 
     override draw(): void {
@@ -128,6 +142,13 @@ class CompoundParticleObject extends Object3D {
             child.transformToViewSpace(thisTransform);
         });
     }
+    
+    override projectToScreen(observer: Observer): void {
+        this.children.forEach( (child) => {
+            child.projectToScreen(observer);
+        });
+    }
+
 
     override draw(): void {
         this.children.forEach( (child) => {
