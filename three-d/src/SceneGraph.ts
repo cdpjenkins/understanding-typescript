@@ -35,10 +35,35 @@ class Vertex {
     ) {}
 }
 
+abstract class Shape3D {
+    constructor(
+        public vertextReferences: number[]
+    ) {}
+
+    abstract draw(vertices: Vertex[]): void;
+}
+
+class ParticleShape extends Shape3D {
+    constructor(
+        vertexNumber: number
+    ) {
+        super([vertexNumber]);
+    }
+
+    override draw(vertices: Vertex[]) {
+        const vertex = vertices[this.vertextReferences[0]];
+
+        if (vertex.viewPos.z > 0) {
+            drawCircle(vertex.viewPos, "rgb(255, 255, 255)", 100);
+        }
+    }
+}
+
 class ObjectWithVertices extends Object3D {
     constructor(
         worldPos: Vector3D,
-        public vertices: Vertex[]
+        public vertices: Vertex[],
+        public shapes: Shape3D[]
     ) {
         super(worldPos);
     }
@@ -60,10 +85,8 @@ class ObjectWithVertices extends Object3D {
 
         console.log(this);
 
-        this.vertices.forEach((vertex) => {
-            if (vertex.viewPos.z > 0) {
-                drawCircle(vertex.viewPos, "rgb(255, 255, 255)", 100);
-            }
+        this.shapes.forEach((shape) => {
+            shape.draw(this.vertices);
         });
     }
 

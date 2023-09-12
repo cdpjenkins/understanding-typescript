@@ -78,6 +78,12 @@ function setupObjects(): Object3D[] {
             new Vertex(new Vector3D(0, 200, 0)),
             new Vertex(new Vector3D(0, 400, 0)),
             new Vertex(new Vector3D(0, 600, 0)),
+        ],
+        [
+            new ParticleShape(0),
+            new ParticleShape(1),
+            new ParticleShape(2),
+            new ParticleShape(3)
         ]
     );
 
