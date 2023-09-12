@@ -72,7 +72,7 @@ class CompoundParticleObject extends Object3D {
 }
 
 class Observer {
-    readonly PROJECTION_DEPTH = 300;
+    readonly PROJECTION_DEPTH = 1000;
 
     constructor(
         public pos: Vector3D,

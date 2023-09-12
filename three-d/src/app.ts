@@ -1,7 +1,6 @@
 /// <reference path="LinearAlgebra.ts"/>
 /// <reference path="SceneGraph.ts"/>
 
-
 //
 // Application stuff here
 //
@@ -68,21 +67,21 @@ function makeFloor(): CompoundParticleObject {
 function setupObjects(): Object3D[] {
     let objects: Object3D[] = [];
 
-    objects.push(makeVerticalCircle(new Vector3D(0, 300, 700)));
-    objects.push(makeVerticalCircle(new Vector3D(0, 300, 500)));
-    objects.push(makeVerticalCircle(new Vector3D(0, 300, 300)));
+    for (let z = 300; z < 24000; z += 200) {
+        objects.push(makeVerticalCircle(new Vector3D(0, 300, z)));
+    }
 
-    let weirdTotemPoleThingie = new CompoundParticleObject(
-        new Vector3D(0, 0, 1000),
-        [
-            new Particle(new Vector3D(0, 0, 0), 100),
-            new Particle(new Vector3D(0, 200, 0), 100),
-            new Particle(new Vector3D(0, 400, 0), 100),
-            new Particle(new Vector3D(0, 600, 0), 100),
-        ]
-    );
+    // let weirdTotemPoleThingie = new CompoundParticleObject(
+    //     new Vector3D(0, 0, 1000),
+    //     [
+    //         new Particle(new Vector3D(0, 0, 0), 100),
+    //         new Particle(new Vector3D(0, 200, 0), 100),
+    //         new Particle(new Vector3D(0, 400, 0), 100),
+    //         new Particle(new Vector3D(0, 600, 0), 100),
+    //     ]
+    // );
 
-    objects.push(weirdTotemPoleThingie);
+    // objects.push(weirdTotemPoleThingie);
 
     objects.push(makeFloor());
 
