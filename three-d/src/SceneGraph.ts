@@ -27,6 +27,45 @@ abstract class Object3D {
     abstract draw(): void;
 }
 
+class ObjectWithVertices extends Object3D {
+
+    private verticesViewPoses: Vector3D[];
+
+    constructor(
+        worldPos: Vector3D,
+        public vertices: Vector3D[]
+    ) {
+        super(worldPos);
+
+        this.verticesViewPoses = vertices.map((v) => v);
+    }
+
+    override transformToViewSpace(parentTransform: Matrix4x3): void {
+        this.viewPos = parentTransform.transformVector(this.worldPos);
+
+        const thisTransform = parentTransform.transformMatrix(Matrix4x3.translation(this.worldPos));
+
+        this.verticesViewPoses = this.vertices.map ( (v) => thisTransform.transformVector(v) );
+    }
+    
+    override draw(): void {
+        // if (this.viewPos.z > 0) {
+        //     drawCircle(this.viewPos, "rgb(255, 255, 255)", 120);
+        // }
+
+        console.log(this);
+
+        this.verticesViewPoses.forEach((v) => {
+            if (v.z > 0) {
+                console.log(`${v.z}`)   
+
+                drawCircle(v, "rgb(255, 255, 255)", 100);
+            }
+        });
+    }
+
+}
+
 class Particle extends Object3D {
     constructor(
         worldPos: Vector3D,

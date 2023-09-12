@@ -71,17 +71,17 @@ function setupObjects(): Object3D[] {
         objects.push(makeVerticalCircle(new Vector3D(0, 300, z)));
     }
 
-    // let weirdTotemPoleThingie = new CompoundParticleObject(
-    //     new Vector3D(0, 0, 1000),
-    //     [
-    //         new Particle(new Vector3D(0, 0, 0), 100),
-    //         new Particle(new Vector3D(0, 200, 0), 100),
-    //         new Particle(new Vector3D(0, 400, 0), 100),
-    //         new Particle(new Vector3D(0, 600, 0), 100),
-    //     ]
-    // );
+    let weirdTotemPoleThingie = new ObjectWithVertices(
+        new Vector3D(0, 0, 1000),
+        [
+            new Vector3D(0, 0, 0),
+            new Vector3D(0, 200, 0),
+            new Vector3D(0, 400, 0),
+            new Vector3D(0, 600, 0),
+        ]
+    );
 
-    // objects.push(weirdTotemPoleThingie);
+    objects.push(weirdTotemPoleThingie);
 
     objects.push(makeFloor());
 
