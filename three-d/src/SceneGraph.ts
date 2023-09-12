@@ -34,6 +34,14 @@ class Vertex {
         public viewPos: Vector3D = Vector3D.ZERO,
         public screenPos: Vector2D = Vector2D.ZERO
     ) {}
+
+    transformToViewSpace(parentTransform: Matrix4x3): void {
+        this.viewPos = parentTransform.transformVector(this.pos);
+    }
+
+    projectToScreen(observer: Observer): void {
+        this.screenPos = observer.projectViewToScreen(this.viewPos)
+    }
 }
 
 abstract class Shape3D {
@@ -75,30 +83,21 @@ class ObjectWithVertices extends Object3D {
         const thisTransform = parentTransform.transformMatrix(Matrix4x3.translation(this.worldPos));
 
         this.vertices.forEach ((v) => {
-            v.viewPos = thisTransform.transformVector(v.pos);
-         });
+            v.transformToViewSpace(thisTransform);
+        });
     }
 
     override projectToScreen(): void {
         this.vertices.forEach ((v) => {
-            v.screenPos = observer.projectViewToScreen(v.viewPos);
+            v.projectToScreen(observer);
         });
-
     }
-
     
     override draw(): void {
-        // if (this.viewPos.z > 0) {
-        //     drawCircle(this.viewPos, "rgb(255, 255, 255)", 120);
-        // }
-
-        console.log(this);
-
         this.shapes.forEach((shape) => {
             shape.draw(this.vertices);
         });
     }
-
 }
 
 class Particle extends Object3D {
@@ -204,5 +203,4 @@ class Observer {
 
         return new Vector2D(screenX, screenY);
     }
-
 }
