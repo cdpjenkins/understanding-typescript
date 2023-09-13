@@ -16,6 +16,19 @@
 // y points up
 // z points forwards
 
+class Colour {
+    constructor(
+        public red: number,
+        public green: number,
+        public blue: number
+        // what about alpha???
+    ) {}
+
+    static readonly WHITE = new Colour(255, 255, 255);
+    static readonly RED = new Colour(255, 0, 0);
+
+}
+
 abstract class Object3D {
     public viewPos: Vector3D = Vector3D.ZERO;
 
@@ -46,7 +59,8 @@ class Vertex {
 
 abstract class Shape3D {
     constructor(
-        public vertextReferences: number[]
+        public vertextReferences: number[],
+        public colour: Colour = Colour.WHITE
     ) {}
 
     abstract draw(vertices: Vertex[]): void;
@@ -54,16 +68,17 @@ abstract class Shape3D {
 
 class ParticleShape extends Shape3D {
     constructor(
-        vertexNumber: number
+        vertexNumber: number,
+        colour: Colour
     ) {
-        super([vertexNumber]);
+        super([vertexNumber], colour);
     }
 
     override draw(vertices: Vertex[]) {
         const vertex = vertices[this.vertextReferences[0]];
 
         if (vertex.viewPos.z > 0) {
-            drawCircle(vertex.viewPos, "rgb(255, 255, 255)", 100);
+            drawCircle(vertex.viewPos, `rgb(${this.colour.red}, ${this.colour.green}, ${this.colour.blue})`, 100);
         }
     }
 }

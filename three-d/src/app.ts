@@ -73,23 +73,22 @@ function setupObjects(): Object3D[] {
         objects.push(makeVerticalCircle(new Vector3D(0, 300, z)));
     }
 
-    let weirdTotemPoleThingie = new ObjectWithVertices(
-        new Vector3D(0, 0, 1000),
-        [
-            new Vertex(new Vector3D(0, 0, 0)),
-            new Vertex(new Vector3D(0, 200, 0)),
-            new Vertex(new Vector3D(0, 400, 0)),
-            new Vertex(new Vector3D(0, 600, 0)),
-        ],
-        [
-            new ParticleShape(0),
-            new ParticleShape(1),
-            new ParticleShape(2),
-            new ParticleShape(3)
-        ]
-    );
-
-    objects.push(weirdTotemPoleThingie);
+    // let weirdTotemPoleThingie = new ObjectWithVertices(
+    //     new Vector3D(0, 0, 1000),
+    //     [
+    //         new Vertex(new Vector3D(0, 0, 0)),
+    //         new Vertex(new Vector3D(0, 200, 0)),
+    //         new Vertex(new Vector3D(0, 400, 0)),
+    //         new Vertex(new Vector3D(0, 600, 0)),
+    //     ],
+    //     [
+    //         new ParticleShape(0, Colour.WHITE),
+    //         new ParticleShape(1, Colour.RED),
+    //         new ParticleShape(2, Colour.WHITE),
+    //         new ParticleShape(3, Colour.RED)
+    //     ]
+    // );
+    // objects.push(weirdTotemPoleThingie);
 
     objects.push(makeFloor());
 
@@ -174,5 +173,6 @@ function drawCircle(pos: Vector3D, rgb: string, radius: number) {
     ctx.beginPath();
     ctx.arc(screenPos.x, screenPos.y, radius, 0, 2*Math.PI);
     ctx.fillStyle = rgb;
+
     ctx.fill();
 }
