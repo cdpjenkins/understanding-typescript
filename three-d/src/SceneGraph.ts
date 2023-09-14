@@ -16,7 +16,9 @@
 // y points up
 // z points forwards
 
-class Colour {
+import { Matrix4x3, Vector3D, Vector2D } from "./LinearAlgebra.js";
+
+export class Colour {
     constructor(
         public red: number,
         public green: number,
@@ -29,7 +31,7 @@ class Colour {
 
 }
 
-abstract class Object3D {
+export abstract class Object3D {
     public viewPos: Vector3D = Vector3D.ZERO;
 
     constructor(
@@ -41,7 +43,7 @@ abstract class Object3D {
     abstract draw(ctx: CanvasRenderingContext2D, observer: Observer): void;
 }
 
-class Vertex {
+export class Vertex {
     constructor(
         public pos: Vector3D,
         public viewPos: Vector3D = Vector3D.ZERO,
@@ -57,7 +59,7 @@ class Vertex {
     }
 }
 
-abstract class Shape3D {
+export abstract class Shape3D {
     constructor(
         public vertextReferences: number[],
         public colour: Colour = Colour.WHITE
@@ -66,7 +68,7 @@ abstract class Shape3D {
     abstract draw(ctx: CanvasRenderingContext2D, observer: Observer, vertices: Vertex[]): void;
 }
 
-class ParticleShape extends Shape3D {
+export class ParticleShape extends Shape3D {
     constructor(
         vertexNumber: number,
         colour: Colour
@@ -89,7 +91,7 @@ class ParticleShape extends Shape3D {
     }
 }
 
-class ObjectWithVertices extends Object3D {
+export class ObjectWithVertices extends Object3D {
     constructor(
         worldPos: Vector3D,
         public vertices: Vertex[],
@@ -121,7 +123,7 @@ class ObjectWithVertices extends Object3D {
     }
 }
 
-class Particle extends Object3D {
+export class Particle extends Object3D {
     constructor(
         worldPos: Vector3D,
         public radius: number,
@@ -145,7 +147,7 @@ class Particle extends Object3D {
     }
 }
 
-class CompoundParticleObject extends Object3D {
+export class CompoundParticleObject extends Object3D {
     constructor(
         worldPos: Vector3D,
         public children: Object3D[]
@@ -177,7 +179,7 @@ class CompoundParticleObject extends Object3D {
     }
 }
 
-class Observer {
+export class Observer {
     readonly PROJECTION_DEPTH = 1000;
 
     constructor(

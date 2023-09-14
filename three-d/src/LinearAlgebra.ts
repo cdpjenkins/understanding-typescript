@@ -4,7 +4,7 @@
 
 // TODO learn how multiple source files / modules / whatever work so we don't have to have everything in
 // the same source file.
-class Vector3D {
+export class Vector3D {
     constructor(
         public x: number,
         public y: number,
@@ -38,7 +38,7 @@ class Vector3D {
     }
 }
 
-class Vector2D {
+export class Vector2D {
     constructor(
         public x: number,
         public y: number
@@ -56,7 +56,7 @@ class Vector2D {
 //
 // The matrix is 4x3 because the fourth term of the vector is assumed to always be 1 and
 // we still use Vector3D for that reason.
-class Matrix4x3 {
+export class Matrix4x3 {
     constructor(
         public m11: number, public m21: number, public m31: number, public m41: number,
         public m12: number, public m22: number, public m32: number, public m42: number,

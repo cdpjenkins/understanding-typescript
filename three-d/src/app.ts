@@ -1,15 +1,34 @@
-// import Collections = require('typescript-collections');
 
-/// <reference path="LinearAlgebra.ts"/>
-/// <reference path="SceneGraph.ts"/>
 
 //
 // Application stuff here
 //
 
+// import * as Collections from 'typescript-collections';
+
+import { Matrix4x3, Vector3D, Vector2D } from "./LinearAlgebra.js";
+import { Particle, CompoundParticleObject, Observer, Object3D } from "./SceneGraph.js";
+
+// const tree = new Collections.BSTree<String>(
+//     (lhs: String, rhs: String) => {
+//         if (lhs < rhs) {
+//             return -1;
+//         } else if (lhs == rhs) {
+//             return 0;
+//         } else {
+//             return 1;
+//         }
+//     });
+
+// tree.add("cheese");
+// tree.add("ston");
+// tree.add("bon bada bon");
+
+// tree.inorderTraversal( (element) => console.log(element) );
+    
 let keysDown = new Map<string, boolean>();
 
-var canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
+export var canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 document.addEventListener('keydown', function(e) {
     keysDown.set(e.key, true);
 }, false);
@@ -19,7 +38,7 @@ document.addEventListener('keyup', function(e) {
 
 var ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
-function makeVerticalCircle(pos: Vector3D): CompoundParticleObject {
+export function makeVerticalCircle(pos: Vector3D): CompoundParticleObject {
     const NUM_PARTICLES = 50;
 
     let childObjects: Object3D[] = [];

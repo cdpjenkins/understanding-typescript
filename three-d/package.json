@@ -13,6 +13,7 @@
     "lite-server": "^2.6.1"
   },
   "dependencies": {
-    "typescript": "^4.6.3"
+    "typescript": "^4.6.3",
+    "typescript-collections": "^1.3.3"
   }
 }
