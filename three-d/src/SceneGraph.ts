@@ -108,13 +108,13 @@ class ObjectWithVertices extends Object3D {
         });
     }
 
-    override projectToScreen(): void {
+    override projectToScreen(observer: Observer): void {
         this.vertices.forEach ((v) => {
             v.projectToScreen(observer);
         });
     }
     
-    override draw(ctx: CanvasRenderingContext2D): void {
+    override draw(ctx: CanvasRenderingContext2D, observer: Observer): void {
         this.shapes.forEach((shape) => {
             shape.draw(ctx, observer, this.vertices);
         });
@@ -170,7 +170,7 @@ class CompoundParticleObject extends Object3D {
     }
 
 
-    override draw(): void {
+    override draw(ctx: CanvasRenderingContext2D, observer: Observer): void {
         this.children.forEach( (child) => {
             child.draw(ctx, observer);
         });
@@ -183,7 +183,9 @@ class Observer {
     constructor(
         public pos: Vector3D,
         public theta: number,
-        public coordinateTransform: Matrix4x3
+        public coordinateTransform: Matrix4x3,
+        public screenWidth: number,
+        public screenHeight: number
     ) {}
 
     rotate(dTheta: number) {
@@ -219,9 +221,23 @@ class Observer {
         let projectedX = viewPos.x * factor;
         let projectedY = viewPos.y * factor;
 
-        let screenX = canvas.width / 2 + projectedX;
-        let screenY = canvas.height / 2 - projectedY;
+        let screenX = this.screenWidth / 2 + projectedX;
+        let screenY = this.screenHeight / 2 - projectedY;
 
         return new Vector2D(screenX, screenY);
     }
+}
+
+function drawCircle(ctx: CanvasRenderingContext2D, observer: Observer, pos: Vector3D, rgb: string, radius: number) {
+    let screenPos = observer.projectViewToScreen(pos);
+
+    // It's not great to have to compute the radius here (slightly incrrectly if the circle is actually
+    // supposed to be a sphere) but hopefully something better will fall out eventually.
+    radius = radius * observer.PROJECTION_DEPTH / pos.z;
+
+    ctx.beginPath();
+    ctx.arc(screenPos.x, screenPos.y, radius, 0, 2*Math.PI);
+    ctx.fillStyle = rgb;
+
+    ctx.fill();
 }

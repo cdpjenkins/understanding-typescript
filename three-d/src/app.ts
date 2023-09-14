@@ -1,3 +1,5 @@
+// import Collections = require('typescript-collections');
+
 /// <reference path="LinearAlgebra.ts"/>
 /// <reference path="SceneGraph.ts"/>
 
@@ -100,7 +102,9 @@ let objects = setupObjects();
 let observer: Observer = new Observer(
     new Vector3D(0, 300, 0),
     0,
-    Matrix4x3.IDENTITY
+    Matrix4x3.IDENTITY,
+    canvas.width,
+    canvas.height
 )
 
 setInterval(tick, 20)
@@ -161,18 +165,4 @@ function draw() {
 
         particle.draw(ctx, observer);
     }
-}
-
-function drawCircle(ctx: CanvasRenderingContext2D, observer: Observer, pos: Vector3D, rgb: string, radius: number) {
-    let screenPos = observer.projectViewToScreen(pos);
-
-    // It's not great to have to compute the radius here (slightly incrrectly if the circle is actually
-    // supposed to be a sphere) but hopefully something better will fall out eventually.
-    radius = radius * observer.PROJECTION_DEPTH / pos.z;
-
-    ctx.beginPath();
-    ctx.arc(screenPos.x, screenPos.y, radius, 0, 2*Math.PI);
-    ctx.fillStyle = rgb;
-
-    ctx.fill();
 }
