@@ -38,7 +38,7 @@ abstract class Object3D {
 
     abstract transformToViewSpace(transform: Matrix4x3): void;
     abstract projectToScreen(observer: Observer): void;
-    abstract draw(ctx: CanvasRenderingContext2D): void;
+    abstract draw(ctx: CanvasRenderingContext2D, observer: Observer): void;
 }
 
 class Vertex {
@@ -63,7 +63,7 @@ abstract class Shape3D {
         public colour: Colour = Colour.WHITE
     ) {}
 
-    abstract draw(ctx: CanvasRenderingContext2D, vertices: Vertex[]): void;
+    abstract draw(ctx: CanvasRenderingContext2D, observer: Observer, vertices: Vertex[]): void;
 }
 
 class ParticleShape extends Shape3D {
@@ -74,12 +74,13 @@ class ParticleShape extends Shape3D {
         super([vertexNumber], colour);
     }
 
-    override draw(ctx: CanvasRenderingContext2D, vertices: Vertex[]) {
+    override draw(ctx: CanvasRenderingContext2D, observer: Observer, vertices: Vertex[]) {
         const vertex = vertices[this.vertextReferences[0]];
 
         if (vertex.viewPos.z > 0) {
             drawCircle(
                 ctx,
+                observer,
                 vertex.viewPos,
                 `rgb(${this.colour.red}, ${this.colour.green}, ${this.colour.blue})`,
                 100
@@ -115,7 +116,7 @@ class ObjectWithVertices extends Object3D {
     
     override draw(ctx: CanvasRenderingContext2D): void {
         this.shapes.forEach((shape) => {
-            shape.draw(ctx, this.vertices);
+            shape.draw(ctx, observer, this.vertices);
         });
     }
 }
@@ -137,9 +138,9 @@ class Particle extends Object3D {
         this.screenPos = observer.projectViewToScreen(this.viewPos)
     }
 
-    override draw(ctx: CanvasRenderingContext2D): void {
+    override draw(ctx: CanvasRenderingContext2D, observer: Observer): void {
         if (this.viewPos.z > 0) {
-            drawCircle(ctx, this.viewPos, "rgb(255, 255, 255)", this.radius);
+            drawCircle(ctx, observer, this.viewPos, "rgb(255, 255, 255)", this.radius);
         }
     }
 }
@@ -171,7 +172,7 @@ class CompoundParticleObject extends Object3D {
 
     override draw(): void {
         this.children.forEach( (child) => {
-            child.draw(ctx);
+            child.draw(ctx, observer);
         });
     }
 }
