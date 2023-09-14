@@ -159,11 +159,11 @@ function draw() {
     for (const particle of objects) {
         particle.transformToViewSpace(transform);
 
-        particle.draw();
+        particle.draw(ctx);
     }
 }
 
-function drawCircle(pos: Vector3D, rgb: string, radius: number) {
+function drawCircle(ctx: CanvasRenderingContext2D, pos: Vector3D, rgb: string, radius: number) {
     let screenPos = observer.projectViewToScreen(pos);
 
     // It's not great to have to compute the radius here (slightly incrrectly if the circle is actually
