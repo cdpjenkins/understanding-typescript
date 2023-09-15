@@ -28,7 +28,7 @@ export abstract class Object3D {
 
     abstract transformToViewSpace(transform: Matrix4x3): void;
     abstract projectToScreen(observer: Observer): void;
-    abstract draw(ctx: CanvasRenderingContext2D, observer: Observer, shapes: Shape2D[]): void;
+    abstract draw(observer: Observer, shapes: Shape2D[]): void;
 }
 
 export class Vertex {
@@ -53,18 +53,19 @@ export abstract class Shape3D {
         public colour: Colour = Colour.WHITE
     ) {}
 
-    abstract draw(ctx: CanvasRenderingContext2D, observer: Observer, vertices: Vertex[], shapes: Shape2D[]): void;
+    abstract draw(observer: Observer, vertices: Vertex[], shapes: Shape2D[]): void;
 }
 
 export class ParticleShape extends Shape3D {
     constructor(
         vertexNumber: number,
-        colour: Colour
+        colour: Colour,
+        public radius: number = 100
     ) {
         super([vertexNumber], colour);
     }
 
-    override draw(ctx: CanvasRenderingContext2D, observer: Observer, vertices: Vertex[], shapes: Shape2D[]) {
+    override draw(observer: Observer, vertices: Vertex[], shapes: Shape2D[]) {
         const vertex = vertices[this.vertextReferences[0]];
 
         if (vertex.viewPos.z > 0) {
@@ -81,7 +82,7 @@ export class ParticleShape extends Shape3D {
 
             // It's not great to have to compute the radius here (slightly incrrectly if the circle is actually
             // supposed to be a sphere) but hopefully something better will fall out eventually.
-            const radius = 100 * observer.PROJECTION_DEPTH / vertex.viewPos.z;
+            const radius = this.radius * observer.PROJECTION_DEPTH / vertex.viewPos.z;
         
             shapes.push(new Circle(screenPos, vertex.viewPos.z, radius, this.colour));
         }
@@ -113,53 +114,20 @@ export class ObjectWithVertices extends Object3D {
         });
     }
     
-    override draw(ctx: CanvasRenderingContext2D, observer: Observer, shapes: Shape2D[]): void {
+    override draw(observer: Observer, shapes: Shape2D[]): void {
         this.shapes.forEach((shape) => {
-            shape.draw(ctx, observer, this.vertices, shapes);
+            shape.draw(observer, this.vertices, shapes);
         });
     }
 }
 
-export class Particle extends Object3D {
+export class Particle extends ObjectWithVertices {
     constructor(
         worldPos: Vector3D,
         public radius: number,
         public screenPos: Vector2D
     ) {
-        super(worldPos);
-    }
-
-    override transformToViewSpace(parentTransform: Matrix4x3): void {
-        this.viewPos = parentTransform.transformVector(this.worldPos);
-    }
-
-    override projectToScreen(observer: Observer): void {
-        this.screenPos = observer.projectViewToScreen(this.viewPos)
-    }
-
-    override draw(ctx: CanvasRenderingContext2D, observer: Observer, shapes: Shape2D[]): void {
-        if (this.viewPos.z > 0) {
-            // TODO urgh get rid of this and turn this whole thing into a shape with vertices
-
-            if (this.viewPos.z > 0) {
-                // drawCircle(
-                //     ctx,
-                //     observer,
-                //     vertex.viewPos,
-                //     this.colour,
-                //     100
-                // );
-                // shapes.push(new Circle(vertex.viewPos, ))
-    
-                const screenPos = observer.projectViewToScreen(this.viewPos);
-    
-                // It's not great to have to compute the radius here (slightly incrrectly if the circle is actually
-                // supposed to be a sphere) but hopefully something better will fall out eventually.
-                const radius = this.radius * observer.PROJECTION_DEPTH / this.viewPos.z;
-            
-                shapes.push(new Circle(screenPos, this.viewPos.z, radius, new Colour(255, 255, 255)));
-            }
-        }
+        super(worldPos, [new Vertex(new Vector3D(0, 0, 0))], [new ParticleShape(0, Colour.WHITE, radius)]);
     }
 }
 
@@ -187,10 +155,9 @@ export class CompoundParticleObject extends Object3D {
         });
     }
 
-
-    override draw(ctx: CanvasRenderingContext2D, observer: Observer, shapes: Shape2D[]): void {
+    override draw(observer: Observer, shapes: Shape2D[]): void {
         this.children.forEach( (child) => {
-            child.draw(ctx, observer, shapes);
+            child.draw(observer, shapes);
         });
     }
 }
@@ -244,14 +211,4 @@ export class Observer {
 
         return new Vector2D(screenX, screenY);
     }
-}
-
-function drawCircle(ctx: CanvasRenderingContext2D, observer: Observer, pos: Vector3D, colour: Colour, radius: number) {
-    let screenPos = observer.projectViewToScreen(pos);
-
-    // It's not great to have to compute the radius here (slightly incrrectly if the circle is actually
-    // supposed to be a sphere) but hopefully something better will fall out eventually.
-    radius = radius * observer.PROJECTION_DEPTH / pos.z;
-
-    new Circle(screenPos, pos.z, radius, colour).draw(ctx);
 }

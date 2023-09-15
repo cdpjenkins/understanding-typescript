@@ -187,7 +187,7 @@ function draw() {
     for (const object of objects) {
         object.transformToViewSpace(transform);
 
-        object.draw(ctx, observer, shapes);
+        object.draw(observer, shapes);
     }
 
     shapes.sort( (lhs, rhs) => rhs.z - lhs.z );
