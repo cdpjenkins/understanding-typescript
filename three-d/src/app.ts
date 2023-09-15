@@ -6,8 +6,8 @@
 
 // import * as Collections from 'typescript-collections';
 
-import { Matrix4x3, Vector3D, Vector2D } from "./LinearAlgebra.js";
-import { Particle, CompoundParticleObject, Observer, Object3D } from "./SceneGraph.js";
+import { Matrix4x3, Vector3D, Vector2D } from "./LinearAlgebra";
+import { Particle, CompoundParticleObject, Observer, Object3D } from "./SceneGraph";
 
 // const tree = new Collections.BSTree<String>(
 //     (lhs: String, rhs: String) => {
@@ -128,6 +128,8 @@ let observer: Observer = new Observer(
 
 setInterval(tick, 20)
 
+// ignore unused for now because we're referencing directly from the HTML
+// @ts-ignore
 function openFullscreen() {
     if (canvas.requestFullscreen) {
         canvas.requestFullscreen();
