@@ -5,7 +5,8 @@
 import * as Collections from 'typescript-collections';
 
 import { Matrix4x3, Vector3D, Vector2D } from "./linear-algebra";
-import { Colour, Particle, CompoundParticleObject, Observer, Object3D, ObjectWithVertices, ParticleShape, Vertex } from "./scene-graph";
+import { Particle, CompoundParticleObject, Observer, Object3D, ObjectWithVertices, ParticleShape, Vertex } from "./scene-graph";
+import { Colour, Shape2D } from "./draw-2d";
 
 const tree = new Collections.BSTree<String>(
     (lhs: String, rhs: String) => {
@@ -181,13 +182,20 @@ function draw() {
 
     const transform = rotationMatrix.transformMatrix(translationMatrix);
 
-    objects.sort( (lhs, rhs) => rhs.viewPos.z - lhs.viewPos.z);
+    let shapes: Shape2D[] = [];
 
-    for (const particle of objects) {
-        particle.transformToViewSpace(transform);
+    for (const object of objects) {
+        object.transformToViewSpace(transform);
 
-        particle.draw(ctx, observer);
+        object.draw(ctx, observer, shapes);
     }
+
+    shapes.sort( (lhs, rhs) => rhs.z - lhs.z );
+
+    for (const shape of shapes) {
+        shape.draw(ctx)
+    }
+
     const endTime = performance.now();
     let timeTaken = endTime - startTime;
     console.log(`One tick: ${timeTaken}ms`);

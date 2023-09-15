@@ -17,19 +17,7 @@
 // z points forwards
 
 import { Matrix4x3, Vector3D, Vector2D } from "./linear-algebra";
-
-export class Colour {
-    constructor(
-        public red: number,
-        public green: number,
-        public blue: number
-        // what about alpha???
-    ) {}
-
-    static readonly WHITE = new Colour(255, 255, 255);
-    static readonly RED = new Colour(255, 0, 0);
-
-}
+import { Colour, Circle, Shape2D } from "./draw-2d";
 
 export abstract class Object3D {
     public viewPos: Vector3D = Vector3D.ZERO;
@@ -40,7 +28,7 @@ export abstract class Object3D {
 
     abstract transformToViewSpace(transform: Matrix4x3): void;
     abstract projectToScreen(observer: Observer): void;
-    abstract draw(ctx: CanvasRenderingContext2D, observer: Observer): void;
+    abstract draw(ctx: CanvasRenderingContext2D, observer: Observer, shapes: Shape2D[]): void;
 }
 
 export class Vertex {
@@ -65,7 +53,7 @@ export abstract class Shape3D {
         public colour: Colour = Colour.WHITE
     ) {}
 
-    abstract draw(ctx: CanvasRenderingContext2D, observer: Observer, vertices: Vertex[]): void;
+    abstract draw(ctx: CanvasRenderingContext2D, observer: Observer, vertices: Vertex[], shapes: Shape2D[]): void;
 }
 
 export class ParticleShape extends Shape3D {
@@ -76,17 +64,26 @@ export class ParticleShape extends Shape3D {
         super([vertexNumber], colour);
     }
 
-    override draw(ctx: CanvasRenderingContext2D, observer: Observer, vertices: Vertex[]) {
+    override draw(ctx: CanvasRenderingContext2D, observer: Observer, vertices: Vertex[], shapes: Shape2D[]) {
         const vertex = vertices[this.vertextReferences[0]];
 
         if (vertex.viewPos.z > 0) {
-            drawCircle(
-                ctx,
-                observer,
-                vertex.viewPos,
-                `rgb(${this.colour.red}, ${this.colour.green}, ${this.colour.blue})`,
-                100
-            );
+            // drawCircle(
+            //     ctx,
+            //     observer,
+            //     vertex.viewPos,
+            //     this.colour,
+            //     100
+            // );
+            // shapes.push(new Circle(vertex.viewPos, ))
+
+            const screenPos = observer.projectViewToScreen(vertex.viewPos);
+
+            // It's not great to have to compute the radius here (slightly incrrectly if the circle is actually
+            // supposed to be a sphere) but hopefully something better will fall out eventually.
+            const radius = 100 * observer.PROJECTION_DEPTH / vertex.viewPos.z;
+        
+            shapes.push(new Circle(screenPos, vertex.viewPos.z, radius, this.colour));
         }
     }
 }
@@ -116,9 +113,9 @@ export class ObjectWithVertices extends Object3D {
         });
     }
     
-    override draw(ctx: CanvasRenderingContext2D, observer: Observer): void {
+    override draw(ctx: CanvasRenderingContext2D, observer: Observer, shapes: Shape2D[]): void {
         this.shapes.forEach((shape) => {
-            shape.draw(ctx, observer, this.vertices);
+            shape.draw(ctx, observer, this.vertices, shapes);
         });
     }
 }
@@ -140,9 +137,28 @@ export class Particle extends Object3D {
         this.screenPos = observer.projectViewToScreen(this.viewPos)
     }
 
-    override draw(ctx: CanvasRenderingContext2D, observer: Observer): void {
+    override draw(ctx: CanvasRenderingContext2D, observer: Observer, shapes: Shape2D[]): void {
         if (this.viewPos.z > 0) {
-            drawCircle(ctx, observer, this.viewPos, "rgb(255, 255, 255)", this.radius);
+            // TODO urgh get rid of this and turn this whole thing into a shape with vertices
+
+            if (this.viewPos.z > 0) {
+                // drawCircle(
+                //     ctx,
+                //     observer,
+                //     vertex.viewPos,
+                //     this.colour,
+                //     100
+                // );
+                // shapes.push(new Circle(vertex.viewPos, ))
+    
+                const screenPos = observer.projectViewToScreen(this.viewPos);
+    
+                // It's not great to have to compute the radius here (slightly incrrectly if the circle is actually
+                // supposed to be a sphere) but hopefully something better will fall out eventually.
+                const radius = this.radius * observer.PROJECTION_DEPTH / this.viewPos.z;
+            
+                shapes.push(new Circle(screenPos, this.viewPos.z, radius, new Colour(255, 255, 255)));
+            }
         }
     }
 }
@@ -172,9 +188,9 @@ export class CompoundParticleObject extends Object3D {
     }
 
 
-    override draw(ctx: CanvasRenderingContext2D, observer: Observer): void {
+    override draw(ctx: CanvasRenderingContext2D, observer: Observer, shapes: Shape2D[]): void {
         this.children.forEach( (child) => {
-            child.draw(ctx, observer);
+            child.draw(ctx, observer, shapes);
         });
     }
 }
@@ -230,16 +246,12 @@ export class Observer {
     }
 }
 
-function drawCircle(ctx: CanvasRenderingContext2D, observer: Observer, pos: Vector3D, rgb: string, radius: number) {
+function drawCircle(ctx: CanvasRenderingContext2D, observer: Observer, pos: Vector3D, colour: Colour, radius: number) {
     let screenPos = observer.projectViewToScreen(pos);
 
     // It's not great to have to compute the radius here (slightly incrrectly if the circle is actually
     // supposed to be a sphere) but hopefully something better will fall out eventually.
     radius = radius * observer.PROJECTION_DEPTH / pos.z;
 
-    ctx.beginPath();
-    ctx.arc(screenPos.x, screenPos.y, radius, 0, 2*Math.PI);
-    ctx.fillStyle = rgb;
-
-    ctx.fill();
+    new Circle(screenPos, pos.z, radius, colour).draw(ctx);
 }
