@@ -1,30 +1,29 @@
-
-
 //
 // Application stuff here
 //
 
-// import * as Collections from 'typescript-collections';
+import * as Collections from 'typescript-collections';
 
-import { Matrix4x3, Vector3D, Vector2D } from "./LinearAlgebra";
-import { Particle, CompoundParticleObject, Observer, Object3D } from "./SceneGraph";
+import { Matrix4x3, Vector3D, Vector2D } from "./linear-algebra";
+import { Particle, CompoundParticleObject, Observer, Object3D } from "./scene-graph";
 
-// const tree = new Collections.BSTree<String>(
-//     (lhs: String, rhs: String) => {
-//         if (lhs < rhs) {
-//             return -1;
-//         } else if (lhs == rhs) {
-//             return 0;
-//         } else {
-//             return 1;
-//         }
-//     });
+const tree = new Collections.BSTree<String>(
+    (lhs: String, rhs: String) => {
+        if (lhs < rhs) {
+            return -1;
+        } else if (lhs == rhs) {
+            return 0;
+        } else {
+            return 1;
+        }
+    });
 
-// tree.add("cheese");
-// tree.add("ston");
-// tree.add("bon bada bon");
+tree.add("delta");
+tree.add("charlie");
+tree.add("bravo");
+tree.add("alpha");
 
-// tree.inorderTraversal( (element) => console.log(element) );
+tree.inorderTraversal( (element) => console.log(element) );
     
 let keysDown = new Map<string, boolean>();
 

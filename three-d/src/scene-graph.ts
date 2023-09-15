@@ -16,7 +16,7 @@
 // y points up
 // z points forwards
 
-import { Matrix4x3, Vector3D, Vector2D } from "./LinearAlgebra";
+import { Matrix4x3, Vector3D, Vector2D } from "./linear-algebra";
 
 export class Colour {
     constructor(
