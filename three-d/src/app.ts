@@ -5,7 +5,7 @@
 import * as Collections from 'typescript-collections';
 
 import { Matrix4x3, Vector3D, Vector2D } from "./linear-algebra";
-import { Particle, CompoundParticleObject, Observer, Object3D } from "./scene-graph";
+import { Colour, Particle, CompoundParticleObject, Observer, Object3D, ObjectWithVertices, ParticleShape, Vertex } from "./scene-graph";
 
 const tree = new Collections.BSTree<String>(
     (lhs: String, rhs: String) => {
@@ -93,22 +93,22 @@ function setupObjects(): Object3D[] {
         objects.push(makeVerticalCircle(new Vector3D(0, 300, z)));
     }
 
-    // let weirdTotemPoleThingie = new ObjectWithVertices(
-    //     new Vector3D(0, 0, 1000),
-    //     [
-    //         new Vertex(new Vector3D(0, 0, 0)),
-    //         new Vertex(new Vector3D(0, 200, 0)),
-    //         new Vertex(new Vector3D(0, 400, 0)),
-    //         new Vertex(new Vector3D(0, 600, 0)),
-    //     ],
-    //     [
-    //         new ParticleShape(0, Colour.WHITE),
-    //         new ParticleShape(1, Colour.RED),
-    //         new ParticleShape(2, Colour.WHITE),
-    //         new ParticleShape(3, Colour.RED)
-    //     ]
-    // );
-    // objects.push(weirdTotemPoleThingie);
+    let weirdTotemPoleThingie = new ObjectWithVertices(
+        new Vector3D(0, 0, 1000),
+        [
+            new Vertex(new Vector3D(0, 0, 0)),
+            new Vertex(new Vector3D(0, 200, 0)),
+            new Vertex(new Vector3D(0, 400, 0)),
+            new Vertex(new Vector3D(0, 600, 0)),
+        ],
+        [
+            new ParticleShape(0, Colour.WHITE),
+            new ParticleShape(1, Colour.RED),
+            new ParticleShape(2, Colour.WHITE),
+            new ParticleShape(3, Colour.RED)
+        ]
+    );
+    objects.push(weirdTotemPoleThingie);
 
     objects.push(makeFloor());
 
@@ -173,6 +173,7 @@ function clear() {
 }
 
 function draw() {
+    const startTime = performance.now();
     clear();
 
     const translationMatrix = Matrix4x3.translation(observer.pos.negate());
@@ -180,9 +181,14 @@ function draw() {
 
     const transform = rotationMatrix.transformMatrix(translationMatrix);
 
+    objects.sort( (lhs, rhs) => rhs.viewPos.z - lhs.viewPos.z);
+
     for (const particle of objects) {
         particle.transformToViewSpace(transform);
 
         particle.draw(ctx, observer);
     }
+    const endTime = performance.now();
+    let timeTaken = endTime - startTime;
+    console.log(`One tick: ${timeTaken}ms`);
 }
