@@ -116,7 +116,8 @@ export class ObjectWithVertices extends Object3D {
     constructor(
         worldPos: Vector3D,
         public vertices: Vertex[],
-        public shapes: Shape3D[]
+        public shapes: Shape3D[],
+        public theta: number = 0,
     ) {
         super(worldPos);
     }
@@ -124,7 +125,10 @@ export class ObjectWithVertices extends Object3D {
     override transformToViewSpace(parentTransform: Matrix4x3): void {
         this.viewPos = parentTransform.transformVector(this.worldPos);
 
-        const thisTransform = parentTransform.transformMatrix(Matrix4x3.translation(this.worldPos));
+        const rotateObject = Matrix4x3.geometricTransformRotationAroundYAxis(this.theta);
+        const translateToWorldPos = Matrix4x3.translation(this.worldPos);
+
+        const thisTransform = parentTransform.transformMatrix(translateToWorldPos.transformMatrix(rotateObject));
 
         this.vertices.forEach ((v) => {
             v.transformToViewSpace(thisTransform);

@@ -118,9 +118,12 @@ function makeCube(pos: Vector3D) {
             new LineShape3D(1, 5, Colour.WHITE),
             new LineShape3D(2, 6, Colour.WHITE),
             new LineShape3D(3, 7, Colour.WHITE),
-        ]
+        ],
+        0
     )
 }
+
+const cube = makeCube(new Vector3D(0, 250, 1000));
 
 function setupObjects(): Object3D[] {
     let objects: Object3D[] = [];
@@ -146,7 +149,7 @@ function setupObjects(): Object3D[] {
     // );
     // objects.push(weirdTotemPoleThingie);
 
-    objects.push(makeCube(new Vector3D(0, 250, 1000)));
+    objects.push(cube);
     objects.push(makeFloor());
 
     return objects;
@@ -199,8 +202,16 @@ function handleKeys() {
     }
 }
 
+function updateObjects() {
+    cube.theta += Math.PI / 1024;
+    if (cube.theta >= Math.PI * 2) {
+        cube.theta -= Math.PI * 2;
+    }
+}
+
 function tick() {
     handleKeys();
+    updateObjects();
     draw();
 }
 
