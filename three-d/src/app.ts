@@ -5,7 +5,7 @@
 import * as Collections from 'typescript-collections';
 
 import { Matrix4x3, Vector3D, Vector2D } from "./linear-algebra";
-import { Particle, CompoundParticleObject, Observer, Object3D, ObjectWithVertices, ParticleShape, Vertex, Shape3D } from "./scene-graph";
+import { Particle, CompoundParticleObject, Observer, Object3D, ObjectWithVertices, ParticleShape, Vertex, Shape3D, LineShape3D } from "./scene-graph";
 import { Colour, Shape2D } from "./draw-2d";
 
 const tree = new Collections.BSTree<String>(
@@ -90,6 +90,38 @@ function makeFloor(): CompoundParticleObject {
     );
 }
 
+function makeCube(pos: Vector3D) {
+    return new ObjectWithVertices(
+        pos,
+        [
+            new Vertex(new Vector3D(-100, -100, -100)),
+            new Vertex(new Vector3D(100, -100, -100)),
+            new Vertex(new Vector3D(100, 100, -100)),
+            new Vertex(new Vector3D(-100, 100, -100)),
+            new Vertex(new Vector3D(-100, -100, 100)),
+            new Vertex(new Vector3D(100, -100, 100)),
+            new Vertex(new Vector3D(100, 100, 100)),
+            new Vertex(new Vector3D(-100, 100, 100)),
+        ],
+        [
+            new LineShape3D(0, 1, Colour.WHITE),
+            new LineShape3D(1, 2, Colour.WHITE),
+            new LineShape3D(2, 3, Colour.WHITE),
+            new LineShape3D(3, 0, Colour.WHITE),
+
+            new LineShape3D(4, 5, Colour.WHITE),
+            new LineShape3D(5, 6, Colour.WHITE),
+            new LineShape3D(6, 7, Colour.WHITE),
+            new LineShape3D(7, 4, Colour.WHITE),
+
+            new LineShape3D(0, 4, Colour.WHITE),
+            new LineShape3D(1, 5, Colour.WHITE),
+            new LineShape3D(2, 6, Colour.WHITE),
+            new LineShape3D(3, 7, Colour.WHITE),
+        ]
+    )
+}
+
 function setupObjects(): Object3D[] {
     let objects: Object3D[] = [];
 
@@ -97,23 +129,24 @@ function setupObjects(): Object3D[] {
         objects.push(makeVerticalCircle(new Vector3D(0, 300, z)));
     }
 
-    let weirdTotemPoleThingie = new ObjectWithVertices(
-        new Vector3D(0, 0, 1000),
-        [
-            new Vertex(new Vector3D(0, 0, 0)),
-            new Vertex(new Vector3D(0, 200, 0)),
-            new Vertex(new Vector3D(0, 400, 0)),
-            new Vertex(new Vector3D(0, 600, 0)),
-        ],
-        [
-            new ParticleShape(0, Colour.WHITE),
-            new ParticleShape(1, Colour.RED),
-            new ParticleShape(2, Colour.WHITE),
-            new ParticleShape(3, Colour.RED)
-        ]
-    );
-    objects.push(weirdTotemPoleThingie);
+    // let weirdTotemPoleThingie = new ObjectWithVertices(
+    //     new Vector3D(0, 0, 1000),
+    //     [
+    //         new Vertex(new Vector3D(0, 0, 0)),
+    //         new Vertex(new Vector3D(0, 200, 0)),
+    //         new Vertex(new Vector3D(0, 400, 0)),
+    //         new Vertex(new Vector3D(0, 600, 0)),
+    //     ],
+    //     [
+    //         new ParticleShape(0, Colour.WHITE),
+    //         new ParticleShape(1, Colour.RED),
+    //         new ParticleShape(2, Colour.WHITE),
+    //         new ParticleShape(3, Colour.RED)
+    //     ]
+    // );
+    // objects.push(weirdTotemPoleThingie);
 
+    objects.push(makeCube(new Vector3D(0, 250, 1000)));
     objects.push(makeFloor());
 
     return objects;

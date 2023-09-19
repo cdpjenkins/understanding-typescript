@@ -48,3 +48,22 @@ export class Circle extends Shape2D {
         ctx.fill();
     }
 }
+
+export class Line2D extends Shape2D {
+    constructor(
+        public startPos: Vector2D,
+        public endPos: Vector2D,
+        z: number,
+        public colour: Colour
+    ) {
+        super(z);
+    }
+
+    draw(ctx: CanvasRenderingContext2D): void {
+        ctx.strokeStyle = this.colour.rgb;
+        ctx.beginPath();
+        ctx.moveTo(this.startPos.x, this.startPos.y);
+        ctx.lineTo(this.endPos.x, this.endPos.y);
+        ctx.stroke();
+    }
+}

@@ -17,7 +17,7 @@
 // z points forwards
 
 import { Matrix4x3, Vector3D, Vector2D } from "./linear-algebra";
-import { Colour, Circle, Shape2D } from "./draw-2d";
+import { Colour, Circle, Shape2D, Line2D } from "./draw-2d";
 
 export abstract class Object3D {
     public viewPos: Vector3D = Vector3D.ZERO;
@@ -78,6 +78,36 @@ export class ParticleShape extends Shape3D {
             const distanceAdjustedColour = this.colour.times(1 / (vertex.viewPos.z / 1024 ));
         
             shapes.push(new Circle(screenPos, vertex.viewPos.z, radius, distanceAdjustedColour));
+        }
+    }
+}
+
+export class LineShape3D extends Shape3D {
+    constructor(
+        private startVertex: number,
+        private endVertex: number,
+        colour: Colour
+    ) {
+        super([startVertex, endVertex], colour);
+    }
+
+    override draw(observer: Observer, vertices: Vertex[], shapes: Shape2D[]) {
+        // TODO if a line intersects the z==0 plane then maybe we need to cut it, rather than having the line kind of disappear
+        // if one end of the other end gets too close to the camera
+
+        const startViewPos = vertices[this.startVertex].viewPos;
+        const endViewPos = vertices[this.endVertex].viewPos;
+
+        if (startViewPos.z > 0 && endViewPos.z > 0) {
+
+            const z = (startViewPos.z + endViewPos.z) / 2;
+
+            const startScreenpos = observer.projectViewToScreen(vertices[this.startVertex].viewPos);
+            const endScreenPos = observer.projectViewToScreen(vertices[this.endVertex].viewPos);
+
+            const distanceAdjustedColour = this.colour.times(1 / (z / 1024 ));
+
+            shapes.push(new Line2D(startScreenpos, endScreenPos, z, distanceAdjustedColour));
         }
     }
 }
