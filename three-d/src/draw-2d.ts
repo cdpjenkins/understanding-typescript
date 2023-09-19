@@ -16,6 +16,10 @@ export class Colour {
     static readonly RED = new Colour(255, 0, 0);
 
     rgb: string = `rgb(${this.red}, ${this.green}, ${this.blue})`;
+
+    times(scalar: number) {
+        return new Colour(this.red * scalar, this.green * scalar, this.blue * scalar);
+    }
 }
 
 export abstract class Shape2D {

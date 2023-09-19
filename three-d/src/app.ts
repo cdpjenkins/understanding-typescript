@@ -5,7 +5,7 @@
 import * as Collections from 'typescript-collections';
 
 import { Matrix4x3, Vector3D, Vector2D } from "./linear-algebra";
-import { Particle, CompoundParticleObject, Observer, Object3D, ObjectWithVertices, ParticleShape, Vertex } from "./scene-graph";
+import { Particle, CompoundParticleObject, Observer, Object3D, ObjectWithVertices, ParticleShape, Vertex, Shape3D } from "./scene-graph";
 import { Colour, Shape2D } from "./draw-2d";
 
 const tree = new Collections.BSTree<String>(
@@ -38,27 +38,30 @@ document.addEventListener('keyup', function(e) {
 
 var ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
-export function makeVerticalCircle(pos: Vector3D): CompoundParticleObject {
+export function makeVerticalCircle(pos: Vector3D): ObjectWithVertices {
     const NUM_PARTICLES = 50;
 
-    let childObjects: Object3D[] = [];
-    for (let theta = 0; theta < Math.PI*2; theta += Math.PI / NUM_PARTICLES) {
-        childObjects.push(
-            new Particle(
+    let vertices: Vertex[] = [];
+    let particles: Shape3D[] = [];
+    let i: number = 0;
+    for (let theta = 0; theta < Math.PI*2; theta += Math.PI / NUM_PARTICLES, i++) {
+        vertices.push(
+            new Vertex(
                 new Vector3D(
                     Math.sin(theta) * 500,
                     Math.cos(theta) * 500,
                     0
-                ),
-                5,
-                Vector2D.ZERO
+                )
             )
         )
+
+        particles.push(new ParticleShape(i, Colour.WHITE, 5));
     }
 
-    return new CompoundParticleObject(
+    return new ObjectWithVertices(
         pos,
-        childObjects
+        vertices,
+        particles
     );
 }
 

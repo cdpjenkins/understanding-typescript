@@ -69,22 +69,15 @@ export class ParticleShape extends Shape3D {
         const vertex = vertices[this.vertextReferences[0]];
 
         if (vertex.viewPos.z > 0) {
-            // drawCircle(
-            //     ctx,
-            //     observer,
-            //     vertex.viewPos,
-            //     this.colour,
-            //     100
-            // );
-            // shapes.push(new Circle(vertex.viewPos, ))
-
             const screenPos = observer.projectViewToScreen(vertex.viewPos);
 
             // It's not great to have to compute the radius here (slightly incrrectly if the circle is actually
             // supposed to be a sphere) but hopefully something better will fall out eventually.
             const radius = this.radius * observer.PROJECTION_DEPTH / vertex.viewPos.z;
+
+            const distanceAdjustedColour = this.colour.times(1 / (vertex.viewPos.z / 1024 ));
         
-            shapes.push(new Circle(screenPos, vertex.viewPos.z, radius, this.colour));
+            shapes.push(new Circle(screenPos, vertex.viewPos.z, radius, distanceAdjustedColour));
         }
     }
 }
