@@ -38,7 +38,7 @@ document.addEventListener('keyup', function(e) {
 
 var ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
-export function makeVerticalCircle(pos: Vector3D): ObjectWithVertices {
+export function makeVerticalCircle(pos: Vector3D, radius: number = 500): ObjectWithVertices {
     const NUM_PARTICLES = 50;
 
     let vertices: Vertex[] = [];
@@ -48,8 +48,8 @@ export function makeVerticalCircle(pos: Vector3D): ObjectWithVertices {
         vertices.push(
             new Vertex(
                 new Vector3D(
-                    Math.sin(theta) * 500,
-                    Math.cos(theta) * 500,
+                    Math.sin(theta) * radius,
+                    Math.cos(theta) * radius,
                     0
                 )
             )
@@ -123,13 +123,40 @@ function makeCube(pos: Vector3D) {
     )
 }
 
-const cube = makeCube(new Vector3D(0, 250, 1000));
+function makePyramid(pos: Vector3D) {
+    return new ObjectWithVertices(
+        pos,
+        [
+            new Vertex(new Vector3D(-100, -100, -100)),
+            new Vertex(new Vector3D(100, -100, -100)),
+            new Vertex(new Vector3D(100, -100, 100)),
+            new Vertex(new Vector3D(-100,-100, 100)),
+            new Vertex(new Vector3D(0, 100, 0)),
+        ],
+        [
+            new LineShape3D(0, 1, Colour.WHITE),
+            new LineShape3D(1, 2, Colour.WHITE),
+            new LineShape3D(2, 3, Colour.WHITE),
+            new LineShape3D(3, 0, Colour.WHITE),
+
+            new LineShape3D(0, 4, Colour.WHITE),
+            new LineShape3D(1, 4, Colour.WHITE),
+            new LineShape3D(2, 4, Colour.WHITE),
+            new LineShape3D(3, 4, Colour.WHITE),
+        ],
+        0
+    )
+}
+
+const cube = makeCube(new Vector3D(200, 250, 1000));
+const pyramid = makePyramid(new Vector3D(-200, 250, 1000))
 
 function setupObjects(): Object3D[] {
     let objects: Object3D[] = [];
 
-    for (let z = 300; z < 24000; z += 200) {
-        objects.push(makeVerticalCircle(new Vector3D(0, 300, z)));
+    for (let z = 300; z < 12000; z += 200) {
+        objects.push(makeVerticalCircle(new Vector3D(0, 300, z), 500));
+        objects.push(makeVerticalCircle(new Vector3D(0, 300, z), 1000));
     }
 
     // let weirdTotemPoleThingie = new ObjectWithVertices(
@@ -150,6 +177,7 @@ function setupObjects(): Object3D[] {
     // objects.push(weirdTotemPoleThingie);
 
     objects.push(cube);
+    objects.push(pyramid);
     objects.push(makeFloor());
 
     return objects;
@@ -183,10 +211,10 @@ function openFullscreen() {
 
 function handleKeys() {
     if (keysDown.get('q')) {
-        observer.rotate(Math.PI / 512);
+        observer.yRotate(Math.PI / 512);
     }
     if (keysDown.get('e')) {
-        observer.rotate(-Math.PI / 512);
+        observer.yRotate(-Math.PI / 512);
     }
     if (keysDown.get('w')) {
         observer.moveForwards(4);
@@ -203,9 +231,15 @@ function handleKeys() {
 }
 
 function updateObjects() {
-    cube.theta += Math.PI / 1024;
-    if (cube.theta >= Math.PI * 2) {
-        cube.theta -= Math.PI * 2;
+    cube.yRotation += Math.PI / 1024;
+    if (cube.yRotation >= Math.PI * 2) {
+        cube.yRotation -= Math.PI * 2;
+    }
+
+
+    pyramid.yRotation -= Math.PI / 1024;
+    if (pyramid.yRotation < 0) {
+        pyramid.yRotation += Math.PI * 2;
     }
 }
 
@@ -225,7 +259,7 @@ function draw() {
     clear();
 
     const translationMatrix = Matrix4x3.translation(observer.pos.negate());
-    const rotationMatrix = Matrix4x3.coordinateTransformRotationAroundYAxis(observer.theta);
+    const rotationMatrix = Matrix4x3.coordinateTransformRotationAroundYAxis(observer.yRotation);
 
     const transform = rotationMatrix.transformMatrix(translationMatrix);
 

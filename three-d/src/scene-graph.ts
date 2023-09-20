@@ -68,14 +68,14 @@ export class ParticleShape extends Shape3D {
     override draw(observer: Observer, vertices: Vertex[], shapes: Shape2D[]) {
         const vertex = vertices[this.vertextReferences[0]];
 
-        if (vertex.viewPos.z > 0) {
+        if (vertex.viewPos.z > 0 && observer.isWithinFrustumOfVisibility(vertex.viewPos)) {
             const screenPos = observer.projectViewToScreen(vertex.viewPos);
 
             // It's not great to have to compute the radius here (slightly incrrectly if the circle is actually
             // supposed to be a sphere) but hopefully something better will fall out eventually.
             const radius = this.radius * observer.PROJECTION_DEPTH / vertex.viewPos.z;
 
-            const distanceAdjustedColour = this.colour.times(1 / (vertex.viewPos.z / 1024 ));
+            const distanceAdjustedColour = this.colour.times(1 * (1024 / vertex.viewPos.z));
         
             shapes.push(new Circle(screenPos, vertex.viewPos.z, radius, distanceAdjustedColour));
         }
@@ -98,14 +98,15 @@ export class LineShape3D extends Shape3D {
         const startViewPos = vertices[this.startVertex].viewPos;
         const endViewPos = vertices[this.endVertex].viewPos;
 
-        if (startViewPos.z > 0 && endViewPos.z > 0) {
+        if (startViewPos.z > 0 && endViewPos.z > 0 &&
+            !(!observer.isWithinFrustumOfVisibility(startViewPos) && !observer.isWithinFrustumOfVisibility(endViewPos))) {
 
             const z = (startViewPos.z + endViewPos.z) / 2;
 
             const startScreenpos = observer.projectViewToScreen(vertices[this.startVertex].viewPos);
             const endScreenPos = observer.projectViewToScreen(vertices[this.endVertex].viewPos);
 
-            const distanceAdjustedColour = this.colour.times(1 / (z / 1024 ));
+            const distanceAdjustedColour = this.colour.times(1 * (1024 / z));
 
             shapes.push(new Line2D(startScreenpos, endScreenPos, z, distanceAdjustedColour));
         }
@@ -117,7 +118,7 @@ export class ObjectWithVertices extends Object3D {
         worldPos: Vector3D,
         public vertices: Vertex[],
         public shapes: Shape3D[],
-        public theta: number = 0,
+        public yRotation: number = 0,
     ) {
         super(worldPos);
     }
@@ -125,7 +126,7 @@ export class ObjectWithVertices extends Object3D {
     override transformToViewSpace(parentTransform: Matrix4x3): void {
         this.viewPos = parentTransform.transformVector(this.worldPos);
 
-        const rotateObject = Matrix4x3.geometricTransformRotationAroundYAxis(this.theta);
+        const rotateObject = Matrix4x3.geometricTransformRotationAroundYAxis(this.yRotation);
         const translateToWorldPos = Matrix4x3.translation(this.worldPos);
 
         const thisTransform = parentTransform.transformMatrix(translateToWorldPos.transformMatrix(rotateObject));
@@ -194,16 +195,16 @@ export class Observer {
 
     constructor(
         public pos: Vector3D,
-        public theta: number,
+        public yRotation: number,
         public coordinateTransform: Matrix4x3,
         public screenWidth: number,
         public screenHeight: number
     ) {}
 
-    rotate(dTheta: number) {
-        this.theta += dTheta;
+    yRotate(dTheta: number) {
+        this.yRotation += dTheta;
 
-        this.coordinateTransform = Matrix4x3.coordinateTransformRotationAroundYAxis(this.theta);
+        this.coordinateTransform = Matrix4x3.coordinateTransformRotationAroundYAxis(this.yRotation);
     }
 
     moveForwards(displacement: number) {
@@ -237,5 +238,27 @@ export class Observer {
         let screenY = this.screenHeight / 2 - projectedY;
 
         return new Vector2D(screenX, screenY);
+    }
+
+    public isWithinFrustumOfVisibility(v: Vector3D): boolean {
+        if (v.z > 10000) {
+            return false;
+        }
+
+
+        // In order to be off screen in the x direction:
+        //     |viewX * projectionDepth / z| < screenWidth/2
+        // ==> |viewX| * projectionDepth / z < screenWidth/2
+        // ==> |viewX| * projectionDepth < screenWidth * z / 2
+        // ==> |viewX| * projectDepth * 2 < screenWidth * z
+
+        const p = v.x * this.PROJECTION_DEPTH * 2;
+        const limit = this.screenWidth * v.z;
+
+        if (p < -limit || p > limit) {
+            return false;
+        }
+
+        return true;
     }
 }
