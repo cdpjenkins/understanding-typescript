@@ -17,7 +17,7 @@
 // z points forwards
 
 import { Matrix4x3, Vector3D, Vector2D } from "./linear-algebra";
-import { Colour, Circle, Shape2D, Line2D } from "./draw-2d";
+import { Colour, Circle, Shape2D, Line2D, Triangle2D } from "./draw-2d";
 
 export abstract class Object3D {
     public viewPos: Vector3D = Vector3D.ZERO;
@@ -112,6 +112,43 @@ export class LineShape3D extends Shape3D {
         }
     }
 }
+
+export class TriangleShape3D extends Shape3D {
+    constructor(
+        private vertex1: number,
+        private vertex2: number,
+        private vertex3: number,
+        colour: Colour
+    ) {
+        super([vertex1, vertex2, vertex3], colour);
+    }
+
+    override draw(observer: Observer, vertices: Vertex[], shapes: Shape2D[]) {
+        // TODO again if a triangle intersects the boundaries of the frustum of visibility then maybe we should cut it
+        
+        const viewPos1 = vertices[this.vertex1].viewPos;
+        const viewPos2 = vertices[this.vertex2].viewPos;
+        const viewPos3 = vertices[this.vertex3].viewPos;
+
+        if (viewPos1.z > 0 && viewPos1.z > 0 && viewPos3.z > 0 &&
+            !(  !observer.isWithinFrustumOfVisibility(viewPos1) &&
+                !observer.isWithinFrustumOfVisibility(viewPos2) &&
+                !observer.isWithinFrustumOfVisibility(viewPos3)
+            )) {
+
+            const z = (viewPos1.z + viewPos2.z + viewPos3.z) / 3;
+
+            const screenpos1 = observer.projectViewToScreen(vertices[this.vertex1].viewPos);
+            const screenpos2 = observer.projectViewToScreen(vertices[this.vertex2].viewPos);
+            const screenpos3 = observer.projectViewToScreen(vertices[this.vertex3].viewPos);
+
+            const distanceAdjustedColour = this.colour.times(1 * (1024 / z));
+
+            shapes.push(new Triangle2D(screenpos1, screenpos2, screenpos3, z, distanceAdjustedColour));
+        }
+    }
+}
+
 
 export class ObjectWithVertices extends Object3D {
     constructor(

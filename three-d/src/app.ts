@@ -5,7 +5,7 @@
 import * as Collections from 'typescript-collections';
 
 import { Matrix4x3, Vector3D, Vector2D } from "./linear-algebra";
-import { Particle, CompoundParticleObject, Observer, Object3D, ObjectWithVertices, ParticleShape, Vertex, Shape3D, LineShape3D } from "./scene-graph";
+import { Particle, CompoundParticleObject, Observer, Object3D, ObjectWithVertices, ParticleShape, Vertex, Shape3D, LineShape3D, TriangleShape3D } from "./scene-graph";
 import { Colour, Shape2D } from "./draw-2d";
 
 const tree = new Collections.BSTree<String>(
@@ -148,8 +148,38 @@ function makePyramid(pos: Vector3D) {
     )
 }
 
-const cube = makeCube(new Vector3D(200, 250, 1000));
-const pyramid = makePyramid(new Vector3D(-200, 250, 1000))
+function makeThingie(pos: Vector3D) {
+    return new ObjectWithVertices(
+        pos,
+        [
+            new Vertex(new Vector3D(-100, 0, -100)),
+            new Vertex(new Vector3D(100, 0, -100)),
+            new Vertex(new Vector3D(100, 0, 100)),
+            new Vertex(new Vector3D(-100, 0, 100)),
+            new Vertex(new Vector3D(0, 100, 0)),
+            new Vertex(new Vector3D(0, -100, 0)),
+        ],
+        [
+            // TODO - when we add surface normal vectors, have to make sure we go consistently clockwqise or consistently anti-clockwise
+            // here
+            new TriangleShape3D(1, 0, 5, Colour.DARK_OFF_GREY),
+            new TriangleShape3D(2, 1, 5, Colour.LIGHT_OFF_GREY),
+            new TriangleShape3D(3, 2, 5, Colour.DARK_OFF_GREY),
+            new TriangleShape3D(0, 3, 5, Colour.LIGHT_OFF_GREY),
+
+            new TriangleShape3D(0, 1, 4, Colour.LIGHT_OFF_GREY),
+            new TriangleShape3D(1, 2, 4, Colour.DARK_OFF_GREY),
+            new TriangleShape3D(2, 3, 4, Colour.LIGHT_OFF_GREY),
+            new TriangleShape3D(3, 0, 4, Colour.DARK_OFF_GREY),
+        ],
+        0
+    )
+
+}
+
+const cube = makeCube(new Vector3D(400, 250, 1000));
+const thingie = makeThingie(new Vector3D(0, 250, 1000));
+const pyramid = makePyramid(new Vector3D(-400, 250, 1000))
 
 function setupObjects(): Object3D[] {
     let objects: Object3D[] = [];
@@ -178,6 +208,7 @@ function setupObjects(): Object3D[] {
 
     objects.push(cube);
     objects.push(pyramid);
+    objects.push(thingie);
     objects.push(makeFloor());
 
     return objects;
@@ -236,10 +267,14 @@ function updateObjects() {
         cube.yRotation -= Math.PI * 2;
     }
 
-
     pyramid.yRotation -= Math.PI / 1024;
     if (pyramid.yRotation < 0) {
         pyramid.yRotation += Math.PI * 2;
+    }
+
+    thingie.yRotation += Math.PI / 1024;
+    if (thingie.yRotation >= Math.PI * 2) {
+        thingie.yRotation -= Math.PI * 2;
     }
 }
 

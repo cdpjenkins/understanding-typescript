@@ -13,6 +13,8 @@ export class Colour {
     ) {}
 
     static readonly WHITE = new Colour(255, 255, 255);
+    static readonly LIGHT_OFF_GREY = new Colour(200, 200, 230);
+    static readonly DARK_OFF_GREY = new Colour(100, 100, 115);
     static readonly RED = new Colour(255, 0, 0);
 
     rgb: string = `rgb(${this.red}, ${this.green}, ${this.blue})`;
@@ -65,5 +67,27 @@ export class Line2D extends Shape2D {
         ctx.moveTo(this.startPos.x, this.startPos.y);
         ctx.lineTo(this.endPos.x, this.endPos.y);
         ctx.stroke();
+    }
+}
+
+export class Triangle2D extends Shape2D {
+    constructor(
+        public pos1: Vector2D,
+        public pos2: Vector2D,
+        public pos3: Vector2D,
+        z: number,
+        public colour: Colour
+    ) {
+        super(z);
+    }
+
+    draw(ctx: CanvasRenderingContext2D): void {
+        ctx.fillStyle = this.colour.rgb;
+        ctx.beginPath();
+        ctx.moveTo(this.pos1.x, this.pos1.y);
+        ctx.lineTo(this.pos2.x, this.pos2.y);
+        ctx.lineTo(this.pos3.x, this.pos3.y);
+        ctx.closePath();
+        ctx.fill();
     }
 }
