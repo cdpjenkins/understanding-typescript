@@ -123,7 +123,7 @@ function makeCube(pos: Vector4D) {
     )
 }
 
-function makePyramid(pos: Vector4D) {
+function makeWireframePyramid(pos: Vector4D) {
     return new ObjectWithVertices(
         pos,
         [
@@ -170,12 +170,7 @@ function makeThingie(pos: Vector4D) {
         new TriangleShape3D(0, 3, 5, Colour.LIGHT_OFF_GREY),
     ];
 
-    triangles.map( (triangle) => {
-        const normal = triangle.calculateNormal(vertices);
-        vertices.push(new Vertex(normal));
-        triangle.normalIndex = vertices.length - 1;
-    });
-
+    ObjectWithVertices.make(pos, vertices, triangles, 0);
 
     return new ObjectWithVertices(
         pos,
@@ -183,12 +178,11 @@ function makeThingie(pos: Vector4D) {
         triangles,
         0
     )
-
 }
 
 const cube = makeCube(new Vector4D(400, 250, 1000));
 const thingie = makeThingie(new Vector4D(0, 250, 1000));
-const pyramid = makePyramid(new Vector4D(-400, 250, 1000))
+const pyramid = makeWireframePyramid(new Vector4D(-400, 250, 1000))
 
 function setupObjects(): Object3D[] {
     let objects: Object3D[] = [];

@@ -205,6 +205,21 @@ export class ObjectWithVertices extends Object3D {
             shape.draw(observer, this.vertices, shapes);
         });
     }
+
+    static make(pos: Vector4D, vertices: Vertex[], triangles: TriangleShape3D[], yRotation: number) {    
+        triangles.map( (triangle) => {
+            const normal = triangle.calculateNormal(vertices);
+            vertices.push(new Vertex(normal));
+            triangle.normalIndex = vertices.length - 1;
+        });
+    
+        return new ObjectWithVertices(
+            pos,
+            vertices,
+            triangles,
+            yRotation
+        )
+    }
 }
 
 export class Particle extends ObjectWithVertices {
