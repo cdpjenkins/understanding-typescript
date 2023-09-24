@@ -114,36 +114,59 @@ export class LineShape3D extends Shape3D {
 }
 
 export class TriangleShape3D extends Shape3D {
+    normalIndex: number = -1;
+
     constructor(
-        private vertex1: number,
-        private vertex2: number,
-        private vertex3: number,
+        private vertex1Index: number,
+        private vertex2Index: number,
+        private vertex3Index: number,
         colour: Colour
     ) {
-        super([vertex1, vertex2, vertex3], colour);
+        super([vertex1Index, vertex2Index, vertex3Index], colour);
     }
 
     override draw(observer: Observer, vertices: Vertex[], shapes: Shape2D[]) {
         // TODO again if a triangle intersects the boundaries of the frustum of visibility then maybe we should cut it
+
         
-        const viewPos1 = vertices[this.vertex1].viewPos;
-        const viewPos2 = vertices[this.vertex2].viewPos;
-        const viewPos3 = vertices[this.vertex3].viewPos;
+        const viewPos1 = vertices[this.vertex1Index].viewPos;
+        const viewPos2 = vertices[this.vertex2Index].viewPos;
+        const viewPos3 = vertices[this.vertex3Index].viewPos;
 
-        if (viewPos1.z > 0 && viewPos1.z > 0 && viewPos3.z > 0 &&
-            !(  !observer.isWithinFrustumOfVisibility(viewPos1) &&
-                !observer.isWithinFrustumOfVisibility(viewPos2) &&
-                !observer.isWithinFrustumOfVisibility(viewPos3)
-            )) {
+        const surfaceNormal = vertices[this.normalIndex].viewPos;
+        const observerVector = Vector4D.ZERO.minus(viewPos1);
 
-            const z = (viewPos1.z + viewPos2.z + viewPos3.z) / 3;
+        const dotProductThingie = surfaceNormal.dotProduct(observerVector);
 
-            const screenpos1 = observer.projectViewToScreen(vertices[this.vertex1].viewPos);
-            const screenpos2 = observer.projectViewToScreen(vertices[this.vertex2].viewPos);
-            const screenpos3 = observer.projectViewToScreen(vertices[this.vertex3].viewPos);
+        if (dotProductThingie < 0) { 
+            if (viewPos1.z > 0 && viewPos1.z > 0 && viewPos3.z > 0 &&
+                !(  !observer.isWithinFrustumOfVisibility(viewPos1) &&
+                    !observer.isWithinFrustumOfVisibility(viewPos2) &&
+                    !observer.isWithinFrustumOfVisibility(viewPos3)
+                )) {
 
-            shapes.push(new Triangle2D(screenpos1, screenpos2, screenpos3, z, this.distanceAdjustedColour(z)));
+                const z = (viewPos1.z + viewPos2.z + viewPos3.z) / 3;
+
+                const screenpos1 = observer.projectViewToScreen(vertices[this.vertex1Index].viewPos);
+                const screenpos2 = observer.projectViewToScreen(vertices[this.vertex2Index].viewPos);
+                const screenpos3 = observer.projectViewToScreen(vertices[this.vertex3Index].viewPos);
+
+                shapes.push(new Triangle2D(screenpos1, screenpos2, screenpos3, z, this.distanceAdjustedColour(z)));
+            }
         }
+    }
+
+    calculateNormal(vertices: Vertex[]): Vector4D {
+        const v1 = vertices[this.vertex1Index].pos;
+        const v2 = vertices[this.vertex2Index].pos;
+        const v3 = vertices[this.vertex3Index].pos;
+
+        const vec1 = v2.minus(v1);
+        const vec2 = v3.minus(v2);
+
+        const normalVector = vec1.crossProduct(vec2).normalise();
+
+        return normalVector;
     }
 }
 

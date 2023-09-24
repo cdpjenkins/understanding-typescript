@@ -149,29 +149,38 @@ function makePyramid(pos: Vector4D) {
 }
 
 function makeThingie(pos: Vector4D) {
+    const vertices = [
+        new Vertex(new Vector4D(-100, 0, -100)),
+        new Vertex(new Vector4D(100, 0, -100)),
+        new Vertex(new Vector4D(100, 0, 100)),
+        new Vertex(new Vector4D(-100, 0, 100)),
+        new Vertex(new Vector4D(0, 100, 0)),
+        new Vertex(new Vector4D(0, -100, 0)),
+    ];
+
+    const triangles = [
+        new TriangleShape3D(0, 1, 4, Colour.LIGHT_OFF_GREY),
+        new TriangleShape3D(1, 2, 4, Colour.DARK_OFF_GREY),
+        new TriangleShape3D(2, 3, 4, Colour.LIGHT_OFF_GREY),
+        new TriangleShape3D(3, 0, 4, Colour.DARK_OFF_GREY),
+
+        new TriangleShape3D(1, 0, 5, Colour.DARK_OFF_GREY),
+        new TriangleShape3D(2, 1, 5, Colour.LIGHT_OFF_GREY),
+        new TriangleShape3D(3, 2, 5, Colour.DARK_OFF_GREY),
+        new TriangleShape3D(0, 3, 5, Colour.LIGHT_OFF_GREY),
+    ];
+
+    triangles.map( (triangle) => {
+        const normal = triangle.calculateNormal(vertices);
+        vertices.push(new Vertex(normal));
+        triangle.normalIndex = vertices.length - 1;
+    });
+
+
     return new ObjectWithVertices(
         pos,
-        [
-            new Vertex(new Vector4D(-100, 0, -100)),
-            new Vertex(new Vector4D(100, 0, -100)),
-            new Vertex(new Vector4D(100, 0, 100)),
-            new Vertex(new Vector4D(-100, 0, 100)),
-            new Vertex(new Vector4D(0, 100, 0)),
-            new Vertex(new Vector4D(0, -100, 0)),
-        ],
-        [
-            // TODO - when we add surface normal vectors, have to make sure we go consistently clockwqise or consistently anti-clockwise
-            // here
-            new TriangleShape3D(1, 0, 5, Colour.DARK_OFF_GREY),
-            new TriangleShape3D(2, 1, 5, Colour.LIGHT_OFF_GREY),
-            new TriangleShape3D(3, 2, 5, Colour.DARK_OFF_GREY),
-            new TriangleShape3D(0, 3, 5, Colour.LIGHT_OFF_GREY),
-
-            new TriangleShape3D(0, 1, 4, Colour.LIGHT_OFF_GREY),
-            new TriangleShape3D(1, 2, 4, Colour.DARK_OFF_GREY),
-            new TriangleShape3D(2, 3, 4, Colour.LIGHT_OFF_GREY),
-            new TriangleShape3D(3, 0, 4, Colour.DARK_OFF_GREY),
-        ],
+        vertices,
+        triangles,
         0
     )
 
