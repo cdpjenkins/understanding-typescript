@@ -32,15 +32,6 @@ export abstract class Shape2D {
         public z: number,
         public colour: Colour
     ) {}
-
-    // This probably isn't going to last.
-    //
-    // For now, colour becomes darker the further away a shape is.
-    //
-    // Ultimately, we'll likely do something more elaborate (with illumination from a light source, maybe some ambient light...)
-    distanceAdjustedColour(z: number): Colour {
-        return this.colour.times(1 * (1024 / z));
-    }
 }
 
 export class Circle extends Shape2D {

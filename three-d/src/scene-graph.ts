@@ -55,10 +55,14 @@ export abstract class Shape3D {
 
     abstract draw(observer: Observer, vertices: Vertex[], shapes: Shape2D[]): void;
 
-    distanceAdjustedColour(z: number) {
-        return this.colour.times(1 * (1024 / z));
-    }
-}
+    // This probably isn't going to last.
+    //
+    // For now, colour becomes darker the further away a shape is.
+    //
+    // Ultimately, we'll likely do something more elaborate (with illumination from a light source, maybe some ambient light...)
+    distanceAdjustedColour(z: number): Colour {
+        return this.colour.times(z <= 1024 ? 1 : 1024 / z);
+    }}
 
 export class ParticleShape extends Shape3D {
     constructor(
