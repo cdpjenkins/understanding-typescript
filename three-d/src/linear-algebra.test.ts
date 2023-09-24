@@ -50,6 +50,13 @@ test("can normalise a vector", () => {
     );
 });
 
+test("calculates cross product of two direction vectors", () => {
+    expectVectorToBe(
+        Vector4D.direction(1, 0, 0).crossProduct(Vector4D.direction(0, 1, 0)),
+        Vector4D.direction(0, 0, 1)
+    )
+});
+
 function expectVectorToBe(actual: Vector4D, expected: Vector4D) {
     console.log("expected:");
     console.log(expected);

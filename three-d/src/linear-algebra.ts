@@ -57,6 +57,14 @@ export class Vector4D {
 
         return this.times(magnitudeReciprocal);
     }
+
+    crossProduct(that: Vector4D): Vector4D {
+        return Vector4D.direction(
+            this.y * that.z - this.z * that.y,
+            this.z * that.x - this.x * that.z,
+            this.x * that.y - this.y * that.x
+        )
+    }
 }
 
 export class Vector2D {
