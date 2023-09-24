@@ -2,39 +2,52 @@
 // Linear algebra stuff here
 //
 
-// TODO learn how multiple source files / modules / whatever work so we don't have to have everything in
-// the same source file.
-export class Vector3D {
+// 4D vector using homogenous coordinates
+//
+// Homogenous coordinates enable all sorts of cleverness but we're likely to use it in two ways:
+//
+// w == 1 => a position vector that is affected by both rotations and translations
+// w == 0 => a direction vector that is affected by rotations but not by translations
+export class Vector4D {
     constructor(
         public x: number,
         public y: number,
-        public z: number
+        public z: number,
+        public w: number = 1
     ) {}
 
-    static readonly ZERO: Vector3D = new Vector3D(0, 0, 0);
+    static readonly ZERO: Vector4D = new Vector4D(0, 0, 0);
 
-    translate(that: Vector3D): Vector3D {
-        return new Vector3D(
+    static position(x: number, y: number, z: number) {
+        return new Vector4D(x, y, z, 1);
+    }
+
+    static direction(x: number, y: number, z: number) {
+        return new Vector4D(x, y, z, 0);
+    }
+
+    translate(that: Vector4D): Vector4D {
+        return new Vector4D(
             this.x + that.x,
             this.y + that.y,
             this.z + that.z
         );
     }
 
-    minus(that: Vector3D): Vector3D {
-        return new Vector3D(
+    minus(that: Vector4D): Vector4D {
+        return new Vector4D(
             this.x - that.x,
             this.y - that.y,
             this.z - that.z
         )
     }
 
-    times(factor: number): Vector3D {
-        return new Vector3D(this.x * factor, this.y * factor, this.z * factor);
+    times(factor: number): Vector4D {
+        return new Vector4D(this.x * factor, this.y * factor, this.z * factor);
     }
 
-    negate(): Vector3D {
-        return new Vector3D(-this.x, -this.y, -this.z);
+    negate(): Vector4D {
+        return new Vector4D(-this.x, -this.y, -this.z);
     }
 }
 
@@ -69,7 +82,7 @@ export class Matrix4x3 {
         0, 0, 1, 0
     );
 
-    static translation(vector: Vector3D): Matrix4x3 {
+    static translation(vector: Vector4D): Matrix4x3 {
         return new Matrix4x3(
             1, 0, 0, vector.x,
             0, 1, 0, vector.y,
@@ -77,12 +90,12 @@ export class Matrix4x3 {
         );
     }
 
-    get zVector(): Vector3D {
-        return new Vector3D(this.m13, this.m23, this.m33);
+    get zVector(): Vector4D {
+        return new Vector4D(this.m13, this.m23, this.m33);
     }
 
-    get xVector(): Vector3D {
-        return new Vector3D(this.m11, this.m21, this.m31);
+    get xVector(): Vector4D {
+        return new Vector4D(this.m11, this.m21, this.m31);
     }
 
     static geometricTransformRotationAroundYAxis(theta: number) {
@@ -101,11 +114,12 @@ export class Matrix4x3 {
         );
     }
 
-    transformVector(v: Vector3D): Vector3D {
-        return new Vector3D(
-            this.m11 * v.x + this.m21 * v.y + this.m31 * v.z + this.m41,
-            this.m12 * v.x + this.m22 * v.y + this.m32 * v.z + this.m42,
-            this.m13 * v.x + this.m23 * v.y + this.m33 * v.z + this.m43            
+    transformVector(v: Vector4D): Vector4D {
+        return new Vector4D(
+            this.m11 * v.x + this.m21 * v.y + this.m31 * v.z + this.m41 * v.w,
+            this.m12 * v.x + this.m22 * v.y + this.m32 * v.z + this.m42 * v.w,
+            this.m13 * v.x + this.m23 * v.y + this.m33 * v.z + this.m43 * v.w,
+            v.w            
         )
     }
 

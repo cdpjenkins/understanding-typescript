@@ -16,14 +16,14 @@
 // y points up
 // z points forwards
 
-import { Matrix4x3, Vector3D, Vector2D } from "./linear-algebra";
+import { Matrix4x3, Vector4D, Vector2D } from "./linear-algebra";
 import { Colour, Circle, Shape2D, Line2D, Triangle2D } from "./draw-2d";
 
 export abstract class Object3D {
-    public viewPos: Vector3D = Vector3D.ZERO;
+    public viewPos: Vector4D = Vector4D.ZERO;
 
     constructor(
-        public worldPos: Vector3D
+        public worldPos: Vector4D
     ) {}
 
     abstract transformToViewSpace(transform: Matrix4x3): void;
@@ -33,8 +33,8 @@ export abstract class Object3D {
 
 export class Vertex {
     constructor(
-        public pos: Vector3D,
-        public viewPos: Vector3D = Vector3D.ZERO,
+        public pos: Vector4D,
+        public viewPos: Vector4D = Vector4D.ZERO,
         public screenPos: Vector2D = Vector2D.ZERO
     ) {}
 
@@ -150,7 +150,7 @@ export class TriangleShape3D extends Shape3D {
 
 export class ObjectWithVertices extends Object3D {
     constructor(
-        worldPos: Vector3D,
+        worldPos: Vector4D,
         public vertices: Vertex[],
         public shapes: Shape3D[],
         public yRotation: number = 0,
@@ -186,17 +186,17 @@ export class ObjectWithVertices extends Object3D {
 
 export class Particle extends ObjectWithVertices {
     constructor(
-        worldPos: Vector3D,
+        worldPos: Vector4D,
         public radius: number,
         public screenPos: Vector2D
     ) {
-        super(worldPos, [new Vertex(new Vector3D(0, 0, 0))], [new ParticleShape(0, Colour.WHITE, radius)]);
+        super(worldPos, [new Vertex(new Vector4D(0, 0, 0))], [new ParticleShape(0, Colour.WHITE, radius)]);
     }
 }
 
 export class CompoundParticleObject extends Object3D {
     constructor(
-        worldPos: Vector3D,
+        worldPos: Vector4D,
         public children: Object3D[]
     ) {
         super(worldPos);
@@ -229,7 +229,7 @@ export class Observer {
     readonly PROJECTION_DEPTH = 1000;
 
     constructor(
-        public pos: Vector3D,
+        public pos: Vector4D,
         public yRotation: number,
         public coordinateTransform: Matrix4x3,
         public screenWidth: number,
@@ -258,7 +258,7 @@ export class Observer {
         this.pos = this.pos.translate(this.coordinateTransform.xVector.times(displacement));
     }
 
-    public projectViewToScreen(viewPos: Vector3D): Vector2D {
+    public projectViewToScreen(viewPos: Vector4D): Vector2D {
         // by similar triangles:
         //     screenX / projectionDepth = viewX / z
         // ==> screenX = viewX * projectionDepth / z
@@ -275,7 +275,7 @@ export class Observer {
         return new Vector2D(screenX, screenY);
     }
 
-    public isWithinFrustumOfVisibility(v: Vector3D): boolean {
+    public isWithinFrustumOfVisibility(v: Vector4D): boolean {
         if (v.z > 10000) {
             return false;
         }

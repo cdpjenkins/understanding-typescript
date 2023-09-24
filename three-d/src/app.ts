@@ -4,7 +4,7 @@
 
 import * as Collections from 'typescript-collections';
 
-import { Matrix4x3, Vector3D, Vector2D } from "./linear-algebra";
+import { Matrix4x3, Vector4D, Vector2D } from "./linear-algebra";
 import { Particle, CompoundParticleObject, Observer, Object3D, ObjectWithVertices, ParticleShape, Vertex, Shape3D, LineShape3D, TriangleShape3D } from "./scene-graph";
 import { Colour, Shape2D } from "./draw-2d";
 
@@ -38,7 +38,7 @@ document.addEventListener('keyup', function(e) {
 
 var ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
-export function makeVerticalCircle(pos: Vector3D, radius: number = 500): ObjectWithVertices {
+export function makeVerticalCircle(pos: Vector4D, radius: number = 500): ObjectWithVertices {
     const NUM_PARTICLES = 50;
 
     let vertices: Vertex[] = [];
@@ -47,7 +47,7 @@ export function makeVerticalCircle(pos: Vector3D, radius: number = 500): ObjectW
     for (let theta = 0; theta < Math.PI*2; theta += Math.PI / NUM_PARTICLES, i++) {
         vertices.push(
             new Vertex(
-                new Vector3D(
+                new Vector4D(
                     Math.sin(theta) * radius,
                     Math.cos(theta) * radius,
                     0
@@ -72,7 +72,7 @@ function makeFloor(): CompoundParticleObject {
         for (let z = 0; z < 10; z++) {
             childObjects.push(
                 new Particle(
-                    new Vector3D(
+                    new Vector4D(
                         (x - 5) * 500,
                         0,
                         (z) * 500
@@ -85,23 +85,23 @@ function makeFloor(): CompoundParticleObject {
     }
 
     return new CompoundParticleObject(
-        Vector3D.ZERO,
+        Vector4D.ZERO,
         childObjects
     );
 }
 
-function makeCube(pos: Vector3D) {
+function makeCube(pos: Vector4D) {
     return new ObjectWithVertices(
         pos,
         [
-            new Vertex(new Vector3D(-100, -100, -100)),
-            new Vertex(new Vector3D(100, -100, -100)),
-            new Vertex(new Vector3D(100, 100, -100)),
-            new Vertex(new Vector3D(-100, 100, -100)),
-            new Vertex(new Vector3D(-100, -100, 100)),
-            new Vertex(new Vector3D(100, -100, 100)),
-            new Vertex(new Vector3D(100, 100, 100)),
-            new Vertex(new Vector3D(-100, 100, 100)),
+            new Vertex(new Vector4D(-100, -100, -100)),
+            new Vertex(new Vector4D(100, -100, -100)),
+            new Vertex(new Vector4D(100, 100, -100)),
+            new Vertex(new Vector4D(-100, 100, -100)),
+            new Vertex(new Vector4D(-100, -100, 100)),
+            new Vertex(new Vector4D(100, -100, 100)),
+            new Vertex(new Vector4D(100, 100, 100)),
+            new Vertex(new Vector4D(-100, 100, 100)),
         ],
         [
             new LineShape3D(0, 1, Colour.WHITE),
@@ -123,15 +123,15 @@ function makeCube(pos: Vector3D) {
     )
 }
 
-function makePyramid(pos: Vector3D) {
+function makePyramid(pos: Vector4D) {
     return new ObjectWithVertices(
         pos,
         [
-            new Vertex(new Vector3D(-100, -100, -100)),
-            new Vertex(new Vector3D(100, -100, -100)),
-            new Vertex(new Vector3D(100, -100, 100)),
-            new Vertex(new Vector3D(-100,-100, 100)),
-            new Vertex(new Vector3D(0, 100, 0)),
+            new Vertex(new Vector4D(-100, -100, -100)),
+            new Vertex(new Vector4D(100, -100, -100)),
+            new Vertex(new Vector4D(100, -100, 100)),
+            new Vertex(new Vector4D(-100,-100, 100)),
+            new Vertex(new Vector4D(0, 100, 0)),
         ],
         [
             new LineShape3D(0, 1, Colour.WHITE),
@@ -148,16 +148,16 @@ function makePyramid(pos: Vector3D) {
     )
 }
 
-function makeThingie(pos: Vector3D) {
+function makeThingie(pos: Vector4D) {
     return new ObjectWithVertices(
         pos,
         [
-            new Vertex(new Vector3D(-100, 0, -100)),
-            new Vertex(new Vector3D(100, 0, -100)),
-            new Vertex(new Vector3D(100, 0, 100)),
-            new Vertex(new Vector3D(-100, 0, 100)),
-            new Vertex(new Vector3D(0, 100, 0)),
-            new Vertex(new Vector3D(0, -100, 0)),
+            new Vertex(new Vector4D(-100, 0, -100)),
+            new Vertex(new Vector4D(100, 0, -100)),
+            new Vertex(new Vector4D(100, 0, 100)),
+            new Vertex(new Vector4D(-100, 0, 100)),
+            new Vertex(new Vector4D(0, 100, 0)),
+            new Vertex(new Vector4D(0, -100, 0)),
         ],
         [
             // TODO - when we add surface normal vectors, have to make sure we go consistently clockwqise or consistently anti-clockwise
@@ -177,16 +177,16 @@ function makeThingie(pos: Vector3D) {
 
 }
 
-const cube = makeCube(new Vector3D(400, 250, 1000));
-const thingie = makeThingie(new Vector3D(0, 250, 1000));
-const pyramid = makePyramid(new Vector3D(-400, 250, 1000))
+const cube = makeCube(new Vector4D(400, 250, 1000));
+const thingie = makeThingie(new Vector4D(0, 250, 1000));
+const pyramid = makePyramid(new Vector4D(-400, 250, 1000))
 
 function setupObjects(): Object3D[] {
     let objects: Object3D[] = [];
 
     for (let z = 300; z < 12000; z += 200) {
-        objects.push(makeVerticalCircle(new Vector3D(0, 300, z), 500));
-        objects.push(makeVerticalCircle(new Vector3D(0, 300, z), 1000));
+        objects.push(makeVerticalCircle(new Vector4D(0, 300, z), 500));
+        objects.push(makeVerticalCircle(new Vector4D(0, 300, z), 1000));
     }
 
     // let weirdTotemPoleThingie = new ObjectWithVertices(
@@ -217,7 +217,7 @@ function setupObjects(): Object3D[] {
 let objects = setupObjects();
 
 let observer: Observer = new Observer(
-    new Vector3D(0, 300, 0),
+    new Vector4D(0, 300, 0),
     0,
     Matrix4x3.IDENTITY,
     canvas.width,
