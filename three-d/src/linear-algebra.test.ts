@@ -57,6 +57,21 @@ test("calculates cross product of two direction vectors", () => {
     )
 });
 
+test("dot product of orthogonal vectors is zero", () => {
+    expect(Vector4D.direction(1, 0, 0).dotProduct(Vector4D.direction(0, 1, 0)))
+            .toBe(0);
+});
+
+test("dot product of non-orthogonal vectors is projection of one onto the other", () => {
+    expect(Vector4D.direction(1, 1, 0).dotProduct(Vector4D.direction(0, 1, 0)))
+            .toBe(1);
+});
+
+test("dot product of two unit vectors is cos of angle between them", () => {
+    expect(Vector4D.direction(1, 1, 0).normalise().dotProduct(Vector4D.direction(0, 1, 0)))
+            .toBeCloseTo(Math.cos(Math.PI / 4));
+});
+
 function expectVectorToBe(actual: Vector4D, expected: Vector4D) {
     console.log("expected:");
     console.log(expected);

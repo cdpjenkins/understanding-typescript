@@ -65,6 +65,10 @@ export class Vector4D {
             this.x * that.y - this.y * that.x
         )
     }
+
+    dotProduct(that: Vector4D): number {
+        return this.x * that.x + this.y * that.y + this.z * that.z;
+    }
 }
 
 export class Vector2D {
