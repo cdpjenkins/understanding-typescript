@@ -14,7 +14,8 @@ export class Colour {
 
     static readonly WHITE = new Colour(255, 255, 255);
     static readonly LIGHT_OFF_GREY = new Colour(200, 200, 230);
-    static readonly DARK_OFF_GREY = new Colour(100, 100, 115);
+    static readonly MEDIUM_OFF_GREY = new Colour(100, 100, 115);
+    static readonly DARK_OFF_GREY = new Colour(50, 50, 60);
     static readonly RED = new Colour(255, 0, 0);
 
     rgb: string = `rgb(${this.red}, ${this.green}, ${this.blue})`;
