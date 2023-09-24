@@ -90,7 +90,8 @@ function makeFloor(): CompoundParticleObject {
     );
 }
 
-function makeCube(pos: Vector4D) {
+// @ts-ignore
+function makeWireframeCube(pos: Vector4D) {
     return new ObjectWithVertices(
         pos,
         [
@@ -123,6 +124,38 @@ function makeCube(pos: Vector4D) {
     )
 }
 
+function makeSolidCube(pos: Vector4D) {
+    return ObjectWithVertices.make(
+        pos,
+        [
+            new Vertex(new Vector4D(-100, -100, -100)),
+            new Vertex(new Vector4D(100, -100, -100)),
+            new Vertex(new Vector4D(100, 100, -100)),
+            new Vertex(new Vector4D(-100, 100, -100)),
+            new Vertex(new Vector4D(-100, -100, 100)),
+            new Vertex(new Vector4D(100, -100, 100)),
+            new Vertex(new Vector4D(100, 100, 100)),
+            new Vertex(new Vector4D(-100, 100, 100)),
+        ],
+        [
+            new TriangleShape3D(0, 1, 2, Colour.LIGHT_OFF_GREY),
+            new TriangleShape3D(0, 2, 3, Colour.LIGHT_OFF_GREY),
+            new TriangleShape3D(1, 5, 6, Colour.MEDIUM_OFF_GREY),
+            new TriangleShape3D(1, 6, 2, Colour.MEDIUM_OFF_GREY),
+            new TriangleShape3D(5, 4, 7, Colour.LIGHT_OFF_GREY),
+            new TriangleShape3D(5, 7, 6, Colour.LIGHT_OFF_GREY),
+            new TriangleShape3D(4, 0, 3, Colour.MEDIUM_OFF_GREY),
+            new TriangleShape3D(4, 3, 7, Colour.MEDIUM_OFF_GREY),
+            new TriangleShape3D(3, 2, 6, Colour.DARK_OFF_GREY),
+            new TriangleShape3D(3, 6, 7, Colour.DARK_OFF_GREY),
+            new TriangleShape3D(0, 4, 5, Colour.DARK_OFF_GREY),
+            new TriangleShape3D(0, 5, 1, Colour.DARK_OFF_GREY),
+        ],
+        0
+    )
+}
+
+// @ts-ignore
 function makeWireframePyramid(pos: Vector4D) {
     return new ObjectWithVertices(
         pos,
@@ -195,10 +228,10 @@ function makeThingie(pos: Vector4D) {
     return ObjectWithVertices.make(pos, vertices, triangles, 0);
 }
 
-const cube = makeCube(new Vector4D(400, 250, 1000));
+const cube = makeSolidCube(new Vector4D(400, 250, 1000));
 const thingie = makeThingie(new Vector4D(0, 250, 1000));
-const wireframePyramid = makeWireframePyramid(new Vector4D(-400, 250, 1000));
-const solidPyramid = makeSolidPyramid(new Vector4D(0, 500, 1000));
+// const wireframePyramid = makeWireframePyramid(new Vector4D(-400, 250, 1000));
+const solidPyramid = makeSolidPyramid(new Vector4D(-400, 250, 1000));
 
 function setupObjects(): Object3D[] {
     let objects: Object3D[] = [];
@@ -226,7 +259,7 @@ function setupObjects(): Object3D[] {
     // objects.push(weirdTotemPoleThingie);
 
     objects.push(cube);
-    objects.push(wireframePyramid);
+    // objects.push(wireframePyramid);
     objects.push(solidPyramid);
     objects.push(thingie);
     objects.push(makeFloor());
@@ -287,10 +320,10 @@ function updateObjects() {
         cube.yRotation -= Math.PI * 2;
     }
 
-    wireframePyramid.yRotation -= Math.PI / 1024;
-    if (wireframePyramid.yRotation < 0) {
-        wireframePyramid.yRotation += Math.PI * 2;
-    }
+    // wireframePyramid.yRotation -= Math.PI / 1024;
+    // if (wireframePyramid.yRotation < 0) {
+    //     wireframePyramid.yRotation += Math.PI * 2;
+    // }
 
     thingie.yRotation += Math.PI / 1024;
     if (thingie.yRotation >= Math.PI * 2) {
