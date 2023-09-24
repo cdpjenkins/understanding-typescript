@@ -54,6 +54,10 @@ export abstract class Shape3D {
     ) {}
 
     abstract draw(observer: Observer, vertices: Vertex[], shapes: Shape2D[]): void;
+
+    distanceAdjustedColour(z: number) {
+        return this.colour.times(1 * (1024 / z));
+    }
 }
 
 export class ParticleShape extends Shape3D {
@@ -74,10 +78,8 @@ export class ParticleShape extends Shape3D {
             // It's not great to have to compute the radius here (slightly incrrectly if the circle is actually
             // supposed to be a sphere) but hopefully something better will fall out eventually.
             const radius = this.radius * observer.PROJECTION_DEPTH / vertex.viewPos.z;
-
-            const distanceAdjustedColour = this.colour.times(1 * (1024 / vertex.viewPos.z));
         
-            shapes.push(new Circle(screenPos, vertex.viewPos.z, radius, distanceAdjustedColour));
+            shapes.push(new Circle(screenPos, vertex.viewPos.z, radius, this.distanceAdjustedColour(vertex.viewPos.z)));
         }
     }
 }
@@ -106,9 +108,7 @@ export class LineShape3D extends Shape3D {
             const startScreenpos = observer.projectViewToScreen(vertices[this.startVertex].viewPos);
             const endScreenPos = observer.projectViewToScreen(vertices[this.endVertex].viewPos);
 
-            const distanceAdjustedColour = this.colour.times(1 * (1024 / z));
-
-            shapes.push(new Line2D(startScreenpos, endScreenPos, z, distanceAdjustedColour));
+            shapes.push(new Line2D(startScreenpos, endScreenPos, z, this.distanceAdjustedColour(z)));
         }
     }
 }
@@ -142,9 +142,7 @@ export class TriangleShape3D extends Shape3D {
             const screenpos2 = observer.projectViewToScreen(vertices[this.vertex2].viewPos);
             const screenpos3 = observer.projectViewToScreen(vertices[this.vertex3].viewPos);
 
-            const distanceAdjustedColour = this.colour.times(1 * (1024 / z));
-
-            shapes.push(new Triangle2D(screenpos1, screenpos2, screenpos3, z, distanceAdjustedColour));
+            shapes.push(new Triangle2D(screenpos1, screenpos2, screenpos3, z, this.distanceAdjustedColour(z)));
         }
     }
 }
