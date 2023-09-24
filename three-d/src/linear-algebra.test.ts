@@ -43,6 +43,13 @@ test("direction vector is *NOT* affected by translations", () => {
     );
 });
 
+test("can normalise a vector", () => {
+    expectVectorToBe(
+        Vector4D.direction(10, 0, 0).normalise(),
+        Vector4D.direction(1, 0, 0)
+    );
+});
+
 function expectVectorToBe(actual: Vector4D, expected: Vector4D) {
     console.log("expected:");
     console.log(expected);

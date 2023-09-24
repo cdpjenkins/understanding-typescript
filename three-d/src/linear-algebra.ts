@@ -38,16 +38,24 @@ export class Vector4D {
         return new Vector4D(
             this.x - that.x,
             this.y - that.y,
-            this.z - that.z
+            this.z - that.z,
+            this.w - that.w
         )
     }
 
     times(factor: number): Vector4D {
-        return new Vector4D(this.x * factor, this.y * factor, this.z * factor);
+        return new Vector4D(this.x * factor, this.y * factor, this.z * factor, this.w);
     }
 
     negate(): Vector4D {
         return new Vector4D(-this.x, -this.y, -this.z);
+    }
+
+    normalise(): Vector4D {
+        const magnitude = Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
+        const magnitudeReciprocal = 1 / magnitude;
+
+        return this.times(magnitudeReciprocal);
     }
 }
 
@@ -91,11 +99,11 @@ export class Matrix4x3 {
     }
 
     get zVector(): Vector4D {
-        return new Vector4D(this.m13, this.m23, this.m33);
+        return new Vector4D(this.m13, this.m23, this.m33, this.m43);
     }
 
     get xVector(): Vector4D {
-        return new Vector4D(this.m11, this.m21, this.m31);
+        return new Vector4D(this.m11, this.m21, this.m31, this.m41);
     }
 
     static geometricTransformRotationAroundYAxis(theta: number) {
