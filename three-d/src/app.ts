@@ -5,7 +5,7 @@
 import * as Collections from 'typescript-collections';
 
 import { Matrix4x3, Vector4D, Vector2D } from "./linear-algebra";
-import { Particle, CompoundParticleObject, Observer, Object3D, ObjectWithVertices, ParticleShape, Vertex, Shape3D, LineShape3D, TriangleShape3D } from "./scene-graph";
+import { Particle, CompoundParticleObject, Observer, Object3D, ObjectWithVertices, ParticleShape, Vertex, Shape3D, LineShape3D, TriangleShape3D, Scene } from "./scene-graph";
 import { Colour, Shape2D } from "./draw-2d";
 
 const tree = new Collections.BSTree<String>(
@@ -269,13 +269,15 @@ function setupObjects(): Object3D[] {
 
 let objects = setupObjects();
 
-let observer: Observer = new Observer(
-    new Vector4D(0, 300, 0),
-    0,
-    Matrix4x3.IDENTITY,
-    canvas.width,
-    canvas.height
-)
+const scene: Scene = new Scene(
+    new Observer(
+        new Vector4D(0, 300, 0),
+        0,
+        Matrix4x3.IDENTITY,
+        canvas.width,
+        canvas.height
+    )
+);
 
 setInterval(tick, 20)
 
@@ -295,22 +297,22 @@ function openFullscreen() {
 
 function handleKeys() {
     if (keysDown.get('q')) {
-        observer.yRotate(Math.PI / 512);
+        scene.observer.yRotate(Math.PI / 512);
     }
     if (keysDown.get('e')) {
-        observer.yRotate(-Math.PI / 512);
+        scene.observer.yRotate(-Math.PI / 512);
     }
     if (keysDown.get('w')) {
-        observer.moveForwards(4);
+        scene.observer.moveForwards(4);
     }
     if (keysDown.get('s')) {
-        observer.moveBackwards(4);
+        scene.observer.moveBackwards(4);
     }
     if (keysDown.get('a')) {
-        observer.moveLeft(4);
+        scene.observer.moveLeft(4);
     }
     if (keysDown.get('d')) {
-        observer.moveRight(4);
+        scene.observer.moveRight(4);
     }
 }
 
@@ -351,8 +353,8 @@ function draw() {
     const startTime = performance.now();
     clear();
 
-    const translationMatrix = Matrix4x3.translation(observer.pos.negate());
-    const rotationMatrix = Matrix4x3.coordinateTransformRotationAroundYAxis(observer.yRotation);
+    const translationMatrix = Matrix4x3.translation(scene.observer.pos.negate());
+    const rotationMatrix = Matrix4x3.coordinateTransformRotationAroundYAxis(scene.observer.yRotation);
 
     const transform = rotationMatrix.transformMatrix(translationMatrix);
 
@@ -361,7 +363,7 @@ function draw() {
     for (const object of objects) {
         object.transformToViewSpace(transform);
 
-        object.draw(observer, shapes);
+        object.draw(scene.observer, shapes);
     }
 
     shapes.sort( (lhs, rhs) => rhs.z - lhs.z );

@@ -19,6 +19,12 @@
 import { Matrix4x3, Vector4D, Vector2D } from "./linear-algebra";
 import { Colour, Circle, Shape2D, Line2D, Triangle2D } from "./draw-2d";
 
+export class Scene {
+    constructor(
+        public observer: Observer
+    ) {}
+}
+
 export abstract class Object3D {
     public viewPos: Vector4D = Vector4D.ZERO;
 
@@ -138,11 +144,8 @@ export class TriangleShape3D extends Shape3D {
         const viewPos3 = vertices[this.vertex3Index].viewPos;
 
         const surfaceNormal = vertices[this.normalIndex].viewPos;
-        const observerVector = Vector4D.ZERO.minus(viewPos1);
 
-        const dotProductThingie = surfaceNormal.dotProduct(observerVector);
-
-        if (dotProductThingie < 0) { 
+        if (surfaceNormal.dotProduct(viewPos1) > 0) { 
             if (viewPos1.z > 0 && viewPos1.z > 0 && viewPos3.z > 0 &&
                 !(  !observer.isWithinFrustumOfVisibility(viewPos1) &&
                     !observer.isWithinFrustumOfVisibility(viewPos2) &&
