@@ -5,8 +5,8 @@
 import * as Collections from 'typescript-collections';
 
 import { Matrix4x3, Vector4D, Vector2D } from "./linear-algebra";
-import { Particle, CompoundParticleObject, Observer, Object3D, ObjectWithVertices, ParticleShape, Vertex, Shape3D, LineShape3D, TriangleShape3D, Scene } from "./scene-graph";
-import { Colour, Shape2D } from "./draw-2d";
+import { Particle, CompoundParticleObject, Observer, Object3D, ObjectWithVertices, ParticleShape, Vertex, Shape3D, LineShape3D, TriangleShape3D, Scene, DirectionalLightSource } from "./scene-graph";
+import { Colour } from "./draw-2d";
 
 const tree = new Collections.BSTree<String>(
     (lhs: String, rhs: String) => {
@@ -66,7 +66,6 @@ export function makeVerticalCircle(pos: Vector4D, radius: number = 500): ObjectW
 }
 
 function makeFloor(): CompoundParticleObject {
-
     let childObjects: Object3D[] = [];
     for (let x = 0; x < 10; x++) {
         for (let z = 0; z < 10; z++) {
@@ -140,12 +139,12 @@ function makeSolidCube(pos: Vector4D) {
         [
             new TriangleShape3D(0, 1, 2, Colour.LIGHT_OFF_GREY),
             new TriangleShape3D(0, 2, 3, Colour.LIGHT_OFF_GREY),
-            new TriangleShape3D(1, 5, 6, Colour.MEDIUM_OFF_GREY),
-            new TriangleShape3D(1, 6, 2, Colour.MEDIUM_OFF_GREY),
+            new TriangleShape3D(1, 5, 6, Colour.WHITE),
+            new TriangleShape3D(1, 6, 2, Colour.WHITE),
             new TriangleShape3D(5, 4, 7, Colour.LIGHT_OFF_GREY),
             new TriangleShape3D(5, 7, 6, Colour.LIGHT_OFF_GREY),
-            new TriangleShape3D(4, 0, 3, Colour.MEDIUM_OFF_GREY),
-            new TriangleShape3D(4, 3, 7, Colour.MEDIUM_OFF_GREY),
+            new TriangleShape3D(4, 0, 3, Colour.WHITE),
+            new TriangleShape3D(4, 3, 7, Colour.WHITE),
             new TriangleShape3D(3, 2, 6, Colour.DARK_OFF_GREY),
             new TriangleShape3D(3, 6, 7, Colour.DARK_OFF_GREY),
             new TriangleShape3D(0, 4, 5, Colour.DARK_OFF_GREY),
@@ -193,9 +192,9 @@ function makeSolidPyramid(pos: Vector4D) {
         ],
         [
             new TriangleShape3D(0, 1, 4, Colour.LIGHT_OFF_GREY),
-            new TriangleShape3D(1, 2, 4, Colour.MEDIUM_OFF_GREY),
+            new TriangleShape3D(1, 2, 4, Colour.WHITE),
             new TriangleShape3D(2, 3, 4, Colour.LIGHT_OFF_GREY),
-            new TriangleShape3D(3, 0, 4, Colour.MEDIUM_OFF_GREY),
+            new TriangleShape3D(3, 0, 4, Colour.WHITE),
             new TriangleShape3D(2, 1, 0, Colour.DARK_OFF_GREY),
             new TriangleShape3D(3, 2, 0, Colour.DARK_OFF_GREY),
         ],
@@ -215,13 +214,13 @@ function makeThingie(pos: Vector4D) {
 
     const triangles = [
         new TriangleShape3D(0, 1, 4, Colour.LIGHT_OFF_GREY),
-        new TriangleShape3D(1, 2, 4, Colour.MEDIUM_OFF_GREY),
+        new TriangleShape3D(1, 2, 4, Colour.WHITE),
         new TriangleShape3D(2, 3, 4, Colour.LIGHT_OFF_GREY),
-        new TriangleShape3D(3, 0, 4, Colour.MEDIUM_OFF_GREY),
+        new TriangleShape3D(3, 0, 4, Colour.WHITE),
 
-        new TriangleShape3D(1, 0, 5, Colour.MEDIUM_OFF_GREY),
+        new TriangleShape3D(1, 0, 5, Colour.WHITE),
         new TriangleShape3D(2, 1, 5, Colour.LIGHT_OFF_GREY),
-        new TriangleShape3D(3, 2, 5, Colour.MEDIUM_OFF_GREY),
+        new TriangleShape3D(3, 2, 5, Colour.WHITE),
         new TriangleShape3D(0, 3, 5, Colour.LIGHT_OFF_GREY),
     ];
 
@@ -237,7 +236,7 @@ function setupObjects(): Object3D[] {
     let objects: Object3D[] = [];
 
     for (let z = 300; z < 12000; z += 200) {
-        objects.push(makeVerticalCircle(new Vector4D(0, 300, z), 500));
+        // objects.push(makeVerticalCircle(new Vector4D(0, 300, z), 500));
         objects.push(makeVerticalCircle(new Vector4D(0, 300, z), 1000));
     }
 
@@ -276,6 +275,9 @@ const scene: Scene = new Scene(
         Matrix4x3.IDENTITY,
         canvas.width,
         canvas.height
+    ),
+    new DirectionalLightSource(
+        Vector4D.direction(0.3, -0.25, 1).normalise()
     )
 );
 

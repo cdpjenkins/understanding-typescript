@@ -21,7 +21,8 @@ import { Colour, Circle, Shape2D, Line2D, Triangle2D } from "./draw-2d";
 
 export class Scene {
     constructor(
-        public observer: Observer
+        public observer: Observer,
+        public lightSource: DirectionalLightSource
     ) {}
 
     draw(ctx: CanvasRenderingContext2D, objects: Object3D[], width: number, height: number) {
@@ -38,7 +39,7 @@ export class Scene {
         for (const object of objects) {
             object.transformToViewSpace(transform);
 
-            object.draw(this.observer, shapes);
+            object.draw(this, shapes);
         }
 
         shapes.sort( (lhs, rhs) => rhs.z - lhs.z );
@@ -59,6 +60,13 @@ export class Scene {
     }
 }
 
+export class DirectionalLightSource {
+    constructor(
+        /** This needs to be direction vector (w==0) and not a position vector or it will get screwed up by translations */
+        public direction: Vector4D
+    ) {}
+}
+
 export abstract class Object3D {
     public viewPos: Vector4D = Vector4D.ZERO;
 
@@ -68,7 +76,7 @@ export abstract class Object3D {
 
     abstract transformToViewSpace(transform: Matrix4x3): void;
     abstract projectToScreen(observer: Observer): void;
-    abstract draw(observer: Observer, shapes: Shape2D[]): void;
+    abstract draw(scene: Scene, shapes: Shape2D[]): void;
 }
 
 export class Vertex {
@@ -93,15 +101,15 @@ export abstract class Shape3D {
         public colour: Colour = Colour.WHITE
     ) {}
 
-    abstract draw(observer: Observer, vertices: Vertex[], shapes: Shape2D[]): void;
+    abstract draw(scene: Scene, vertices: Vertex[], shapes: Shape2D[]): void;
 
     // This probably isn't going to last.
     //
     // For now, colour becomes darker the further away a shape is.
     //
     // Ultimately, we'll likely do something more elaborate (with illumination from a light source, maybe some ambient light...)
-    distanceAdjustedColour(z: number): Colour {
-        return this.colour.times(z <= 1024 ? 1 : 1024 / z);
+    distanceAdjustedColour(colour: Colour, z: number): Colour {
+        return colour.times(z <= 1024 ? 1 : 1024 / z);
     }}
 
 export class ParticleShape extends Shape3D {
@@ -113,17 +121,17 @@ export class ParticleShape extends Shape3D {
         super([vertexNumber], colour);
     }
 
-    override draw(observer: Observer, vertices: Vertex[], shapes: Shape2D[]) {
+    override draw(scene: Scene, vertices: Vertex[], shapes: Shape2D[]) {
         const vertex = vertices[this.vertextReferences[0]];
 
-        if (vertex.viewPos.z > 0 && observer.isWithinFrustumOfVisibility(vertex.viewPos)) {
-            const screenPos = observer.projectViewToScreen(vertex.viewPos);
+        if (vertex.viewPos.z > 0 && scene.observer.isWithinFrustumOfVisibility(vertex.viewPos)) {
+            const screenPos = scene.observer.projectViewToScreen(vertex.viewPos);
 
-            // It's not great to have to compute the radius here (slightly incrrectly if the circle is actually
+            // It's not great to have to compute the radius here (slightly incorrectly if the circle is actually
             // supposed to be a sphere) but hopefully something better will fall out eventually.
-            const radius = this.radius * observer.PROJECTION_DEPTH / vertex.viewPos.z;
+            const radius = this.radius * scene.observer.PROJECTION_DEPTH / vertex.viewPos.z;
         
-            shapes.push(new Circle(screenPos, vertex.viewPos.z, radius, this.distanceAdjustedColour(vertex.viewPos.z)));
+            shapes.push(new Circle(screenPos, vertex.viewPos.z, radius, this.distanceAdjustedColour(this.colour, vertex.viewPos.z)));
         }
     }
 }
@@ -137,7 +145,7 @@ export class LineShape3D extends Shape3D {
         super([startVertex, endVertex], colour);
     }
 
-    override draw(observer: Observer, vertices: Vertex[], shapes: Shape2D[]) {
+    override draw(scene: Scene, vertices: Vertex[], shapes: Shape2D[]) {
         // TODO if a line intersects the z==0 plane then maybe we need to cut it, rather than having the line kind of disappear
         // if one end of the other end gets too close to the camera
 
@@ -145,14 +153,14 @@ export class LineShape3D extends Shape3D {
         const endViewPos = vertices[this.endVertex].viewPos;
 
         if (startViewPos.z > 0 && endViewPos.z > 0 &&
-            !(!observer.isWithinFrustumOfVisibility(startViewPos) && !observer.isWithinFrustumOfVisibility(endViewPos))) {
+            !(!scene.observer.isWithinFrustumOfVisibility(startViewPos) && !scene.observer.isWithinFrustumOfVisibility(endViewPos))) {
 
             const z = (startViewPos.z + endViewPos.z) / 2;
 
-            const startScreenpos = observer.projectViewToScreen(vertices[this.startVertex].viewPos);
-            const endScreenPos = observer.projectViewToScreen(vertices[this.endVertex].viewPos);
+            const startScreenpos = scene.observer.projectViewToScreen(vertices[this.startVertex].viewPos);
+            const endScreenPos = scene.observer.projectViewToScreen(vertices[this.endVertex].viewPos);
 
-            shapes.push(new Line2D(startScreenpos, endScreenPos, z, this.distanceAdjustedColour(z)));
+            shapes.push(new Line2D(startScreenpos, endScreenPos, z, this.distanceAdjustedColour(this.colour, z)));
         }
     }
 }
@@ -169,7 +177,7 @@ export class TriangleShape3D extends Shape3D {
         super([vertex1Index, vertex2Index, vertex3Index], colour);
     }
 
-    override draw(observer: Observer, vertices: Vertex[], shapes: Shape2D[]) {
+    override draw(scene: Scene, vertices: Vertex[], shapes: Shape2D[]) {
         // TODO again if a triangle intersects the boundaries of the frustum of visibility then maybe we should cut it
 
         
@@ -181,18 +189,30 @@ export class TriangleShape3D extends Shape3D {
 
         if (surfaceNormal.dotProduct(viewPos1) > 0) { 
             if (viewPos1.z > 0 && viewPos1.z > 0 && viewPos3.z > 0 &&
-                !(  !observer.isWithinFrustumOfVisibility(viewPos1) &&
-                    !observer.isWithinFrustumOfVisibility(viewPos2) &&
-                    !observer.isWithinFrustumOfVisibility(viewPos3)
-                )) {
+                !(  !scene.observer.isWithinFrustumOfVisibility(viewPos1) &&
+                    !scene.observer.isWithinFrustumOfVisibility(viewPos2) &&
+                    !scene.observer.isWithinFrustumOfVisibility(viewPos3))) {
 
                 const z = (viewPos1.z + viewPos2.z + viewPos3.z) / 3;
 
-                const screenpos1 = observer.projectViewToScreen(vertices[this.vertex1Index].viewPos);
-                const screenpos2 = observer.projectViewToScreen(vertices[this.vertex2Index].viewPos);
-                const screenpos3 = observer.projectViewToScreen(vertices[this.vertex3Index].viewPos);
+                const screenpos1 = scene.observer.projectViewToScreen(vertices[this.vertex1Index].viewPos);
+                const screenpos2 = scene.observer.projectViewToScreen(vertices[this.vertex2Index].viewPos);
+                const screenpos3 = scene.observer.projectViewToScreen(vertices[this.vertex3Index].viewPos);
 
-                shapes.push(new Triangle2D(screenpos1, screenpos2, screenpos3, z, this.distanceAdjustedColour(z)));
+                // TODO move this into the light source or something
+                // grrrr we transform everything (including surface normals) directly from object space to view space and never store the surface normals
+                // in world space meaning that we have to transform the illumination vector into view space in order to use it
+                //
+                // TODO it is probably pretty inefficient to do this for every polygon. Instead, we should transform the illumination vector once
+                // and store it within the light source.
+                const illuminationVector = scene.observer.coordinateTransform.transformVector(scene.lightSource.direction);
+                let directionalIlluminationCoefficient = Math.max(
+                        surfaceNormal.dotProduct(illuminationVector),
+                        0);
+                const totalIlluminationCoefficient = directionalIlluminationCoefficient * 0.5 + 0.5;
+                const colour = this.colour.times(totalIlluminationCoefficient);
+
+                shapes.push(new Triangle2D(screenpos1, screenpos2, screenpos3, z, this.distanceAdjustedColour(colour, z)));
             }
         }
     }
@@ -241,9 +261,9 @@ export class ObjectWithVertices extends Object3D {
         });
     }
     
-    override draw(observer: Observer, shapes: Shape2D[]): void {
+    override draw(scene: Scene, shapes: Shape2D[]): void {
         this.shapes.forEach((shape) => {
-            shape.draw(observer, this.vertices, shapes);
+            shape.draw(scene, this.vertices, shapes);
         });
     }
 
@@ -297,9 +317,9 @@ export class CompoundParticleObject extends Object3D {
         });
     }
 
-    override draw(observer: Observer, shapes: Shape2D[]): void {
+    override draw(scene: Scene, shapes: Shape2D[]): void {
         this.children.forEach( (child) => {
-            child.draw(observer, shapes);
+            child.draw(scene, shapes);
         });
     }
 }
