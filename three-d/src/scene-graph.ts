@@ -209,7 +209,7 @@ export class TriangleShape3D extends Shape3D {
                 let directionalIlluminationCoefficient = Math.max(
                         surfaceNormal.dotProduct(illuminationVector),
                         0);
-                const totalIlluminationCoefficient = directionalIlluminationCoefficient * 0.5 + 0.5;
+                const totalIlluminationCoefficient = directionalIlluminationCoefficient * 0.875 + 0.125;
                 const colour = this.colour.times(totalIlluminationCoefficient);
 
                 shapes.push(new Triangle2D(screenpos1, screenpos2, screenpos3, z, this.distanceAdjustedColour(colour, z)));

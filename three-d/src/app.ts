@@ -139,16 +139,16 @@ function makeSolidCube(pos: Vector4D) {
         [
             new TriangleShape3D(0, 1, 2, Colour.LIGHT_OFF_GREY),
             new TriangleShape3D(0, 2, 3, Colour.LIGHT_OFF_GREY),
-            new TriangleShape3D(1, 5, 6, Colour.WHITE),
-            new TriangleShape3D(1, 6, 2, Colour.WHITE),
+            new TriangleShape3D(1, 5, 6, Colour.LIGHT_OFF_GREY),
+            new TriangleShape3D(1, 6, 2, Colour.LIGHT_OFF_GREY),
             new TriangleShape3D(5, 4, 7, Colour.LIGHT_OFF_GREY),
             new TriangleShape3D(5, 7, 6, Colour.LIGHT_OFF_GREY),
-            new TriangleShape3D(4, 0, 3, Colour.WHITE),
-            new TriangleShape3D(4, 3, 7, Colour.WHITE),
-            new TriangleShape3D(3, 2, 6, Colour.DARK_OFF_GREY),
-            new TriangleShape3D(3, 6, 7, Colour.DARK_OFF_GREY),
-            new TriangleShape3D(0, 4, 5, Colour.DARK_OFF_GREY),
-            new TriangleShape3D(0, 5, 1, Colour.DARK_OFF_GREY),
+            new TriangleShape3D(4, 0, 3, Colour.LIGHT_OFF_GREY),
+            new TriangleShape3D(4, 3, 7, Colour.LIGHT_OFF_GREY),
+            new TriangleShape3D(3, 2, 6, Colour.LIGHT_OFF_GREY),
+            new TriangleShape3D(3, 6, 7, Colour.LIGHT_OFF_GREY),
+            new TriangleShape3D(0, 4, 5, Colour.LIGHT_OFF_GREY),
+            new TriangleShape3D(0, 5, 1, Colour.LIGHT_OFF_GREY),
         ],
         0
     )
@@ -192,11 +192,11 @@ function makeSolidPyramid(pos: Vector4D) {
         ],
         [
             new TriangleShape3D(0, 1, 4, Colour.LIGHT_OFF_GREY),
-            new TriangleShape3D(1, 2, 4, Colour.WHITE),
+            new TriangleShape3D(1, 2, 4, Colour.LIGHT_OFF_GREY),
             new TriangleShape3D(2, 3, 4, Colour.LIGHT_OFF_GREY),
-            new TriangleShape3D(3, 0, 4, Colour.WHITE),
-            new TriangleShape3D(2, 1, 0, Colour.DARK_OFF_GREY),
-            new TriangleShape3D(3, 2, 0, Colour.DARK_OFF_GREY),
+            new TriangleShape3D(3, 0, 4, Colour.LIGHT_OFF_GREY),
+            new TriangleShape3D(2, 1, 0, Colour.LIGHT_OFF_GREY),
+            new TriangleShape3D(3, 2, 0, Colour.LIGHT_OFF_GREY),
         ],
         0
     );
@@ -214,13 +214,13 @@ function makeThingie(pos: Vector4D) {
 
     const triangles = [
         new TriangleShape3D(0, 1, 4, Colour.LIGHT_OFF_GREY),
-        new TriangleShape3D(1, 2, 4, Colour.WHITE),
+        new TriangleShape3D(1, 2, 4, Colour.LIGHT_OFF_GREY),
         new TriangleShape3D(2, 3, 4, Colour.LIGHT_OFF_GREY),
-        new TriangleShape3D(3, 0, 4, Colour.WHITE),
+        new TriangleShape3D(3, 0, 4, Colour.LIGHT_OFF_GREY),
 
-        new TriangleShape3D(1, 0, 5, Colour.WHITE),
+        new TriangleShape3D(1, 0, 5, Colour.LIGHT_OFF_GREY),
         new TriangleShape3D(2, 1, 5, Colour.LIGHT_OFF_GREY),
-        new TriangleShape3D(3, 2, 5, Colour.WHITE),
+        new TriangleShape3D(3, 2, 5, Colour.LIGHT_OFF_GREY),
         new TriangleShape3D(0, 3, 5, Colour.LIGHT_OFF_GREY),
     ];
 
