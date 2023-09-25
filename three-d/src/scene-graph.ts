@@ -23,6 +23,40 @@ export class Scene {
     constructor(
         public observer: Observer
     ) {}
+
+    draw(ctx: CanvasRenderingContext2D, objects: Object3D[], width: number, height: number) {
+        const startTime = performance.now();
+        this.clear(ctx, width, height);
+
+        const translationMatrix = Matrix4x3.translation(this.observer.pos.negate());
+        const rotationMatrix = Matrix4x3.coordinateTransformRotationAroundYAxis(this.observer.yRotation);
+
+        const transform = rotationMatrix.transformMatrix(translationMatrix);
+
+        let shapes: Shape2D[] = [];
+
+        for (const object of objects) {
+            object.transformToViewSpace(transform);
+
+            object.draw(this.observer, shapes);
+        }
+
+        shapes.sort( (lhs, rhs) => rhs.z - lhs.z );
+
+        for (const shape of shapes) {
+            shape.draw(ctx)
+        }
+
+        const endTime = performance.now();
+        let timeTaken = endTime - startTime;
+        console.log(`One tick: ${timeTaken}ms`);
+    }
+
+    // This probably wants to live in draw-2d
+    clear(ctx: CanvasRenderingContext2D, width: number, height: number) {
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(0, 0, width, height);
+    }
 }
 
 export abstract class Object3D {

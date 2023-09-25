@@ -341,38 +341,5 @@ function updateObjects() {
 function tick() {
     handleKeys();
     updateObjects();
-    draw();
-}
-
-function clear() {
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
-
-function draw() {
-    const startTime = performance.now();
-    clear();
-
-    const translationMatrix = Matrix4x3.translation(scene.observer.pos.negate());
-    const rotationMatrix = Matrix4x3.coordinateTransformRotationAroundYAxis(scene.observer.yRotation);
-
-    const transform = rotationMatrix.transformMatrix(translationMatrix);
-
-    let shapes: Shape2D[] = [];
-
-    for (const object of objects) {
-        object.transformToViewSpace(transform);
-
-        object.draw(scene.observer, shapes);
-    }
-
-    shapes.sort( (lhs, rhs) => rhs.z - lhs.z );
-
-    for (const shape of shapes) {
-        shape.draw(ctx)
-    }
-
-    const endTime = performance.now();
-    let timeTaken = endTime - startTime;
-    console.log(`One tick: ${timeTaken}ms`);
+    scene.draw(ctx, objects, canvas.width, canvas.height);
 }
