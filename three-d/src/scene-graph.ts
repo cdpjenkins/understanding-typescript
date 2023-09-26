@@ -26,7 +26,7 @@ export class Scene {
     ) {}
 
     draw(ctx: CanvasRenderingContext2D, objects: Object3D[], width: number, height: number) {
-        const startTime = performance.now();
+        // const startTime = performance.now();
         this.clear(ctx, width, height);
 
         const translationMatrix = Matrix4x3.translation(this.observer.pos.negate());
@@ -48,9 +48,9 @@ export class Scene {
             shape.draw(ctx)
         }
 
-        const endTime = performance.now();
-        let timeTaken = endTime - startTime;
-        console.log(`One tick: ${timeTaken}ms`);
+        // const endTime = performance.now();
+        // let timeTaken = endTime - startTime;
+        // console.log(`One tick: ${timeTaken}ms`);
     }
 
     // This probably wants to live in draw-2d
@@ -180,7 +180,6 @@ export class TriangleShape3D extends Shape3D {
     override draw(scene: Scene, vertices: Vertex[], shapes: Shape2D[]) {
         // TODO again if a triangle intersects the boundaries of the frustum of visibility then maybe we should cut it
 
-        
         const viewPos1 = vertices[this.vertex1Index].viewPos;
         const viewPos2 = vertices[this.vertex2Index].viewPos;
         const viewPos3 = vertices[this.vertex3Index].viewPos;
@@ -188,16 +187,26 @@ export class TriangleShape3D extends Shape3D {
         const surfaceNormal = vertices[this.normalIndex].viewPos;
 
         if (surfaceNormal.dotProduct(viewPos1) > 0) { 
-            if (viewPos1.z > 0 && viewPos1.z > 0 && viewPos3.z > 0 &&
-                !(  !scene.observer.isWithinFrustumOfVisibility(viewPos1) &&
-                    !scene.observer.isWithinFrustumOfVisibility(viewPos2) &&
-                    !scene.observer.isWithinFrustumOfVisibility(viewPos3))) {
+            if (viewPos1.z > 1 && viewPos1.z > 1 && viewPos3.z > 1 &&
+                (  scene.observer.isWithinFrustumOfVisibility(viewPos1) &&
+                    scene.observer.isWithinFrustumOfVisibility(viewPos2) &&
+                    scene.observer.isWithinFrustumOfVisibility(viewPos3))) {
 
                 const z = (viewPos1.z + viewPos2.z + viewPos3.z) / 3;
 
                 const screenpos1 = scene.observer.projectViewToScreen(vertices[this.vertex1Index].viewPos);
                 const screenpos2 = scene.observer.projectViewToScreen(vertices[this.vertex2Index].viewPos);
                 const screenpos3 = scene.observer.projectViewToScreen(vertices[this.vertex3Index].viewPos);
+
+                if (screenpos1.y < 0) {
+                    console.log(vertices[this.vertex1Index]);
+                }
+                if (screenpos2.y < 0) {
+                    console.log(vertices[this.vertex2Index]);
+                }
+                if (screenpos3.y < 0) {
+                    console.log(vertices[this.vertex3Index]);
+                }
 
                 // TODO move this into the light source or something
                 // grrrr we transform everything (including surface normals) directly from object space to view space and never store the surface normals
@@ -268,7 +277,7 @@ export class ObjectWithVertices extends Object3D {
     }
 
     static make(pos: Vector4D, vertices: Vertex[], triangles: TriangleShape3D[], yRotation: number) {    
-        triangles.map( (triangle) => {
+        triangles.forEach( (triangle) => {
             const normal = triangle.calculateNormal(vertices);
             vertices.push(new Vertex(normal));
             triangle.normalIndex = vertices.length - 1;
@@ -387,7 +396,7 @@ export class Observer {
         // ==> |viewX| * projectDepth * 2 < screenWidth * z
 
         const p = v.x * this.PROJECTION_DEPTH * 2;
-        const limit = this.screenWidth * v.z;
+        const limit = (this.screenWidth + 200) * v.z;
 
         if (p < -limit || p > limit) {
             return false;

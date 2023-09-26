@@ -4,7 +4,7 @@
 
 import { Matrix4x3, Vector4D } from "./linear-algebra";
 import { Observer, Object3D, Scene, DirectionalLightSource } from "./scene-graph";
-import { makeParticleFloor, makeSolidCube, makeSolidPyramid, makeThingie, makeVerticalCircle } from './object-3d';    
+import { makePolyFloor, makeSolidCube, makeSolidPyramid, makeThingie, makeVerticalCircle } from './object-3d';    
 let keysDown = new Map<string, boolean>();
 
 export var canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
@@ -32,7 +32,7 @@ function setupObjects(): Object3D[] {
     // objects.push(wireframePyramid);
     objects.push(solidPyramid);
     objects.push(thingie);
-    objects.push(makeParticleFloor());
+    objects.push(makePolyFloor());
 
     return objects;
 }
@@ -70,22 +70,22 @@ function openFullscreen() {
 
 function handleKeys() {
     if (keysDown.get('q')) {
-        scene.observer.yRotate(Math.PI / 512);
+        scene.observer.yRotate(Math.PI / 128);
     }
     if (keysDown.get('e')) {
-        scene.observer.yRotate(-Math.PI / 512);
+        scene.observer.yRotate(-Math.PI / 128);
     }
     if (keysDown.get('w')) {
-        scene.observer.moveForwards(4);
+        scene.observer.moveForwards(16);
     }
     if (keysDown.get('s')) {
-        scene.observer.moveBackwards(4);
+        scene.observer.moveBackwards(16);
     }
     if (keysDown.get('a')) {
-        scene.observer.moveLeft(4);
+        scene.observer.moveLeft(16);
     }
     if (keysDown.get('d')) {
-        scene.observer.moveRight(4);
+        scene.observer.moveRight(16);
     }
 }
 

@@ -191,6 +191,50 @@ export function makeParticleFloor(): CompoundParticleObject {
     );
 }
 
+export function makePolyFloor(): ObjectWithVertices {
+    let vertices: Vertex[] = [];
+
+    const width = 100;
+    const depth = 100;
+    
+    for (let x = 0; x < width; x++) {
+        for (let z = 0; z < depth; z++) {
+            vertices.push(
+                new Vertex(
+                    new Vector4D(
+                        (x - width/2) * 100,
+                        Math.random() * 10,
+                        (z) * 100
+                    )
+                )
+            );
+        }
+    }
+
+    let triangles: TriangleShape3D[] = [];
+    for (let x = 0; x < width-10; x++) {
+        for (let z = 0; z < depth-10; z++) {
+            const index = x*width + z;
+            triangles.push(
+                new TriangleShape3D(
+                    index+width, index+1, index,
+                    Colour.BLUE
+                ),
+            )
+
+            triangles.push(
+                new TriangleShape3D(
+                    index+width, index+width+1, index+1,
+                    Colour.BLUE
+                ),
+            );
+        }
+    }
+    
+
+    return ObjectWithVertices.make(Vector4D.position(0, -100, 0), vertices, triangles, 0);
+}
+
 // let weirdTotemPoleThingie = new ObjectWithVertices(
 //     new Vector3D(0, 0, 1000),
 //     [
