@@ -187,26 +187,20 @@ export class TriangleShape3D extends Shape3D {
         const surfaceNormal = vertices[this.normalIndex].viewPos;
 
         if (surfaceNormal.dotProduct(viewPos1) > 0) { 
-            if (viewPos1.z > 1 && viewPos1.z > 1 && viewPos3.z > 1 &&
-                (  scene.observer.isWithinFrustumOfVisibility(viewPos1) &&
-                    scene.observer.isWithinFrustumOfVisibility(viewPos2) &&
+            if (viewPos1.z > 1 && viewPos2.z > 1 && viewPos3.z > 1 &&
+                (  scene.observer.isWithinFrustumOfVisibility(viewPos1) ||
+                    scene.observer.isWithinFrustumOfVisibility(viewPos2) ||
                     scene.observer.isWithinFrustumOfVisibility(viewPos3))) {
 
                 const z = (viewPos1.z + viewPos2.z + viewPos3.z) / 3;
 
-                const screenpos1 = scene.observer.projectViewToScreen(vertices[this.vertex1Index].viewPos);
-                const screenpos2 = scene.observer.projectViewToScreen(vertices[this.vertex2Index].viewPos);
-                const screenpos3 = scene.observer.projectViewToScreen(vertices[this.vertex3Index].viewPos);
+                vertices[this.vertex1Index].screenPos = scene.observer.projectViewToScreen(vertices[this.vertex1Index].viewPos);
+                vertices[this.vertex2Index].screenPos = scene.observer.projectViewToScreen(vertices[this.vertex2Index].viewPos);
+                vertices[this.vertex3Index].screenPos = scene.observer.projectViewToScreen(vertices[this.vertex3Index].viewPos);
 
-                if (screenpos1.y < 0) {
-                    console.log(vertices[this.vertex1Index]);
-                }
-                if (screenpos2.y < 0) {
-                    console.log(vertices[this.vertex2Index]);
-                }
-                if (screenpos3.y < 0) {
-                    console.log(vertices[this.vertex3Index]);
-                }
+                const screenpos1 = vertices[this.vertex1Index].screenPos;
+                const screenpos2 = vertices[this.vertex2Index].screenPos;
+                const screenpos3 = vertices[this.vertex3Index].screenPos;
 
                 // TODO move this into the light source or something
                 // grrrr we transform everything (including surface normals) directly from object space to view space and never store the surface normals
