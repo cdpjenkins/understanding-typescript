@@ -15,6 +15,9 @@ document.addEventListener('keyup', function(e) {
     keysDown.set(e.key, false);
 }, false);
 
+const fullScreenButton = document.getElementById("full-screen-button");
+fullScreenButton?.addEventListener('click', (_) => openFullscreen());
+
 var ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
 const cube = makeSolidCube(new Vector4D(400, 250, 1000));
