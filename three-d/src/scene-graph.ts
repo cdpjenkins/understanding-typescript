@@ -36,6 +36,8 @@ export class Scene {
 
         let shapes: Shape2D[] = [];
 
+        this.lightSource.transformToViewSpace(this.observer);
+
         for (const object of objects) {
             object.transformToViewSpace(transform);
 
@@ -61,10 +63,16 @@ export class Scene {
 }
 
 export class DirectionalLightSource {
+    directionInViewSpace: Vector4D = Vector4D.ZERO;
+    
     constructor(
         /** This needs to be direction vector (w==0) and not a position vector or it will get screwed up by translations */
         public direction: Vector4D
     ) {}
+
+    transformToViewSpace(observer: Observer) {
+        this.directionInViewSpace = observer.coordinateTransform.transformVector(this.direction);
+    }
 }
 
 export abstract class Object3D {
@@ -202,15 +210,8 @@ export class TriangleShape3D extends Shape3D {
                 const screenpos2 = vertices[this.vertex2Index].screenPos;
                 const screenpos3 = vertices[this.vertex3Index].screenPos;
 
-                // TODO move this into the light source or something
-                // grrrr we transform everything (including surface normals) directly from object space to view space and never store the surface normals
-                // in world space meaning that we have to transform the illumination vector into view space in order to use it
-                //
-                // TODO it is probably pretty inefficient to do this for every polygon. Instead, we should transform the illumination vector once
-                // and store it within the light source.
-                const illuminationVector = scene.observer.coordinateTransform.transformVector(scene.lightSource.direction);
                 let directionalIlluminationCoefficient = Math.max(
-                        surfaceNormal.dotProduct(illuminationVector),
+                        surfaceNormal.dotProduct(scene.lightSource.directionInViewSpace),
                         0);
                 const totalIlluminationCoefficient = directionalIlluminationCoefficient * 0.875 + 0.125;
                 const colour = this.colour.times(totalIlluminationCoefficient);
@@ -220,6 +221,7 @@ export class TriangleShape3D extends Shape3D {
         }
     }
 
+    /** Call this once when the object is created and then store the result! */
     calculateNormal(vertices: Vertex[]): Vector4D {
         const v1 = vertices[this.vertex1Index].pos;
         const v2 = vertices[this.vertex2Index].pos;
