@@ -1,4 +1,5 @@
 import { Matrix3D } from "./linear-algebra";
+import { ColourSupplier } from "./colour";
 
 class Complex {
     constructor(
@@ -7,6 +8,7 @@ class Complex {
     ) {}
 }
 
+// @ts-ignore
 function hsvToRgb(h: number, s: number, v: number): [number, number, number] {
     const HUE_PERIOD: number = 360;
 
@@ -49,6 +51,8 @@ class MandelbrotRenderer {
     colourSaturation: number = 0.8;
     colourValue: number = 1;
 
+    colourSupplier: ColourSupplier = new ColourSupplier();
+
     constructor(ctx: CanvasRenderingContext2D) {
         this.ctx = ctx;
         this.canvasData = this.ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -73,8 +77,6 @@ class MandelbrotRenderer {
                     .transformMatrix(Matrix3D.scale(this.scale / this.width ))
                     .transformMatrix(Matrix3D.rotation(-this.theta))
                     .transformMatrix(Matrix3D.translation(-this.width / 2, -this.height / 2));
-
-        this.geometricTransform.printOut();
     }
 
     draw() {
@@ -82,11 +84,9 @@ class MandelbrotRenderer {
 
         this.refreshGeometricTransformMatrix();
 
-
         let i = 0;
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++, i += 4) {
-
                 const re = this.geometricTransform.transformX(x, y);
                 const im = this.geometricTransform.transformY(x, y);
 
@@ -97,14 +97,14 @@ class MandelbrotRenderer {
                     this.canvasData.data[i + 2] = 0x00;
                     this.canvasData.data[i + 3] = 0xFF;
                 } else {
-                    let [r, g, b] = hsvToRgb(iterations, this.colourSaturation, this.colourValue);
+                    // let [r, g, b] = hsvToRgb(iterations, this.colourSaturation, this.colourValue);
+                    let [r, g, b] = this.colourSupplier.colourFor(iterations);
 
                     this.canvasData.data[i + 0] = r * 255;
                     this.canvasData.data[i + 1] = g * 255;
                     this.canvasData.data[i + 2] = b * 255;
                     this.canvasData.data[i + 3] = 0xFF;
                 }
-
             }
         }
 
@@ -190,24 +190,26 @@ class MandelbrotRenderer {
         let zre = 0;
         let zim = 0;
 
+        let zReSquared = 0;
+        let zImSquared = 0;
+
         for (let i = 0; i < this.iterationDepth; i++) {
-            let z2re = zre * zre - zim * zim + kre;
+            let z2re = zReSquared - zImSquared + kre;
             let z2im = 2 * zre * zim + kim;
 
             zre = z2re;
             zim = z2im;
 
-            if (magnitudeSquared(zre, zim) >= 4) {
+            zReSquared = zre * zre;
+            zImSquared = zim * zim;
+
+            if (zReSquared + zImSquared >= 4) {
                 return i;
             }
         }
 
         return -1;
     }
-}
-
-function magnitudeSquared(re: number, im: number): number {
-    return re * re + im * im;
 }
 
 let canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
