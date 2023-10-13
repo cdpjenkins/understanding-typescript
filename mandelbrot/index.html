@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Mandelbrot</title>
-  <script src="dist/mandelbrot.js" defer></script>
+  <script src="dist/bundle.js" defer></script>
 </head>
 <body>
   <canvas id="myCanvas"
@@ -20,15 +20,15 @@
           <tr>
             <td>Iteration depth</td>
             <td><input type="text" id="iterationDepth" name="Iteration depth"></td>
-            <td><button onclick="decreaseIterationDepth();">-100</button></td>
-            <td><button onclick="increaseIterationDepth();">+100</button></td>
+            <td><button id="decreaseIterationDepth">-100</button></td>
+            <td><button id="increaseIterationDepth">+100</button></td>
     
           </tr>
           <tr>
             <td>Scale</td>
             <td><input type="text" id="scale" name="Scale"></td>
-            <td><button onclick="zoomIn();">Zoom in</button></td>
-            <td><button onclick="zoomOut();">Zoom out</button></td>
+            <td><button id="zoomIn">Zoom in</button></td>
+            <td><button id="zoomOut">Zoom out</button></td>
           </tr>
           <tr>
             <td>Real</td>
@@ -47,13 +47,13 @@
       <td>
         <table>
           <tr>
-          <td></td><td><button onclick="mandie.scrollUp();">⇧</button></td><td></td>
+          <td></td><td><button id="scrollUp">⇧</button></td><td></td>
           </tr>
           <tr>
-            <td><button onclick="mandie.scrollLeft();">⇦</button></td><td></td><td><button onclick="mandie.scrollRight();">⇨</button></td>
+            <td><button id="scrollLeft">⇦</button></td><td></td><td><button id="scrollRight">⇨</button></td>
           </tr>
           <tr>
-            <td></td><td><button onclick="mandie.scrollDown();">⇩</button></td><td></td>
+            <td></td><td><button id="scrollDown">⇩</button></td><td></td>
           </tr>
           </tr>
         </table>

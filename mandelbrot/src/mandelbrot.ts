@@ -227,12 +227,14 @@ function decreaseIterationDepth() {
     mandie.draw();
 }
 
+// @ts-ignore
 function zoomIn() {
     mandie.zoomIn();
     updateUI(mandie);
     mandie.draw();
 }
 
+// @ts-ignore
 function zoomOut() {
     mandie.zoomOut();
     updateUI(mandie);
@@ -276,6 +278,30 @@ imaginaryInput.onkeydown = (e) => {
         mandie.draw();
     }
 }
+
+(document.getElementById("decreaseIterationDepth") as HTMLButtonElement)
+    .addEventListener("click", (_) => decreaseIterationDepth());
+(document.getElementById("increaseIterationDepth") as HTMLButtonElement)
+    .addEventListener("click", (_) => increaseIterationDepth());
+
+(document.getElementById("zoomIn") as HTMLButtonElement)
+    .addEventListener("click", (_) => zoomIn());
+(document.getElementById("zoomOut") as HTMLButtonElement)
+    .addEventListener("click", (_) => zoomOut());
+
+(document.getElementById("scrollUp") as HTMLButtonElement)
+    .addEventListener("click", (_) => mandie.scrollUp());
+(document.getElementById("scrollLeft") as HTMLButtonElement)
+.addEventListener("click", (_) => mandie.scrollLeft());
+(document.getElementById("scrollRight") as HTMLButtonElement)
+.addEventListener("click", (_) => mandie.scrollRight());
+(document.getElementById("scrollDown") as HTMLButtonElement)
+.addEventListener("click", (_) => mandie.scrollDown());
+
+
+
+// <td><button onclick="zoomIn();">Zoom in</button></td>
+// <td><button onclick="zoomOut();">Zoom out</button></td>
 
 canvas.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
 let ctx = canvas.getContext("2d")!;
