@@ -35,6 +35,7 @@ function hsvToRgb(h: number, s: number, v: number): [number, number, number] {
 class MandelbrotRenderer {
     centre: Complex = new Complex(0, 0);
     scale: number = 4;
+    theta: number = 0;
     iterationDepth: number = 1000;
     timeToRender: number = -1;
     geometricTransform: Matrix3D = Matrix3D.identity;
@@ -69,8 +70,9 @@ class MandelbrotRenderer {
 
     refreshGeometricTransformMatrix() {
         this.geometricTransform = Matrix3D.translation(this.centre.re, this.centre.im)
-                            .transformMatrix(Matrix3D.scale(this.scale / this.width ))
-                            .transformMatrix(Matrix3D.translation(-this.width / 2, -this.height / 2));
+                    .transformMatrix(Matrix3D.scale(this.scale / this.width ))
+                    .transformMatrix(Matrix3D.rotation(-this.theta))
+                    .transformMatrix(Matrix3D.translation(-this.width / 2, -this.height / 2));
 
         this.geometricTransform.printOut();
     }
@@ -132,6 +134,24 @@ class MandelbrotRenderer {
 
     scrollUp() {
         this.centre.im -= 0.01 / 0.1/this.scale;
+        updateUI(this);
+        this.draw();
+    }
+    
+    rotateLeft() {
+        this.theta -= 1/16;
+        if (this.theta < 0) {
+            this.theta += Math.PI * 2;
+        }
+        updateUI(this);
+        this.draw();
+    }
+
+    rotateRight() {
+        this.theta += 1/16;
+        if (this.theta >= Math.PI * 2) {
+            this.theta -= Math.PI * 2;
+        }
         updateUI(this);
         this.draw();
     }
@@ -201,6 +221,7 @@ canvas.onmousedown = (e) => {
 
 let iterationDepthTextInput = <HTMLInputElement>document.getElementById("iterationDepth");
 let scaleTextInput = <HTMLInputElement>document.getElementById("scale");
+let thetaTextInput = <HTMLInputElement>document.getElementById("theta");
 let realInput = <HTMLInputElement>document.getElementById("real");
 let imaginaryInput = <HTMLInputElement>document.getElementById("imaginary");
 let timeToRenderSpan = <HTMLSpanElement>document.getElementById("timeToRenderSpan");
@@ -219,6 +240,7 @@ function setScale(newScale: number) {
 function updateUI(mandie: MandelbrotRenderer) {
     iterationDepthTextInput.value = mandie.iterationDepth.toString();
     scaleTextInput.value = mandie.scale.toString();
+    thetaTextInput.value = mandie.theta.toString();
     realInput.value = `${mandie.centre.re.toString()}`;
     imaginaryInput.value = `${mandie.centre.im.toString()}`;
     timeToRenderSpan.textContent = `${mandie.timeToRender.toFixed(2)}ms`;
@@ -297,6 +319,12 @@ imaginaryInput.onkeydown = (e) => {
     .addEventListener("click", (_) => zoomIn());
 (document.getElementById("zoomOut") as HTMLButtonElement)
     .addEventListener("click", (_) => zoomOut());
+
+
+(document.getElementById("rotateLeft") as HTMLButtonElement)
+    .addEventListener("click", (_) => mandie.rotateLeft());
+(document.getElementById("rotateRight") as HTMLButtonElement)
+    .addEventListener("click", (_) => mandie.rotateRight());
 
 (document.getElementById("scrollUp") as HTMLButtonElement)
     .addEventListener("click", (_) => mandie.scrollUp());
