@@ -115,25 +115,25 @@ class MandelbrotRenderer {
     }
 
     scrollLeft() {
-        this.centre.re -= 0.01 / 0.1/this.scale;
+        this.centre.re -= this.scale * (1/16);
         updateUI(this);
         this.draw();
     }
 
     scrollRight() {
-        this.centre.re += 0.01 / 0.1/this.scale;
+        this.centre.re += this.scale * (1/16);
         updateUI(this);
         this.draw();
     }
 
     scrollDown() {
-        this.centre.im += 0.01 / 0.1/this.scale;
+        this.centre.im += this.scale * (1/16);
         updateUI(this);
         this.draw();
     }
 
     scrollUp() {
-        this.centre.im -= 0.01 / 0.1/this.scale;
+        this.centre.im -= this.scale * (1/16);
         updateUI(this);
         this.draw();
     }
