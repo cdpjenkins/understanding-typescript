@@ -1,7 +1,7 @@
-import { Vector2D, Matrix2D } from "./linear-algebra";
+import { Vector2D, Matrix3D } from "./linear-algebra";
 
 test("transforming by identity matrix leaves vector unchanged", () => {
-    const result = Matrix2D.identity
+    const result = Matrix3D.identity
             .transformVector(new Vector2D(1, 2));
 
     expect(result.x).toBe(1);
@@ -9,11 +9,28 @@ test("transforming by identity matrix leaves vector unchanged", () => {
 });
 
 test("rotating anti-clockwise by 90 degrees works correctly", () => {
-    const result = new Matrix2D(
-        0, -1,
-        1, 0
-    ).transformVector(new Vector2D(1, 2))
+    const result = Matrix3D.rotation(Math.PI / 2)
+            .transformVector(new Vector2D(1, 2));
 
-    expect(result.x).toBe(-2);
-    expect(result.y).toBe(1);
+    expect(result.x).toBeCloseTo(-2);
+    expect(result.y).toBeCloseTo(1);
+});
+
+test("translating a vector works correctly", () => {
+    const result = Matrix3D.translation(10, 20)
+            .transformVector(new Vector2D(1, 2));
+
+    expect(result.x).toBeCloseTo(11);
+    expect(result.y).toBeCloseTo(22);
+        
+});
+
+test("can translate and thn rotate correctly", () => {
+    const transform = Matrix3D.rotation(Math.PI / 2)
+            .transformMatrix(Matrix3D.translation(10, 20));
+
+    const result = transform.transformVector(new Vector2D(1, 2));
+
+    expect(result.x).toBeCloseTo(-22);
+    expect(result.y).toBeCloseTo(11);
 });
