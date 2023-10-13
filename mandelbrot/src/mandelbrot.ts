@@ -1,3 +1,5 @@
+import { Matrix3D } from "./linear-algebra";
+
 class Complex {
     constructor(
         public re: number,
@@ -32,9 +34,10 @@ function hsvToRgb(h: number, s: number, v: number): [number, number, number] {
 
 class MandelbrotRenderer {
     centre: Complex = new Complex(0, 0);
-    scale: number = 0.5;
+    scale: number = 4;
     iterationDepth: number = 1000;
     timeToRender: number = -1;
+    geometricTransform: Matrix3D = Matrix3D.identity;
 
     ctx: CanvasRenderingContext2D;
     canvasData: ImageData;
@@ -53,23 +56,37 @@ class MandelbrotRenderer {
         this.height = this.canvasData.height;
     }
 
-    screenXToComplexRe(x: number) {
-        return this.centre.re + (x - this.width / 2) / (this.scale * this.width / 2);
+    screenToComplex(x: number, y: number): Complex {
+        return new Complex(
+            this.geometricTransform.transformX(x, y),
+            this.geometricTransform.transformY(x, y)
+        );
     }
 
     screenYToComplexIm(y: number) {
         return this.centre.im + (y - this.height / 2) / (this.scale * this.height / 2);
     }
 
+    refreshGeometricTransformMatrix() {
+        this.geometricTransform = Matrix3D.translation(this.centre.re, this.centre.im)
+                            .transformMatrix(Matrix3D.scale(this.scale / this.width ))
+                            .transformMatrix(Matrix3D.translation(-this.width / 2, -this.height / 2));
+
+        this.geometricTransform.printOut();
+    }
+
     draw() {
         const startTime = performance.now();
+
+        this.refreshGeometricTransformMatrix();
+
 
         let i = 0;
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++, i += 4) {
 
-                let re = this.screenXToComplexRe(x);
-                let im = this.screenYToComplexIm(y);
+                const re = this.geometricTransform.transformX(x, y);
+                const im = this.geometricTransform.transformY(x, y);
 
                 let iterations = this.mandelbrotIterations(re, im);
                 if (iterations == -1) {
@@ -120,20 +137,20 @@ class MandelbrotRenderer {
     }
 
     zoomIn() {
-        this.scale *= 1.25;
+        this.scale /= 1.25;
         updateUI(this);
         this.draw();
     }
 
     zoomOut() {
-        this.scale /= 1.25;
+        this.scale *= 1.25;
         updateUI(this);
         this.draw();
     }
 
     zoomInTo(x: number, y: number) {
         this.centre = this.screenToComplex(x, y);
-        this.scale *= 1.25;
+        this.scale /= 1.25;
 
         updateUI(this);
 
@@ -142,19 +159,11 @@ class MandelbrotRenderer {
 
     zoomOutTo(x: number, y: number) {
         this.centre = this.screenToComplex(x, y);
-        this.scale /= 1.25;
+        this.scale *= 1.25;
 
         updateUI(this);
 
         this.draw();
-    }
-
-    private screenToComplex(x: number, y: number) {
-        let re = this.screenXToComplexRe(x);
-        let im = this.screenYToComplexIm(y);
-
-        const z = new Complex(re, im);
-        return z;
     }
 
     private mandelbrotIterations(kre: number, kim: number): number {

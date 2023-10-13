@@ -37,6 +37,13 @@ export class Matrix3D {
         );
     }
 
+    static scale(factor: number) {
+        return new Matrix3D(
+            factor, 0, 0,
+            0, factor, 0
+        );
+    }
+
     transformX(x: number, y: number) {
         return this.m11 * x + this.m21 * y  + this.m31;
     }
@@ -51,12 +58,17 @@ export class Matrix3D {
 
     transformMatrix(that: Matrix3D): Matrix3D {
         return new Matrix3D(
-            this.m11 * that.m11 + this.m21 * that.m12 + this.m31,
-            this.m11 * that.m21 + this.m21 * that.m22 + this.m31,
+            this.m11 * that.m11 + this.m21 * that.m12,
+            this.m11 * that.m21 + this.m21 * that.m22,
             this.m11 * that.m31 + this.m21 * that.m32 + this.m31,
-            this.m12 * that.m11 + this.m22 * that.m12 + this.m32,
-            this.m12 * that.m21 + this.m22 * that.m22 + this.m32,
+            this.m12 * that.m11 + this.m22 * that.m12,
+            this.m12 * that.m21 + this.m22 * that.m22,
             this.m12 * that.m31 + this.m22 * that.m32 + this.m32
         )
+    }
+
+    printOut() {
+        console.log(`${this.m11} ${this.m21} ${this.m31}`);
+        console.log(`${this.m12} ${this.m22} ${this.m32}`);
     }
 }

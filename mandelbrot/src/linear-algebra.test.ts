@@ -25,7 +25,7 @@ test("translating a vector works correctly", () => {
         
 });
 
-test("can translate and thn rotate correctly", () => {
+test("can translate and then rotate correctly using composed matrices", () => {
     const transform = Matrix3D.rotation(Math.PI / 2)
             .transformMatrix(Matrix3D.translation(10, 20));
 
@@ -33,4 +33,12 @@ test("can translate and thn rotate correctly", () => {
 
     expect(result.x).toBeCloseTo(-22);
     expect(result.y).toBeCloseTo(11);
+});
+
+test("can scale a vector correctly", () => {
+    const result = Matrix3D.scale(1/100)
+            .transformVector(new Vector2D(200, 300));
+
+    expect(result.x).toBeCloseTo(2);
+    expect(result.y).toBeCloseTo(3);
 });
