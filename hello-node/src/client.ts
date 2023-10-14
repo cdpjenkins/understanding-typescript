@@ -1,12 +1,6 @@
-import * as http from "http";
+import axios from 'axios';
 
-http.get("http://localhost:3000/todos", (res) => {
-    if (res.statusCode === 200) {
-        let data = "";
-        res.on("data", (chunk) => {
-            data += chunk;
-        });
-
-        res.on("close", () => {console.log(data)});
-    }
-});
+axios("http://localhost:3000/todos")
+    .then(res => {
+        console.log(res.data);
+    });
