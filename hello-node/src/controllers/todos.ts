@@ -14,8 +14,6 @@ export const createTodo: RequestHandler = ( req, res, next) => {
     const text = (req.body as {text: string}).text;
     const newTodo = new Todo(allocateId(), text);
 
-    console.log(newTodo);
-
     todos.push(newTodo);
 
     return res.status(201).json(
