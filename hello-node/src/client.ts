@@ -10,7 +10,8 @@ getAllTODOs();
 function getAllTODOs() {
     axios("http://localhost:3000/todos")
         .then(res => {
-            console.log(res.data);
+            const todos: Todo[] = res.data;
+            console.log(todos);
         });
 }
 
