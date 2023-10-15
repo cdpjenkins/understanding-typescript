@@ -231,12 +231,12 @@ let timeToRenderSpan = <HTMLSpanElement>document.getElementById("timeToRenderSpa
 // TODO - maybe all these set functions could live in the MandelbrotRenderer class
 function setIterationDepth(newIterationDepth: number) {
     mandie.iterationDepth = newIterationDepth;
-    mandie.draw();
+    drawMandie();
 }
 
 function setScale(newScale: number) {
     mandie.scale = newScale;
-    mandie.draw();
+    drawMandie();
 }
 
 function updateUI(mandie: MandelbrotRenderer) {
@@ -251,27 +251,27 @@ function updateUI(mandie: MandelbrotRenderer) {
 function increaseIterationDepth() {
     mandie.iterationDepth += 100;
     updateUI(mandie);
-    mandie.draw();
+    drawMandie();
 }
 
 function decreaseIterationDepth() {
     mandie.iterationDepth -= 100;
     updateUI(mandie);
-    mandie.draw();
+    drawMandie();
 }
 
 // @ts-ignore
 function zoomIn() {
     mandie.zoomIn();
     updateUI(mandie);
-    mandie.draw();
+    drawMandie();
 }
 
 // @ts-ignore
 function zoomOut() {
     mandie.zoomOut();
     updateUI(mandie);
-    mandie.draw();
+    drawMandie();
 }
 
 iterationDepthTextInput.onkeydown = (e) => {
@@ -299,7 +299,7 @@ realInput.onkeydown = (e) => {
         const target = e.target as HTMLInputElement;
         mandie.centre.re = parseFloat(target.value);
 
-        mandie.draw();
+        drawMandie();
     }
 }
 
@@ -308,7 +308,7 @@ imaginaryInput.onkeydown = (e) => {
         const target = e.target as HTMLInputElement;
         mandie.centre.im = parseFloat(target.value);
 
-        mandie.draw();
+        drawMandie();
     }
 }
 
@@ -346,6 +346,14 @@ canvas.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
 let ctx = canvas.getContext("2d")!;
 let mandie = new MandelbrotRenderer(ctx);
 
-mandie.draw();
+drawMandie();
 updateUI(mandie);
+
+function drawMandie() {
+    window.requestAnimationFrame( (timestamp) => {
+        console.log(timestamp);
+        mandie.draw();
+        updateUI(mandie);
+    });
+}
 
