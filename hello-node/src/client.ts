@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Todo } from './models/todosModel';
 
 addTODO("TODO number one");
 addTODO("the second TODO");
@@ -16,9 +17,7 @@ function getAllTODOs() {
 function addTODO(message: string) {
     axios.post(
         "http://localhost:3000/todos",
-        {
-            text: message
-        }
+        new Todo(undefined, message)
     ).then(res => {
         console.log(res.status);
     });
