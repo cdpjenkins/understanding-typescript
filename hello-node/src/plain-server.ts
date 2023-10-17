@@ -23,8 +23,8 @@ const server = http.createServer((req: http.IncomingMessage, res) => {
                     <body>
                         <h1>Wot is ur name???</h1>
             
-                        <form action="hello" method="GET">
-                            <input type="text" name="name"/>
+                        <form action="hello" method="POST">
+                            <input type="text" name="postedName"/>
                             <input type="submit"/>
                         </form>
                     </body>
@@ -53,10 +53,16 @@ const server = http.createServer((req: http.IncomingMessage, res) => {
         }
         res.end();
     } else if (req.method === "POST") {
-        name = req.body
-        res.setHeader("Location", `/hello?name=${name}`);
-        res.statusCode = 302;
-        res.end();
+        const body: Buffer[] = [];
+
+        req.on("data", (chunk) => body.push(chunk));
+        req.on("end", () => {
+            const parsedBody = Buffer.concat(body).toString();
+            const name = parsedBody.split("=")[1];
+            res.setHeader("Location", `/hello?name=${name}`);
+            res.statusCode = 302;
+            res.end();                
+        });
     }
 });
 
