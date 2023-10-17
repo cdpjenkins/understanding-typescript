@@ -1,35 +1,65 @@
 // Plain server that just uses node (no Express) and does basic HTTP stuff. For science.
 
 import http from "http";
+import url from "url";
 
 let visitorNumber = 0;
 
-const server = http.createServer( (req, res) => {    
+const server = http.createServer((req: http.IncomingMessage, res) => {
+
+    const queryParams = url.parse(req.url!, true).query;
+    const name = queryParams["name"];
+
+    if (req.url === "/favicon.ico") {
+        res.statusCode = 404;
+        res.end();
+    } else if (req.method === "GET") {
+
         res.setHeader("Content-type", "text/html");
-        res.write(`
-        <html>
-            <body>
-                <h1>Hello World!!!1</h1>
-            </body>
 
-            <p>
-                This is a page returned from Node.
-            </p>
+        if (name == undefined) {
+            res.write(`
+                <html>
+                    <body>
+                        <h1>Wot is ur name???</h1>
+            
+                        <form action="hello" method="GET">
+                            <input type="text" name="name"/>
+                            <input type="submit"/>
+                        </form>
+                    </body>
+                </html>`
+            );
+        } else {
+            res.write(`
+                <html>
+                    <body>
+                        <h1>Hello ${name}!!!1</h1>
+                    </body>
 
-            <p>
-                You are visitor number ${getNextVisitorNumber()}.
-            </p>
+                    <p>
+                        This is a page returned from Node.
+                    </p>
 
-            <p>
-                Please visit again soon!
-            </p>
-        </html>`);
+                    <p>
+                        You are visitor number ${getNextVisitorNumber()}.
+                    </p>
+
+                    <p>
+                        Please visit again soon!
+                    </p>
+                </html>
+            `);
+        }
+        res.end();
+    } else if (req.method === "POST") {
+        name = req.body
+        res.setHeader("Location", `/hello?name=${name}`);
+        res.statusCode = 302;
         res.end();
     }
-)
+});
 
-// Note that the visitor number appears to go up by 2 each time when you hit this from Chrome (and likely other browsers)
-// because Chrome sends two requests, one for "/" and one for "favicon.ico".
 function getNextVisitorNumber() {
     console.log(visitorNumber);
 
