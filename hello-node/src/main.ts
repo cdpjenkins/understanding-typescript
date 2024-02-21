@@ -13,6 +13,10 @@ app.use("/todos", todosRouter);
 app.use("/admin", adminRouter);
 app.use("/shop", shopRouter);
 
+app.use("/", (req, res) => {
+    res.status(200).send("<html><body><h1>Welcome to the shop!</h1></body>\n")
+})
+
 app.use((req, res, next) => {
     res.status(404).send("<html><body><h1>Not found!!!1</body></html>\n");
 });
