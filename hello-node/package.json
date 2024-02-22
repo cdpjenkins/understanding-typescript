@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
+    "build": "npm run copy-files && tsc",
+    "copy-files": "cp -pr src/views dist/",
     "tscw": "tsc -w",
     "start": "nodemon dist/main.js"
   },
