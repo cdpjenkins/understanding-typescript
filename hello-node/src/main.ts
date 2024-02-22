@@ -1,5 +1,6 @@
 import express from "express";
 import { json } from "body-parser";
+import path from "path";
 
 import todosRouter from "./routes/todos";
 import adminRouter from "./routes/admin";
@@ -13,12 +14,8 @@ app.use("/todos", todosRouter);
 app.use("/admin", adminRouter);
 app.use("/shop", shopRouter);
 
-app.use("/", (req, res) => {
-    res.status(200).send("<html><body><h1>Welcome to the shop!</h1></body>\n")
-})
-
 app.use((req, res, next) => {
-    res.status(404).send("<html><body><h1>Not found!!!1</body></html>\n");
+    res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
 });
 
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
