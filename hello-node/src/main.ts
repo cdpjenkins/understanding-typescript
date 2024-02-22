@@ -14,11 +14,11 @@ app.use("/todos", todosRouter);
 app.use("/admin", adminRouter);
 app.use("/shop", shopRouter);
 
-app.use((req, res, next) => {
+app.use((req, res, _) => {
     res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
 });
 
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: Error, req: express.Request, res: express.Response, _: express.NextFunction) => {
     res.status(500).json({message: err.message});
 });
 
