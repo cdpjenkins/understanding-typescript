@@ -5,6 +5,7 @@ import path from "path";
 import todosRouter from "./routes/todos";
 import adminRouter from "./routes/admin";
 import shopRouter from "./routes/shop";
+import {rootDir} from "./util/path";
 
 const app = express();
 
@@ -15,7 +16,7 @@ app.use("/admin", adminRouter);
 app.use("/shop", shopRouter);
 
 app.use((req, res, _) => {
-    res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
+    res.status(404).sendFile(path.join(rootDir, "views", "404.html"));
 });
 
 app.use((err: Error, req: express.Request, res: express.Response, _: express.NextFunction) => {
