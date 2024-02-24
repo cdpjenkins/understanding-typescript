@@ -2,9 +2,9 @@ import express from "express";
 import { json } from "body-parser";
 import path from "path";
 
-import todosRouter from "./routes/todos";
-import adminRouter from "./routes/admin";
-import shopRouter from "./routes/shop";
+import * as todos from "./routes/todos";
+import * as admin from "./routes/admin";
+import * as shop  from "./routes/shop";
 import {rootDir} from "./util/path";
 
 const app = express();
@@ -13,9 +13,9 @@ app.use(json());
 
 app.use(express.static( path.join(rootDir, "public")));
 
-app.use("/todos", todosRouter);
-app.use("/admin", adminRouter);
-app.use(shopRouter);
+app.use("/todos", todos.router);
+app.use("/admin", admin.router);
+app.use(shop.router);
 
 
 app.use((req, res, _) => {
