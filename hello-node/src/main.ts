@@ -11,9 +11,12 @@ const app = express();
 
 app.use(json());
 
+app.use("/static", express.static( path.join(rootDir, "static")));
+
 app.use("/todos", todosRouter);
 app.use("/admin", adminRouter);
-app.use("/shop", shopRouter);
+app.use(shopRouter);
+
 
 app.use((req, res, _) => {
     res.status(404).sendFile(path.join(rootDir, "views", "404.html"));
