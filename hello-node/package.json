@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npm run copy-files && tsc",
-    "copy-files": "mkdir -p dist && cp -pr src/views dist/ && cp -pr src/static dist/",
+    "copy-files": "mkdir -p dist && cp -pr src/views dist/ && cp -pr src/public dist/",
     "tscw": "tsc -w",
     "start": "nodemon dist/main.js"
   },

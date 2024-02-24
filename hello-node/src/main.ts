@@ -11,7 +11,7 @@ const app = express();
 
 app.use(json());
 
-app.use("/static", express.static( path.join(rootDir, "static")));
+app.use("/public", express.static( path.join(rootDir, "public")));
 
 app.use("/todos", todosRouter);
 app.use("/admin", adminRouter);
