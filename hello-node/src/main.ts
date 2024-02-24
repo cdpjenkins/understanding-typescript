@@ -1,5 +1,5 @@
 import express from "express";
-import { json } from "body-parser";
+import * as bodyParser from "body-parser";
 import path from "path";
 
 import * as todos from "./routes/todos";
@@ -9,7 +9,8 @@ import {rootDir} from "./util/path";
 
 const app = express();
 
-app.use(json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(express.static( path.join(rootDir, "public")));
 

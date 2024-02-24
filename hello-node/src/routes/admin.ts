@@ -4,15 +4,23 @@ import {rootDir} from "../util/path";
 
 const router = Router();
 
-const products: string[] = [];
+class Product {
+    constructor(
+        public title: string
+    ) {}
+}
+
+const products: Product[] = [];
 
 router.get("/add-product", (req, res, next) => {
     res.sendFile(path.join(rootDir, "views", "add-product.html"));
 });
 
 router.post("/add-product", (req, res) => {
-   console.log(req.body);
-   res.redirect("/");
+    console.log(req.body);
+    let title = req.body.title;
+    products.push(new Product(title));
+    res.redirect("/");
 });
 
 // export default router;
