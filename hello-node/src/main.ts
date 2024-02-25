@@ -9,6 +9,9 @@ import {rootDir} from "./util/path";
 
 const app = express();
 
+app.set("view engine", "ejs");
+app.set("views", path.join(rootDir, "views"));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
@@ -20,7 +23,7 @@ app.use(shop.router);
 
 
 app.use((req, res, _) => {
-    res.status(404).sendFile(path.join(rootDir, "views", "404.html"));
+    res.status(404).render('404', { pageTitle: "Page totally not found!!!1" } );
 });
 
 app.use((err: Error, req: express.Request, res: express.Response, _: express.NextFunction) => {

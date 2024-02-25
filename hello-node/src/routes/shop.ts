@@ -9,5 +9,14 @@ export const router = Router();
 
 router.get("/", (req, res, next) => {
     console.log(admin.products);
-    res.sendFile(path.join(rootDir, "views", "shop.html"));
+    // res.sendFile(path.join(rootDir, "views", "shop.html"));
+    const products = admin.products;
+    res.render('shop', {
+        prods: products,
+        pageTitle: 'Shop',
+        path: '/',
+        hasProducts: products.length > 0,
+        activeShop: true,
+        productCSS: true
+    });
 });
