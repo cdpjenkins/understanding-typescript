@@ -13,7 +13,6 @@ class Product {
 const products: Product[] = [];
 
 router.get("/add-product", (req, res, next) => {
-    // res.sendFile(path.join(rootDir, "views", "add-product.html"));
     res.status(200).render("add-product", { pageTitle: "Add product innit like" });
 });
 
