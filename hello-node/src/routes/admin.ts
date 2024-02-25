@@ -13,7 +13,13 @@ class Product {
 const products: Product[] = [];
 
 router.get("/add-product", (req, res, next) => {
-    res.status(200).render("add-product", { pageTitle: "Add product innit like" });
+    res.render("add-product", {
+        prods: products,
+        pageTitle: "Add product innit like",
+        path: '/admin/add-product',
+        activeShop: true,
+        productCSS: true
+    });
 });
 
 router.post("/add-product", (req, res) => {
