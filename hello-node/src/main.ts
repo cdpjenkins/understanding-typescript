@@ -6,6 +6,7 @@ import * as todos from "./routes/todos";
 import * as admin from "./routes/admin";
 import * as shop  from "./routes/shop";
 import {rootDir} from "./util/path";
+import * as errorController from "./controllers/error-controller";
 
 const app = express();
 
@@ -22,13 +23,9 @@ app.use("/admin", admin.router);
 app.use(shop.router);
 
 
-app.use((req, res, _) => {
-    res.status(404).render('404', { pageTitle: "Page totally not found!!!1" } );
-});
+app.use(errorController.handle404);
 
-app.use((err: Error, req: express.Request, res: express.Response, _: express.NextFunction) => {
-    res.status(500).json({message: err.message});
-});
+app.use(errorController.handleServerError);
 
 app.listen(3000);
 

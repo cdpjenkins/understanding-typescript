@@ -1,6 +1,6 @@
 import { RequestHandler, Request, Response } from "express" ;
 
-import * as admin from "../controllers/admin";
+import * as admin from "./admin-controller";
 
 export const getShop: RequestHandler = (req, res, next) => {
     console.log(admin.products);
