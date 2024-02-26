@@ -1,10 +1,11 @@
 import { RequestHandler, Request, Response } from "express" ;
 
 import * as admin from "./admin-controller";
+import { Product } from "../models/products-model";
 
 export const getShop: RequestHandler = (req, res, next) => {
-    console.log(admin.products);
-    const products = admin.products;
+    const products = Product.fetchAll();
+
     res.render('shop', {
         prods: products,
         pageTitle: 'Shop',
