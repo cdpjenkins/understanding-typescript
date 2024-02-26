@@ -1,33 +1,7 @@
 import { Router } from "express";
-import path from "path";
-import {rootDir} from "../util/path";
+import { addProduct as getProducts, actuallyAddProduct as addProduct } from "../controllers/admin";
 
-const router = Router();
+export const router = Router();
 
-class Product {
-    constructor(
-        public title: string
-    ) {}
-}
-
-const products: Product[] = [];
-
-router.get("/add-product", (req, res, next) => {
-    res.render("add-product", {
-        prods: products,
-        pageTitle: "Add product innit like",
-        path: '/admin/add-product',
-        activeShop: true,
-        productCSS: true
-    });
-});
-
-router.post("/add-product", (req, res) => {
-    console.log(req.body);
-    let title = req.body.title;
-    products.push(new Product(title));
-    res.redirect("/");
-});
-
-// export default router;
-export { router, products };
+router.get("/add-product", getProducts);
+router.post("/add-product", addProduct);
