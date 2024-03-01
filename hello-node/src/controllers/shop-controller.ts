@@ -5,7 +5,7 @@ import { Product } from "../models/products-model";
 
 export const getShop: RequestHandler = (req, res, next) => {
     const products = Product.fetchAll((products: Product[]) => {
-        res.render('shop', {
+        res.render('shop/product-list', {
             prods: products,
             pageTitle: 'Shop',
             path: '/',

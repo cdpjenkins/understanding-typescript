@@ -4,7 +4,7 @@ import { Product } from "../models/products-model"
 
 export function addProduct(req: Request, res: Response) {
     const products = Product.fetchAll((products: Product[]) => {
-        res.render("add-product", {
+        res.render("admin/add-product", {
             prods: products,
             pageTitle: "Add product innit like",
             path: '/admin/add-product',
