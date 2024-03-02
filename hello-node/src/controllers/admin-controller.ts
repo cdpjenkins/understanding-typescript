@@ -3,10 +3,10 @@ import { RequestHandler, Request, Response } from "express" ;
 import { Product } from "../models/products-model"
 
 export function getProducts(req: Request, res: Response) {
-    const products = Product.fetchAll((products: Product[]) => {
+    Product.fetchAll((products: Product[]) => {
         res.render("admin/products", {
             prods: products,
-            pageTitle: "Add product innit like",
+            pageTitle: "Admin products",
             path: '/admin/products',
             activeShop: true,
             productCSS: true
