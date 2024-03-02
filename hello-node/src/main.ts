@@ -22,10 +22,8 @@ app.use("/todos", todos.router);
 app.use("/admin", admin.router);
 app.use(shop.router);
 
-
 app.use(errorController.handle404);
 
 app.use(errorController.handleServerError);
 
 app.listen(3000);
-
