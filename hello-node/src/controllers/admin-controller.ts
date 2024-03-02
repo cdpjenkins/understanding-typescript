@@ -1,6 +1,5 @@
-
-import { RequestHandler, Request, Response } from "express" ;
-import { Product } from "../models/products-model"
+import {Request, Response} from "express";
+import {Product} from "../models/products-model"
 
 export function getProducts(req: Request, res: Response) {
     Product.fetchAll((products: Product[]) => {
@@ -15,8 +14,6 @@ export function getProducts(req: Request, res: Response) {
 }
 
 export const addProduct = (req: Request, res: Response) => {
-    console.log(req.body);
-    let title = req.body.title;
-    new Product(title).save();
+    new Product(req.body.title, req.body.description, req.body.price).save();
     res.redirect("/products");
 }

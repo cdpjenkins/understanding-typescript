@@ -4,7 +4,9 @@ import { rootDir } from "../util/path";
 
 export class Product {
     constructor(
-        public title: string
+        public title: string,
+        public description: string,
+        public price: string
     ) {}
 
     save() {
