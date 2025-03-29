@@ -69,7 +69,7 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
             }
 
             void main() {
-                vec2 uv = (gl_FragCoord.xy - u_resolution.xy * 0.5) / (u_resolution.y * u_scale);
+                vec2 uv = (gl_FragCoord.xy - u_resolution.xy * 0.5) / (u_resolution.y / u_scale);
                 
                 // Apply rotation
                 float cos_theta = cos(u_theta);

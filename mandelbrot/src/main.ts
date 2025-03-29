@@ -79,12 +79,12 @@ function decreaseIterationDepth() {
 }
 
 function zoomIn() {
-    parameters.scale /= 1.25;
+    parameters.scale *= 1.25;
     parametersUpdated();
 }
 
 function zoomOut() {
-    parameters.scale *= 1.25;
+    parameters.scale /= 1.25;
     parametersUpdated();
 }
 
