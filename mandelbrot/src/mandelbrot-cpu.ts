@@ -164,7 +164,6 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
 
     zoomOut() {
         this.parameters.scale *= 1.25;
-        // updateUI(this);
         this.draw();
     }
 
@@ -172,16 +171,12 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
         this.parameters.centre = this.screenToComplex(x, y);
         this.parameters.scale /= 1.25;
 
-        // updateUI(this);
-
         this.draw();
     }
 
     zoomOutTo(x: number, y: number) {
         this.parameters.centre = this.screenToComplex(x, y);
         this.parameters.scale *= 1.25;
-
-        // updateUI(this);
 
         this.draw();
     }

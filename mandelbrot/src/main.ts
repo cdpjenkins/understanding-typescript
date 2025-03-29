@@ -40,16 +40,14 @@ let imaginaryInput = <HTMLInputElement>document.getElementById("imaginary");
 // let timeToRenderSpan = <HTMLSpanElement>document.getElementById("timeToRenderSpan");
 
 function setIterationDepth(newIterationDepth: number) {
-    mandieWebGl.parameters.iterationDepth = newIterationDepth;
-    drawMandies();
+    parameters.iterationDepth = newIterationDepth;
+    parametersUpdated();
 }
 
 function setScale(newScale: number) {
-    mandieWebGl.parameters.scale = newScale;
-    drawMandies();
+    parameters.scale = newScale;
+    parametersUpdated();
 }
-
-
 
 function updateUI(mandie: MandelbrotParameters) {
     iterationDepthTextInput.value = mandie.iterationDepth.toString();
@@ -60,28 +58,32 @@ function updateUI(mandie: MandelbrotParameters) {
     // timeToRenderSpan.textContent = `${mandie.timeToRender.toFixed(2)}ms`;
 }
 
-function increaseIterationDepth() {
-    mandieWebGl.parameters.iterationDepth += 100;
-    updateUI(mandieWebGl.getParameters());
+function parametersUpdated() {
+    mandieWebGl.setParameters(parameters);
+    mandieCpu.setParameters(parameters);
+
+    updateUI(parameters);
     drawMandies();
+}
+
+function increaseIterationDepth() {
+    parameters.iterationDepth += 100;
+    parametersUpdated();
 }
 
 function decreaseIterationDepth() {
-    mandieWebGl.parameters.iterationDepth -= 100;
-    updateUI(mandieWebGl.getParameters());
-    drawMandies();
+    parameters.iterationDepth -= 100;
+    parametersUpdated();
 }
 
 function zoomIn() {
-    mandieWebGl.zoomIn();
-    updateUI(mandieWebGl.getParameters());
-    drawMandies();
+    parameters.scale /= 1.25;
+    parametersUpdated();
 }
 
 function zoomOut() {
-    mandieWebGl.zoomOut();
-    updateUI(mandieWebGl.getParameters());
-    drawMandies();
+    parameters.scale *= 1.25;
+    parametersUpdated();
 }
 
 iterationDepthTextInput.onkeydown = (e) => {
@@ -107,9 +109,9 @@ scaleTextInput.onkeydown = (e) => {
 realInput.onkeydown = (e) => {
     if (e.key == "Enter") {
         const target = e.target as HTMLInputElement;
-        mandieWebGl.parameters.centre.re = parseFloat(target.value);
+        parameters.centre.re = parseFloat(target.value);
 
-        drawMandies();
+        parametersUpdated();
     }
 }
 
@@ -118,7 +120,7 @@ imaginaryInput.onkeydown = (e) => {
         const target = e.target as HTMLInputElement;
         mandieWebGl.parameters.centre.im = parseFloat(target.value);
 
-        drawMandies();
+        parametersUpdated();
     }
 }
 
@@ -132,23 +134,57 @@ imaginaryInput.onkeydown = (e) => {
 (document.getElementById("zoomOut") as HTMLButtonElement)
     .addEventListener("click", (_) => zoomIn());
 
+function rotateLeft() {
+    parameters.rotateLeft();
+    parametersUpdated();
+}
+
+
+function rotateRight() {
+    parameters.rotateRight();
+    parametersUpdated();
+}
+
 (document.getElementById("rotateLeft") as HTMLButtonElement)
-    .addEventListener("click", (_) => mandieWebGl.rotateLeft());
+    .addEventListener("click", (_) => rotateLeft());
 (document.getElementById("rotateRight") as HTMLButtonElement)
-    .addEventListener("click", (_) => mandieWebGl.rotateRight());
+    .addEventListener("click", (_) => rotateRight());
+
+function scrollDown() {
+    parameters.scrollDown();
+    parametersUpdated();
+}
+
+function scrollLeft() {
+    parameters.scrollLeft();
+    parametersUpdated();
+}
+
+function scrollRight() {
+    parameters.scrollRight();
+    parametersUpdated();
+}
+function scrollUp() {
+    parameters.scrollUp();
+    parametersUpdated();
+}
 
 (document.getElementById("scrollUp") as HTMLButtonElement)
-    .addEventListener("click", (_) => mandieWebGl.scrollDown());
+    .addEventListener("click", (_) => scrollDown());
+
+
 (document.getElementById("scrollLeft") as HTMLButtonElement)
-    .addEventListener("click", (_) => mandieWebGl.scrollLeft());
+    .addEventListener("click", (_) => scrollLeft());
+
 (document.getElementById("scrollRight") as HTMLButtonElement)
-    .addEventListener("click", (_) => mandieWebGl.scrollRight());
+    .addEventListener("click", (_) => scrollRight());
+
+
 (document.getElementById("scrollDown") as HTMLButtonElement)
-    .addEventListener("click", (_) => mandieWebGl.scrollUp());
+    .addEventListener("click", (_) => scrollUp());
 
 
-drawMandies();
-updateUI(mandieWebGl.getParameters());
+parametersUpdated();
 
 function drawMandies() {
     window.requestAnimationFrame( (timestamp) => {

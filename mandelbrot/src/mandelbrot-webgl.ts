@@ -191,60 +191,6 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
     }
 
     // Navigation methods
-    scrollLeft() {
-        this.parameters.centre.re -= (1/4) / this.parameters.scale;
-        this.draw();
-        this.updateUI();
-    }
-
-    scrollRight() {
-        this.parameters.centre.re += (1/4) / this.parameters.scale;
-        this.draw();
-        this.updateUI();
-    }
-
-    scrollDown() {
-        this.parameters.centre.im += (1/4) / this.parameters.scale;
-        this.draw();
-        this.updateUI();
-    }
-
-    scrollUp() {
-        this.parameters.centre.im -= (1/4) / this.parameters.scale;
-        this.draw();
-        this.updateUI();
-    }
-    
-    rotateLeft() {
-        this.parameters.theta -= 1/16;
-        if (this.parameters.theta < 0) {
-            this.parameters.theta += Math.PI * 2;
-        }
-        this.draw();
-        this.updateUI();
-    }
-
-    rotateRight() {
-        this.parameters.theta += 1/16;
-        if (this.parameters.theta >= Math.PI * 2) {
-            this.parameters.theta -= Math.PI * 2;
-        }
-        this.draw();
-        this.updateUI();
-    }
-
-    zoomIn() {
-        this.parameters.scale /= 1.25;
-        this.draw();
-        this.updateUI();
-    }
-
-    zoomOut() {
-        this.parameters.scale *= 1.25;
-        this.draw();
-        this.updateUI();
-    }
-
     zoomInTo(x: number, y: number) {
         const screenToComplex = (x: number, y: number): Complex => {
             // Convert screen coordinates to complex plane coordinates
