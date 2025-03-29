@@ -3,7 +3,7 @@ const CleanPlugin = require("clean-webpack-plugin");
 
 module.exports = {
     mode: "production",
-    entry: "./src/mandelbrot.ts",
+    entry: "./src/main.ts",
     devServer: {
         static: [
             {
