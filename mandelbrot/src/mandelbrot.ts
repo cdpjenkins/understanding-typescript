@@ -12,7 +12,9 @@ export class MandelbrotParameters {
         public scale: number,
         public theta: number,
         public centre: Complex,
-        public timeToRenderSpan: number
+        public timeToRenderSpan: number,
+        public canvasWidth: number,
+        public canvasHeight: number
     ) {}
 
     rotateLeft() {

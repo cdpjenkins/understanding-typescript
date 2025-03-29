@@ -33,24 +33,18 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
     geometricTransform: Matrix3D = Matrix3D.identity;
 
     ctx: CanvasRenderingContext2D;
-    updateUI: (mandie: MandelbrotParameters) => void;
     canvasData: ImageData;
 
-    width: number;
-    height: number;
 
     colourSaturation: number = 0.8;
     colourValue: number = 1;
 
     colourSupplier: ColourSupplier = new ColourSupplier();
 
-    constructor(ctx: CanvasRenderingContext2D, updateUI: (mandie: MandelbrotParameters) => void, public parameters: MandelbrotParameters) {
+    constructor(ctx: CanvasRenderingContext2D, public parameters: MandelbrotParameters) {
         this.ctx = ctx;
-        this.updateUI = updateUI;
         this.canvasData = this.ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-        this.width = this.canvasData.width;
-        this.height = this.canvasData.height;
     }
 
     setParameters(parameters: MandelbrotParameters): void {
@@ -58,7 +52,7 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
     }
 
     getParameters(): MandelbrotParameters {
-        return new MandelbrotParameters(this.parameters.iterationDepth, this.parameters.scale, this.parameters.theta, this.parameters.centre, this.parameters.scale);
+        return this.parameters;
     }
 
     screenToComplex(x: number, y: number): Complex {
@@ -69,14 +63,14 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
     }
 
     screenYToComplexIm(y: number) {
-        return this.parameters.centre.im + (y - this.height / 2) / (this.parameters.scale * this.height / 2);
+        return this.parameters.centre.im + (y - this.parameters.canvasWidth / 2) / (this.parameters.scale * this.parameters.canvasHeight / 2);
     }
 
     refreshGeometricTransformMatrix() {
         this.geometricTransform = Matrix3D.translation(this.parameters.centre.re, this.parameters.centre.im)
-            .transformMatrix(Matrix3D.scale(this.parameters.scale / this.width ))
+            .transformMatrix(Matrix3D.scale(this.parameters.scale / this.parameters.canvasWidth ))
             .transformMatrix(Matrix3D.rotation(-this.parameters.theta))
-            .transformMatrix(Matrix3D.translation(-this.width / 2, -this.height / 2));
+            .transformMatrix(Matrix3D.translation(-this.parameters.canvasWidth / 2, -this.parameters.canvasHeight / 2));
     }
 
     draw() {
@@ -85,8 +79,8 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
         this.refreshGeometricTransformMatrix();
 
         let i = 0;
-        for (let y = 0; y < this.height; y++) {
-            for (let x = 0; x < this.width; x++, i += 4) {
+        for (let y = 0; y < this.parameters.canvasHeight; y++) {
+            for (let x = 0; x < this.parameters.canvasWidth; x++, i += 4) {
                 const re = this.geometricTransform.transformX(x, y);
                 const im = this.geometricTransform.transformY(x, y);
 

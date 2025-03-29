@@ -7,7 +7,9 @@ let parameters: MandelbrotParameters = new MandelbrotParameters(
     4,
     0,
     new Complex(0, 0),
-    -1
+    -1,
+    640,
+    480
 );
 
 let canvasWebGl = document.getElementById("mandieWebGlCanvas") as HTMLCanvasElement;
@@ -23,7 +25,7 @@ canvasWebGl.onmousedown = (e) => {
 
 let canvasCpu = document.getElementById("mandieCpuCanvas") as HTMLCanvasElement;
 canvasCpu.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
-let mandieCpu = new MandelbrotCPURenderer(canvasCpu.getContext("2d")!, updateUI, parameters);
+let mandieCpu = new MandelbrotCPURenderer(canvasCpu.getContext("2d")!, parameters);
 canvasCpu.onmousedown = (e) => {
     if (e.button == 0) {
         mandieCpu.zoomOutTo(e.x, e.y);
