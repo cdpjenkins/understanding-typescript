@@ -8,7 +8,7 @@ class Complex {
 }
 
 class MandelbrotWebGLRenderer {
-    private gl: WebGLRenderingContext;
+    private gl: WebGL2RenderingContext;
     private program: WebGLProgram | null = null;
     private positionBuffer: WebGLBuffer | null = null;
     private positionAttributeLocation: number = -1;
@@ -30,7 +30,7 @@ class MandelbrotWebGLRenderer {
     private updateUICallback: (renderer: MandelbrotWebGLRenderer) => void;
 
     constructor(canvas: HTMLCanvasElement, updateUICallback: (renderer: MandelbrotWebGLRenderer) => void) {
-        this.gl = canvas.getContext('webgl')!;
+        this.gl = canvas.getContext('webgl2')!;
         this.width = canvas.width;
         this.height = canvas.height;
         this.updateUICallback = updateUICallback;
@@ -40,16 +40,19 @@ class MandelbrotWebGLRenderer {
 
     private initWebGL() {
         // Vertex shader source
-        const vertexShaderSource = `
-            attribute vec2 a_position;
+        const vertexShaderSource = `#version 300 es
+            in vec2 a_position;
             void main() {
                 gl_Position = vec4(a_position, 0.0, 1.0);
             }
         `;
 
         // Fragment shader source
-        const fragmentShaderSource = `
+        const fragmentShaderSource = `#version 300 es
             precision highp float;
+            precision highp int;
+            out vec4 fragColor;
+
             uniform vec2 u_resolution;
             uniform vec2 u_center;
             uniform float u_scale;
@@ -90,12 +93,12 @@ class MandelbrotWebGLRenderer {
                 }
                 
                 if(i >= u_iterationDepth - 1) {
-                    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+                    fragColor = vec4(0.0, 0.0, 0.0, 1.0);
                 } else {
                     float hue = float(i) / float(u_iterationDepth);
                     vec3 hsv = vec3(hue, 0.8, 1.0);
                     vec3 rgb = hsv2rgb(hsv);
-                    gl_FragColor = vec4(rgb, 1.0);
+                    fragColor = vec4(rgb, 1.0);
                 }
             }
         `;

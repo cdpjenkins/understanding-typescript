@@ -8,11 +8,17 @@
   <script src="dist/bundle.js" defer></script>
 </head>
 <body>
-  <canvas id="myCanvas"
-          width="640" 
-          height="480" 
+  <canvas id="mandieWebGlCanvas"
+          width="640"
+          height="480"
           style="border:1px solid #000000;">
   </canvas>
+  <canvas id="mandieCpuCanvas"
+          width="640"
+          height="480"
+          style="border:1px solid #000000;">
+  </canvas>
+
   <table>
     <tr>
       <td>
@@ -35,7 +41,6 @@
             <td><button id="rotateLeft">⮪</button></td>
             <td><button id="rotateRight">⮫</button></td>
           </tr>
-        </tr>
           <tr>
             <td>Real</td>
             <td><input type="text" id="real" name="Real"></td>
@@ -60,7 +65,6 @@
           </tr>
           <tr>
             <td></td><td><button id="scrollDown">⇩</button></td><td></td>
-          </tr>
           </tr>
         </table>
       </td>

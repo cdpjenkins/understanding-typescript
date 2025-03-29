@@ -1,11 +1,25 @@
 import { MandelbrotWebGLRenderer } from "./mandelbrot-webgl";
+import { MandelbrotRenderer } from "./mandelbrot-cpu";
 
-let canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
-canvas.onmousedown = (e) => {
+let canvasWebGl = document.getElementById("mandieWebGlCanvas") as HTMLCanvasElement;
+canvasWebGl.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
+let mandieWebGl = new MandelbrotWebGLRenderer(canvasWebGl, updateUI);
+canvasWebGl.onmousedown = (e) => {
     if (e.button == 0) {
-        mandie.zoomOutTo(e.x, e.y);
+        mandieWebGl.zoomOutTo(e.x, e.y);
     } else if (e.button == 2) {
-        mandie.zoomInTo(e.x, e.y);
+        mandieWebGl.zoomInTo(e.x, e.y);
+    }
+};
+
+let canvasCpu = document.getElementById("mandieCpuCanvas") as HTMLCanvasElement;
+canvasCpu.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
+let mandieCpu = new MandelbrotRenderer(canvasCpu.getContext("2d")!, updateUI);
+canvasCpu.onmousedown = (e) => {
+    if (e.button == 0) {
+        mandieCpu.zoomOutTo(e.x, e.y);
+    } else if (e.button == 2) {
+        mandieCpu.zoomInTo(e.x, e.y);
     }
 };
 
@@ -17,14 +31,16 @@ let imaginaryInput = <HTMLInputElement>document.getElementById("imaginary");
 let timeToRenderSpan = <HTMLSpanElement>document.getElementById("timeToRenderSpan");
 
 function setIterationDepth(newIterationDepth: number) {
-    mandie.iterationDepth = newIterationDepth;
-    drawMandie();
+    mandieWebGl.iterationDepth = newIterationDepth;
+    drawMandies();
 }
 
 function setScale(newScale: number) {
-    mandie.scale = newScale;
-    drawMandie();
+    mandieWebGl.scale = newScale;
+    drawMandies();
 }
+
+
 
 function updateUI(mandie: MandelbrotWebGLRenderer) {
     iterationDepthTextInput.value = mandie.iterationDepth.toString();
@@ -36,27 +52,27 @@ function updateUI(mandie: MandelbrotWebGLRenderer) {
 }
 
 function increaseIterationDepth() {
-    mandie.iterationDepth += 100;
-    updateUI(mandie);
-    drawMandie();
+    mandieWebGl.iterationDepth += 100;
+    updateUI(mandieWebGl);
+    drawMandies();
 }
 
 function decreaseIterationDepth() {
-    mandie.iterationDepth -= 100;
-    updateUI(mandie);
-    drawMandie();
+    mandieWebGl.iterationDepth -= 100;
+    updateUI(mandieWebGl);
+    drawMandies();
 }
 
 function zoomIn() {
-    mandie.zoomIn();
-    updateUI(mandie);
-    drawMandie();
+    mandieWebGl.zoomIn();
+    updateUI(mandieWebGl);
+    drawMandies();
 }
 
 function zoomOut() {
-    mandie.zoomOut();
-    updateUI(mandie);
-    drawMandie();
+    mandieWebGl.zoomOut();
+    updateUI(mandieWebGl);
+    drawMandies();
 }
 
 iterationDepthTextInput.onkeydown = (e) => {
@@ -82,18 +98,18 @@ scaleTextInput.onkeydown = (e) => {
 realInput.onkeydown = (e) => {
     if (e.key == "Enter") {
         const target = e.target as HTMLInputElement;
-        mandie.centre.re = parseFloat(target.value);
+        mandieWebGl.centre.re = parseFloat(target.value);
 
-        drawMandie();
+        drawMandies();
     }
 }
 
 imaginaryInput.onkeydown = (e) => {
     if (e.key == "Enter") {
         const target = e.target as HTMLInputElement;
-        mandie.centre.im = parseFloat(target.value);
+        mandieWebGl.centre.im = parseFloat(target.value);
 
-        drawMandie();
+        drawMandies();
     }
 }
 
@@ -108,30 +124,29 @@ imaginaryInput.onkeydown = (e) => {
     .addEventListener("click", (_) => zoomIn());
 
 (document.getElementById("rotateLeft") as HTMLButtonElement)
-    .addEventListener("click", (_) => mandie.rotateLeft());
+    .addEventListener("click", (_) => mandieWebGl.rotateLeft());
 (document.getElementById("rotateRight") as HTMLButtonElement)
-    .addEventListener("click", (_) => mandie.rotateRight());
+    .addEventListener("click", (_) => mandieWebGl.rotateRight());
 
 (document.getElementById("scrollUp") as HTMLButtonElement)
-    .addEventListener("click", (_) => mandie.scrollDown());
+    .addEventListener("click", (_) => mandieWebGl.scrollDown());
 (document.getElementById("scrollLeft") as HTMLButtonElement)
-    .addEventListener("click", (_) => mandie.scrollLeft());
+    .addEventListener("click", (_) => mandieWebGl.scrollLeft());
 (document.getElementById("scrollRight") as HTMLButtonElement)
-    .addEventListener("click", (_) => mandie.scrollRight());
+    .addEventListener("click", (_) => mandieWebGl.scrollRight());
 (document.getElementById("scrollDown") as HTMLButtonElement)
-    .addEventListener("click", (_) => mandie.scrollUp());
+    .addEventListener("click", (_) => mandieWebGl.scrollUp());
 
-canvas.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
-let mandie = new MandelbrotWebGLRenderer(canvas, updateUI);
 
-drawMandie();
-updateUI(mandie);
+drawMandies();
+updateUI(mandieWebGl);
 
-function drawMandie() {
+function drawMandies() {
     window.requestAnimationFrame( (timestamp) => {
         console.log(timestamp);
-        mandie.draw();
-        updateUI(mandie);
+        mandieWebGl.draw();
+        mandieCpu.draw();
+        updateUI(mandieWebGl);
     });
 }
 
