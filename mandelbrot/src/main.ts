@@ -1,5 +1,5 @@
 import { MandelbrotWebGLRenderer } from "./mandelbrot-webgl";
-import { MandelbrotRenderer } from "./mandelbrot-cpu";
+import { MandelbrotCPURenderer } from "./mandelbrot-cpu";
 
 let canvasWebGl = document.getElementById("mandieWebGlCanvas") as HTMLCanvasElement;
 canvasWebGl.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
@@ -14,7 +14,7 @@ canvasWebGl.onmousedown = (e) => {
 
 let canvasCpu = document.getElementById("mandieCpuCanvas") as HTMLCanvasElement;
 canvasCpu.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
-let mandieCpu = new MandelbrotRenderer(canvasCpu.getContext("2d")!, updateUI);
+let mandieCpu = new MandelbrotCPURenderer(canvasCpu.getContext("2d")!, updateUI);
 canvasCpu.onmousedown = (e) => {
     if (e.button == 0) {
         mandieCpu.zoomOutTo(e.x, e.y);
@@ -145,8 +145,13 @@ function drawMandies() {
     window.requestAnimationFrame( (timestamp) => {
         console.log(timestamp);
         mandieWebGl.draw();
+        console.log("WebGL:")
+        console.log(mandieWebGl.getParameters());
+
         mandieCpu.draw();
+        console.log("CPU:")
+        console.log(mandieCpu.getParameters());
+
         updateUI(mandieWebGl);
     });
 }
-

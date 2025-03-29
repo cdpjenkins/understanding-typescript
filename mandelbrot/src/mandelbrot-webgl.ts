@@ -1,13 +1,15 @@
 import { Matrix3D } from "./linear-algebra";
+import {MandelbrotParameters, MandelbrotRenderer} from "./mandelbrot";
 
 class Complex {
     constructor(
         public re: number,
         public im: number
-    ) {}
+    ) {
+    }
 }
 
-class MandelbrotWebGLRenderer {
+class MandelbrotWebGLRenderer implements MandelbrotRenderer {
     private gl: WebGL2RenderingContext;
     private program: WebGLProgram | null = null;
     private positionBuffer: WebGLBuffer | null = null;
@@ -34,8 +36,12 @@ class MandelbrotWebGLRenderer {
         this.width = canvas.width;
         this.height = canvas.height;
         this.updateUICallback = updateUICallback;
-        
+
         this.initWebGL();
+    }
+
+    getParameters(): MandelbrotParameters {
+        return new MandelbrotParameters(this.iterationDepth, this.scale, this.theta, this.centre, this.timeToRender)
     }
 
     private initWebGL() {

@@ -1,13 +1,7 @@
 import { Matrix3D } from "./linear-algebra";
 import { ColourSupplier } from "./colour";
 import {MandelbrotWebGLRenderer} from "./mandelbrot-webgl";
-
-class Complex {
-    constructor(
-        public re: number,
-        public im: number
-    ) {}
-}
+import {Complex, MandelbrotParameters, MandelbrotRenderer} from "./mandelbrot";
 
 // @ts-ignore
 function hsvToRgb(h: number, s: number, v: number): [number, number, number] {
@@ -35,7 +29,7 @@ function hsvToRgb(h: number, s: number, v: number): [number, number, number] {
     }
 }
 
-export class MandelbrotRenderer {
+export class MandelbrotCPURenderer implements MandelbrotRenderer {
     centre: Complex = new Complex(0, 0);
     scale: number = 4;
     theta: number = 0;
@@ -62,6 +56,10 @@ export class MandelbrotRenderer {
 
         this.width = this.canvasData.width;
         this.height = this.canvasData.height;
+    }
+
+    getParameters(): MandelbrotParameters {
+        return new MandelbrotParameters(this.iterationDepth, this.scale, this.theta, this.centre, this.scale);
     }
 
     screenToComplex(x: number, y: number): Complex {
