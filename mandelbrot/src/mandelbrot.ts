@@ -18,14 +18,14 @@ export class MandelbrotParameters {
     ) {}
 
     rotateLeft() {
-        this.theta -= 1/16;
+        this.theta += 1/16;
         if (this.theta < 0) {
             this.theta += Math.PI * 2;
         }
     }
 
     rotateRight() {
-        this.theta += 1/16;
+        this.theta -= 1/16;
         if (this.theta >= Math.PI * 2) {
             this.theta -= Math.PI * 2;
         }
@@ -40,11 +40,11 @@ export class MandelbrotParameters {
     }
 
     scrollDown() {
-        this.centre.im += (1/4) / this.scale;
+        this.centre.im -= (1/4) / this.scale;
     }
 
     scrollUp() {
-        this.centre.im -= (1/4) / this.scale;
+        this.centre.im += (1/4) / this.scale;
     }
 }
 

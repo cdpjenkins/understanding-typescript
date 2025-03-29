@@ -173,7 +173,7 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
 
         // Set uniforms
         this.gl.uniform2f(this.resolutionUniformLocation!, this.width, this.height);
-        this.gl.uniform2f(this.centerUniformLocation!, this.parameters.centre.re, this.parameters.centre.im);
+        this.gl.uniform2f(this.centerUniformLocation!, this.parameters.centre.re, -this.parameters.centre.im);
         this.gl.uniform1f(this.scaleUniformLocation!, this.parameters.scale);
         this.gl.uniform1f(this.thetaUniformLocation!, this.parameters.theta);
         this.gl.uniform1i(this.iterationDepthUniformLocation!, this.parameters.iterationDepth);
@@ -194,35 +194,9 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
     zoomInTo(x: number, y: number) {
         const screenToComplex = (x: number, y: number): Complex => {
             // Convert screen coordinates to complex plane coordinates
-            // Flip y coordinate since canvas has y increasing downward
             const uv = [
                 (x - this.width / 2) / (this.height * this.parameters.scale),
-                -(y - this.height / 2) / (this.height * this.parameters.scale)
-            ];
-            
-            // Apply rotation
-            const cos_theta = Math.cos(this.parameters.theta);
-            const sin_theta = Math.sin(this.parameters.theta);
-            
-            return new Complex(
-                this.parameters.centre.re + uv[0] * cos_theta - uv[1] * sin_theta,
-                this.parameters.centre.im + uv[0] * sin_theta + uv[1] * cos_theta
-            );
-        };
-
-        this.parameters.centre = screenToComplex(x, y);
-        this.parameters.scale /= 1.25;
-        this.draw();
-        this.updateUI();
-    }
-
-    zoomOutTo(x: number, y: number) {
-        const screenToComplex = (x: number, y: number): Complex => {
-            // Convert screen coordinates to complex plane coordinates
-            // Flip y coordinate since canvas has y increasing downward
-            const uv = [
-                (x - this.width / 2) / (this.height * this.parameters.scale),
-                -(y - this.height / 2) / (this.height * this.parameters.scale)
+                (y - this.height / 2) / (this.height * this.parameters.scale)
             ];
             
             // Apply rotation
@@ -237,6 +211,30 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
 
         this.parameters.centre = screenToComplex(x, y);
         this.parameters.scale *= 1.25;
+        this.draw();
+        this.updateUI();
+    }
+
+    zoomOutTo(x: number, y: number) {
+        const screenToComplex = (x: number, y: number): Complex => {
+            // Convert screen coordinates to complex plane coordinates
+            const uv = [
+                (x - this.width / 2) / (this.height * this.parameters.scale),
+                (y - this.height / 2) / (this.height * this.parameters.scale)
+            ];
+            
+            // Apply rotation
+            const cos_theta = Math.cos(this.parameters.theta);
+            const sin_theta = Math.sin(this.parameters.theta);
+            
+            return new Complex(
+                this.parameters.centre.re + uv[0] * cos_theta - uv[1] * sin_theta,
+                this.parameters.centre.im + uv[0] * sin_theta + uv[1] * cos_theta
+            );
+        };
+
+        this.parameters.centre = screenToComplex(x, y);
+        this.parameters.scale /= 1.25;
         this.draw();
         this.updateUI();
     }
