@@ -1,10 +1,18 @@
 import { MandelbrotWebGLRenderer } from "./mandelbrot-webgl";
 import { MandelbrotCPURenderer } from "./mandelbrot-cpu";
-import {MandelbrotParameters} from "./mandelbrot";
+import {Complex, MandelbrotParameters} from "./mandelbrot";
+
+let parameters: MandelbrotParameters = new MandelbrotParameters(
+    1000,
+    4,
+    0,
+    new Complex(0, 0),
+    -1
+);
 
 let canvasWebGl = document.getElementById("mandieWebGlCanvas") as HTMLCanvasElement;
 canvasWebGl.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
-let mandieWebGl = new MandelbrotWebGLRenderer(canvasWebGl, updateUI);
+let mandieWebGl = new MandelbrotWebGLRenderer(canvasWebGl, updateUI, parameters);
 canvasWebGl.onmousedown = (e) => {
     if (e.button == 0) {
         mandieWebGl.zoomOutTo(e.x, e.y);
@@ -15,7 +23,7 @@ canvasWebGl.onmousedown = (e) => {
 
 let canvasCpu = document.getElementById("mandieCpuCanvas") as HTMLCanvasElement;
 canvasCpu.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
-let mandieCpu = new MandelbrotCPURenderer(canvasCpu.getContext("2d")!, updateUI);
+let mandieCpu = new MandelbrotCPURenderer(canvasCpu.getContext("2d")!, updateUI, parameters);
 canvasCpu.onmousedown = (e) => {
     if (e.button == 0) {
         mandieCpu.zoomOutTo(e.x, e.y);

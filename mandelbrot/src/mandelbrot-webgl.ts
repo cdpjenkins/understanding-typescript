@@ -21,19 +21,11 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
 
     timeToRender: number = -1;
 
-    parameters: MandelbrotParameters = new MandelbrotParameters(
-        1000,
-        4,
-        0,
-        new Complex(0, 0),
-        -1
-    );
-
     width: number;
     height: number;
     private updateUICallback: (renderer: MandelbrotParameters) => void;
 
-    constructor(canvas: HTMLCanvasElement, updateUICallback: (renderer: MandelbrotParameters) => void) {
+    constructor(canvas: HTMLCanvasElement, updateUICallback: (renderer: MandelbrotParameters) => void, public parameters: MandelbrotParameters) {
         this.gl = canvas.getContext('webgl2')!;
         this.width = canvas.width;
         this.height = canvas.height;

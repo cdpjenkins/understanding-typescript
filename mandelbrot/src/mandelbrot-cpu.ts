@@ -44,15 +44,7 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
 
     colourSupplier: ColourSupplier = new ColourSupplier();
 
-    parameters: MandelbrotParameters = new MandelbrotParameters(
-        1000,
-        4,
-        0,
-        new Complex(0, 0),
-        -1
-    );
-
-    constructor(ctx: CanvasRenderingContext2D, updateUI: (mandie: MandelbrotParameters) => void) {
+    constructor(ctx: CanvasRenderingContext2D, updateUI: (mandie: MandelbrotParameters) => void, public parameters: MandelbrotParameters) {
         this.ctx = ctx;
         this.updateUI = updateUI;
         this.canvasData = this.ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
