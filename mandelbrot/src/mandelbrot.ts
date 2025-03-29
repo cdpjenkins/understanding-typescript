@@ -24,4 +24,6 @@ export class RenderResult {
 
 export interface MandelbrotRenderer {
     getParameters(): MandelbrotParameters;
+    setParameters(parameters: MandelbrotParameters): void;
+    draw(): void;
 }

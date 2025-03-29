@@ -40,6 +40,13 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
         this.initWebGL();
     }
 
+    setParameters(parameters: MandelbrotParameters): void {
+        this.iterationDepth = parameters.iterationDepth;
+        this.scale = parameters.scale;
+        this.theta = parameters.theta;
+        this.centre = parameters.centre;
+        this.scale = parameters.scale;
+    }
     getParameters(): MandelbrotParameters {
         return new MandelbrotParameters(this.iterationDepth, this.scale, this.theta, this.centre, this.timeToRender)
     }
