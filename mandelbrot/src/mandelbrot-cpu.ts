@@ -29,10 +29,6 @@ function hsvToRgb(h: number, s: number, v: number): [number, number, number] {
 }
 
 export class MandelbrotCPURenderer implements MandelbrotRenderer {
-    centre: Complex = new Complex(0, 0);
-    scale: number = 4;
-    theta: number = 0;
-    iterationDepth: number = 1000;
     timeToRender: number = -1;
     geometricTransform: Matrix3D = Matrix3D.identity;
 
@@ -48,6 +44,14 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
 
     colourSupplier: ColourSupplier = new ColourSupplier();
 
+    parameters: MandelbrotParameters = new MandelbrotParameters(
+        1000,
+        4,
+        0,
+        new Complex(0, 0),
+        -1
+    );
+
     constructor(ctx: CanvasRenderingContext2D, updateUI: (mandie: MandelbrotParameters) => void) {
         this.ctx = ctx;
         this.updateUI = updateUI;
@@ -58,15 +62,11 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
     }
 
     setParameters(parameters: MandelbrotParameters): void {
-        this.iterationDepth = parameters.iterationDepth;
-        this.scale = parameters.scale;
-        this.theta = parameters.theta;
-        this.centre = parameters.centre;
-        this.scale = parameters.scale;
+        this.parameters = parameters
     }
 
     getParameters(): MandelbrotParameters {
-        return new MandelbrotParameters(this.iterationDepth, this.scale, this.theta, this.centre, this.scale);
+        return new MandelbrotParameters(this.parameters.iterationDepth, this.parameters.scale, this.parameters.theta, this.parameters.centre, this.parameters.scale);
     }
 
     screenToComplex(x: number, y: number): Complex {
@@ -77,13 +77,13 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
     }
 
     screenYToComplexIm(y: number) {
-        return this.centre.im + (y - this.height / 2) / (this.scale * this.height / 2);
+        return this.parameters.centre.im + (y - this.height / 2) / (this.parameters.scale * this.height / 2);
     }
 
     refreshGeometricTransformMatrix() {
-        this.geometricTransform = Matrix3D.translation(this.centre.re, this.centre.im)
-            .transformMatrix(Matrix3D.scale(this.scale / this.width ))
-            .transformMatrix(Matrix3D.rotation(-this.theta))
+        this.geometricTransform = Matrix3D.translation(this.parameters.centre.re, this.parameters.centre.im)
+            .transformMatrix(Matrix3D.scale(this.parameters.scale / this.width ))
+            .transformMatrix(Matrix3D.rotation(-this.parameters.theta))
             .transformMatrix(Matrix3D.translation(-this.width / 2, -this.height / 2));
     }
 
@@ -123,62 +123,62 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
     }
 
     scrollLeft() {
-        this.centre.re -= this.scale * (1/16);
+        this.parameters.centre.re -= this.parameters.scale * (1/16);
         // this.updateUI(this);
         this.draw();
     }
 
     scrollRight() {
-        this.centre.re += this.scale * (1/16);
+        this.parameters.centre.re += this.parameters.scale * (1/16);
         // updateUI(this);
         this.draw();
     }
 
     scrollDown() {
-        this.centre.im += this.scale * (1/16);
+        this.parameters.centre.im += this.parameters.scale * (1/16);
         // updateUI(this);
         this.draw();
     }
 
     scrollUp() {
-        this.centre.im -= this.scale * (1/16);
+        this.parameters.centre.im -= this.parameters.scale * (1/16);
         // updateUI(this);
         this.draw();
     }
 
     rotateLeft() {
-        this.theta -= 1/16;
-        if (this.theta < 0) {
-            this.theta += Math.PI * 2;
+        this.parameters.theta -= 1/16;
+        if (this.parameters.theta < 0) {
+            this.parameters.theta += Math.PI * 2;
         }
         // updateUI(this);
         this.draw();
     }
 
     rotateRight() {
-        this.theta += 1/16;
-        if (this.theta >= Math.PI * 2) {
-            this.theta -= Math.PI * 2;
+        this.parameters.theta += 1/16;
+        if (this.parameters.theta >= Math.PI * 2) {
+            this.parameters.theta -= Math.PI * 2;
         }
         // updateUI(this);
         this.draw();
     }
 
     zoomIn() {
-        this.scale /= 1.25;
+        this.parameters.scale /= 1.25;
         // updateUI(this);
         this.draw();
     }
 
     zoomOut() {
-        this.scale *= 1.25;
+        this.parameters.scale *= 1.25;
         // updateUI(this);
         this.draw();
     }
 
     zoomInTo(x: number, y: number) {
-        this.centre = this.screenToComplex(x, y);
-        this.scale /= 1.25;
+        this.parameters.centre = this.screenToComplex(x, y);
+        this.parameters.scale /= 1.25;
 
         // updateUI(this);
 
@@ -186,8 +186,8 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
     }
 
     zoomOutTo(x: number, y: number) {
-        this.centre = this.screenToComplex(x, y);
-        this.scale *= 1.25;
+        this.parameters.centre = this.screenToComplex(x, y);
+        this.parameters.scale *= 1.25;
 
         // updateUI(this);
 
@@ -201,7 +201,7 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
         let zReSquared = 0;
         let zImSquared = 0;
 
-        for (let i = 0; i < this.iterationDepth; i++) {
+        for (let i = 0; i < this.parameters.iterationDepth; i++) {
             let z2re = zReSquared - zImSquared + kre;
             let z2im = 2 * zre * zim + kim;
 

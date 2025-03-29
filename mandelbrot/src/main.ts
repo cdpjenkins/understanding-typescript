@@ -32,12 +32,12 @@ let imaginaryInput = <HTMLInputElement>document.getElementById("imaginary");
 // let timeToRenderSpan = <HTMLSpanElement>document.getElementById("timeToRenderSpan");
 
 function setIterationDepth(newIterationDepth: number) {
-    mandieWebGl.iterationDepth = newIterationDepth;
+    mandieWebGl.parameters.iterationDepth = newIterationDepth;
     drawMandies();
 }
 
 function setScale(newScale: number) {
-    mandieWebGl.scale = newScale;
+    mandieWebGl.parameters.scale = newScale;
     drawMandies();
 }
 
@@ -53,13 +53,13 @@ function updateUI(mandie: MandelbrotParameters) {
 }
 
 function increaseIterationDepth() {
-    mandieWebGl.iterationDepth += 100;
+    mandieWebGl.parameters.iterationDepth += 100;
     updateUI(mandieWebGl.getParameters());
     drawMandies();
 }
 
 function decreaseIterationDepth() {
-    mandieWebGl.iterationDepth -= 100;
+    mandieWebGl.parameters.iterationDepth -= 100;
     updateUI(mandieWebGl.getParameters());
     drawMandies();
 }
@@ -99,7 +99,7 @@ scaleTextInput.onkeydown = (e) => {
 realInput.onkeydown = (e) => {
     if (e.key == "Enter") {
         const target = e.target as HTMLInputElement;
-        mandieWebGl.centre.re = parseFloat(target.value);
+        mandieWebGl.parameters.centre.re = parseFloat(target.value);
 
         drawMandies();
     }
@@ -108,7 +108,7 @@ realInput.onkeydown = (e) => {
 imaginaryInput.onkeydown = (e) => {
     if (e.key == "Enter") {
         const target = e.target as HTMLInputElement;
-        mandieWebGl.centre.im = parseFloat(target.value);
+        mandieWebGl.parameters.centre.im = parseFloat(target.value);
 
         drawMandies();
     }

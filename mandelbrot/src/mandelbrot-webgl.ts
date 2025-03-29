@@ -1,4 +1,3 @@
-import { Matrix3D } from "./linear-algebra";
 import {MandelbrotParameters, MandelbrotRenderer} from "./mandelbrot";
 
 class Complex {
@@ -20,12 +19,15 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
     private thetaUniformLocation: WebGLUniformLocation | null = null;
     private iterationDepthUniformLocation: WebGLUniformLocation | null = null;
 
-    centre: Complex = new Complex(0, 0);
-    scale: number = 4;
-    theta: number = 0;
-    iterationDepth: number = 1000;
     timeToRender: number = -1;
-    geometricTransform: Matrix3D = Matrix3D.identity;
+
+    parameters: MandelbrotParameters = new MandelbrotParameters(
+        1000,
+        4,
+        0,
+        new Complex(0, 0),
+        -1
+    );
 
     width: number;
     height: number;
@@ -41,14 +43,10 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
     }
 
     setParameters(parameters: MandelbrotParameters): void {
-        this.iterationDepth = parameters.iterationDepth;
-        this.scale = parameters.scale;
-        this.theta = parameters.theta;
-        this.centre = parameters.centre;
-        this.scale = parameters.scale;
+        this.parameters = parameters;
     }
     getParameters(): MandelbrotParameters {
-        return new MandelbrotParameters(this.iterationDepth, this.scale, this.theta, this.centre, this.timeToRender)
+        return this.parameters;
     }
 
     private initWebGL() {
@@ -183,10 +181,10 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
 
         // Set uniforms
         this.gl.uniform2f(this.resolutionUniformLocation!, this.width, this.height);
-        this.gl.uniform2f(this.centerUniformLocation!, this.centre.re, this.centre.im);
-        this.gl.uniform1f(this.scaleUniformLocation!, this.scale);
-        this.gl.uniform1f(this.thetaUniformLocation!, this.theta);
-        this.gl.uniform1i(this.iterationDepthUniformLocation!, this.iterationDepth);
+        this.gl.uniform2f(this.centerUniformLocation!, this.parameters.centre.re, this.parameters.centre.im);
+        this.gl.uniform1f(this.scaleUniformLocation!, this.parameters.scale);
+        this.gl.uniform1f(this.thetaUniformLocation!, this.parameters.theta);
+        this.gl.uniform1i(this.iterationDepthUniformLocation!, this.parameters.iterationDepth);
 
         // Set position attribute
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
@@ -202,55 +200,55 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
 
     // Navigation methods
     scrollLeft() {
-        this.centre.re -= (1/4) / this.scale;
+        this.parameters.centre.re -= (1/4) / this.parameters.scale;
         this.draw();
         this.updateUI();
     }
 
     scrollRight() {
-        this.centre.re += (1/4) / this.scale;
+        this.parameters.centre.re += (1/4) / this.parameters.scale;
         this.draw();
         this.updateUI();
     }
 
     scrollDown() {
-        this.centre.im += (1/4) / this.scale;
+        this.parameters.centre.im += (1/4) / this.parameters.scale;
         this.draw();
         this.updateUI();
     }
 
     scrollUp() {
-        this.centre.im -= (1/4) / this.scale;
+        this.parameters.centre.im -= (1/4) / this.parameters.scale;
         this.draw();
         this.updateUI();
     }
     
     rotateLeft() {
-        this.theta -= 1/16;
-        if (this.theta < 0) {
-            this.theta += Math.PI * 2;
+        this.parameters.theta -= 1/16;
+        if (this.parameters.theta < 0) {
+            this.parameters.theta += Math.PI * 2;
         }
         this.draw();
         this.updateUI();
     }
 
     rotateRight() {
-        this.theta += 1/16;
-        if (this.theta >= Math.PI * 2) {
-            this.theta -= Math.PI * 2;
+        this.parameters.theta += 1/16;
+        if (this.parameters.theta >= Math.PI * 2) {
+            this.parameters.theta -= Math.PI * 2;
         }
         this.draw();
         this.updateUI();
     }
 
     zoomIn() {
-        this.scale /= 1.25;
+        this.parameters.scale /= 1.25;
         this.draw();
         this.updateUI();
     }
 
     zoomOut() {
-        this.scale *= 1.25;
+        this.parameters.scale *= 1.25;
         this.draw();
         this.updateUI();
     }
@@ -260,22 +258,22 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
             // Convert screen coordinates to complex plane coordinates
             // Flip y coordinate since canvas has y increasing downward
             const uv = [
-                (x - this.width / 2) / (this.height * this.scale),
-                -(y - this.height / 2) / (this.height * this.scale)
+                (x - this.width / 2) / (this.height * this.parameters.scale),
+                -(y - this.height / 2) / (this.height * this.parameters.scale)
             ];
             
             // Apply rotation
-            const cos_theta = Math.cos(this.theta);
-            const sin_theta = Math.sin(this.theta);
+            const cos_theta = Math.cos(this.parameters.theta);
+            const sin_theta = Math.sin(this.parameters.theta);
             
             return new Complex(
-                this.centre.re + uv[0] * cos_theta - uv[1] * sin_theta,
-                this.centre.im + uv[0] * sin_theta + uv[1] * cos_theta
+                this.parameters.centre.re + uv[0] * cos_theta - uv[1] * sin_theta,
+                this.parameters.centre.im + uv[0] * sin_theta + uv[1] * cos_theta
             );
         };
 
-        this.centre = screenToComplex(x, y);
-        this.scale /= 1.25;
+        this.parameters.centre = screenToComplex(x, y);
+        this.parameters.scale /= 1.25;
         this.draw();
         this.updateUI();
     }
@@ -285,22 +283,22 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
             // Convert screen coordinates to complex plane coordinates
             // Flip y coordinate since canvas has y increasing downward
             const uv = [
-                (x - this.width / 2) / (this.height * this.scale),
-                -(y - this.height / 2) / (this.height * this.scale)
+                (x - this.width / 2) / (this.height * this.parameters.scale),
+                -(y - this.height / 2) / (this.height * this.parameters.scale)
             ];
             
             // Apply rotation
-            const cos_theta = Math.cos(this.theta);
-            const sin_theta = Math.sin(this.theta);
+            const cos_theta = Math.cos(this.parameters.theta);
+            const sin_theta = Math.sin(this.parameters.theta);
             
             return new Complex(
-                this.centre.re + uv[0] * cos_theta - uv[1] * sin_theta,
-                this.centre.im + uv[0] * sin_theta + uv[1] * cos_theta
+                this.parameters.centre.re + uv[0] * cos_theta - uv[1] * sin_theta,
+                this.parameters.centre.im + uv[0] * sin_theta + uv[1] * cos_theta
             );
         };
 
-        this.centre = screenToComplex(x, y);
-        this.scale *= 1.25;
+        this.parameters.centre = screenToComplex(x, y);
+        this.parameters.scale *= 1.25;
         this.draw();
         this.updateUI();
     }
