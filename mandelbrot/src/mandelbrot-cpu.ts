@@ -1,6 +1,5 @@
 import { Matrix3D } from "./linear-algebra";
 import { ColourSupplier } from "./colour";
-import {MandelbrotWebGLRenderer} from "./mandelbrot-webgl";
 import {Complex, MandelbrotParameters, MandelbrotRenderer} from "./mandelbrot";
 
 // @ts-ignore
@@ -38,7 +37,7 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
     geometricTransform: Matrix3D = Matrix3D.identity;
 
     ctx: CanvasRenderingContext2D;
-    updateUI: (mandie: MandelbrotWebGLRenderer) => void;
+    updateUI: (mandie: MandelbrotParameters) => void;
     canvasData: ImageData;
 
     width: number;
@@ -49,7 +48,7 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
 
     colourSupplier: ColourSupplier = new ColourSupplier();
 
-    constructor(ctx: CanvasRenderingContext2D, updateUI: (mandie: MandelbrotWebGLRenderer) => void) {
+    constructor(ctx: CanvasRenderingContext2D, updateUI: (mandie: MandelbrotParameters) => void) {
         this.ctx = ctx;
         this.updateUI = updateUI;
         this.canvasData = this.ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);

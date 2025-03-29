@@ -29,9 +29,9 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
 
     width: number;
     height: number;
-    private updateUICallback: (renderer: MandelbrotWebGLRenderer) => void;
+    private updateUICallback: (renderer: MandelbrotParameters) => void;
 
-    constructor(canvas: HTMLCanvasElement, updateUICallback: (renderer: MandelbrotWebGLRenderer) => void) {
+    constructor(canvas: HTMLCanvasElement, updateUICallback: (renderer: MandelbrotParameters) => void) {
         this.gl = canvas.getContext('webgl2')!;
         this.width = canvas.width;
         this.height = canvas.height;
@@ -306,7 +306,7 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
     }
 
     private updateUI() {
-        this.updateUICallback(this);
+        this.updateUICallback(this.getParameters());
     }
 }
 

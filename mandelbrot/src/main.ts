@@ -1,5 +1,6 @@
 import { MandelbrotWebGLRenderer } from "./mandelbrot-webgl";
 import { MandelbrotCPURenderer } from "./mandelbrot-cpu";
+import {MandelbrotParameters} from "./mandelbrot";
 
 let canvasWebGl = document.getElementById("mandieWebGlCanvas") as HTMLCanvasElement;
 canvasWebGl.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
@@ -28,7 +29,7 @@ let scaleTextInput = <HTMLInputElement>document.getElementById("scale");
 let thetaTextInput = <HTMLInputElement>document.getElementById("theta");
 let realInput = <HTMLInputElement>document.getElementById("real");
 let imaginaryInput = <HTMLInputElement>document.getElementById("imaginary");
-let timeToRenderSpan = <HTMLSpanElement>document.getElementById("timeToRenderSpan");
+// let timeToRenderSpan = <HTMLSpanElement>document.getElementById("timeToRenderSpan");
 
 function setIterationDepth(newIterationDepth: number) {
     mandieWebGl.iterationDepth = newIterationDepth;
@@ -42,36 +43,36 @@ function setScale(newScale: number) {
 
 
 
-function updateUI(mandie: MandelbrotWebGLRenderer) {
+function updateUI(mandie: MandelbrotParameters) {
     iterationDepthTextInput.value = mandie.iterationDepth.toString();
     scaleTextInput.value = mandie.scale.toString();
     thetaTextInput.value = mandie.theta.toString();
     realInput.value = `${mandie.centre.re.toString()}`;
     imaginaryInput.value = `${mandie.centre.im.toString()}`;
-    timeToRenderSpan.textContent = `${mandie.timeToRender.toFixed(2)}ms`;
+    // timeToRenderSpan.textContent = `${mandie.timeToRender.toFixed(2)}ms`;
 }
 
 function increaseIterationDepth() {
     mandieWebGl.iterationDepth += 100;
-    updateUI(mandieWebGl);
+    updateUI(mandieWebGl.getParameters());
     drawMandies();
 }
 
 function decreaseIterationDepth() {
     mandieWebGl.iterationDepth -= 100;
-    updateUI(mandieWebGl);
+    updateUI(mandieWebGl.getParameters());
     drawMandies();
 }
 
 function zoomIn() {
     mandieWebGl.zoomIn();
-    updateUI(mandieWebGl);
+    updateUI(mandieWebGl.getParameters());
     drawMandies();
 }
 
 function zoomOut() {
     mandieWebGl.zoomOut();
-    updateUI(mandieWebGl);
+    updateUI(mandieWebGl.getParameters());
     drawMandies();
 }
 
@@ -139,7 +140,7 @@ imaginaryInput.onkeydown = (e) => {
 
 
 drawMandies();
-updateUI(mandieWebGl);
+updateUI(mandieWebGl.getParameters());
 
 function drawMandies() {
     window.requestAnimationFrame( (timestamp) => {
@@ -152,6 +153,6 @@ function drawMandies() {
         console.log("CPU:")
         console.log(mandieCpu.getParameters());
 
-        updateUI(mandieWebGl);
+        updateUI(mandieWebGl.getParameters());
     });
 }
