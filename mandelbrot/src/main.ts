@@ -14,12 +14,18 @@ let parameters: MandelbrotParameters = new MandelbrotParameters(
 
 let canvasWebGl = document.getElementById("mandieWebGlCanvas") as HTMLCanvasElement;
 canvasWebGl.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
-let mandieWebGl = new MandelbrotWebGLRenderer(canvasWebGl, updateUI, parameters);
+let mandieWebGl = new MandelbrotWebGLRenderer(canvasWebGl, parameters);
 canvasWebGl.onmousedown = (e) => {
+    const rect = canvasWebGl.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+
     if (e.button == 0) {
-        mandieWebGl.zoomOutTo(e.x, e.y);
+        parameters.zoomOutTo(x, y);
+        parametersUpdated();
     } else if (e.button == 2) {
-        mandieWebGl.zoomInTo(e.x, e.y);
+        parameters.zoomInTo(x, y);
+        parametersUpdated();
     }
 };
 
@@ -27,10 +33,16 @@ let canvasCpu = document.getElementById("mandieCpuCanvas") as HTMLCanvasElement;
 canvasCpu.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
 let mandieCpu = new MandelbrotCPURenderer(canvasCpu.getContext("2d")!, parameters);
 canvasCpu.onmousedown = (e) => {
+    const rect = canvasCpu.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+
     if (e.button == 0) {
-        mandieCpu.zoomOutTo(e.x, e.y);
+        parameters.zoomOutTo(x, y);
+        parametersUpdated();
     } else if (e.button == 2) {
-        mandieCpu.zoomInTo(e.x, e.y);
+        parameters.zoomInTo(x, y);
+        parametersUpdated();
     }
 };
 

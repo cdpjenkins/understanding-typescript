@@ -62,10 +62,6 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
         );
     }
 
-    screenYToComplexIm(y: number) {
-        return this.parameters.centre.im + (y - this.parameters.canvasWidth / 2) / (this.parameters.scale * this.parameters.canvasHeight / 2);
-    }
-
     refreshGeometricTransformMatrix() {
         this.geometricTransform = Matrix3D.translation(this.parameters.centre.re, this.parameters.centre.im)
             .transformMatrix(Matrix3D.scale(this.parameters.scale / this.parameters.canvasWidth ))
@@ -158,20 +154,6 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
 
     zoomOut() {
         this.parameters.scale *= 1.25;
-        this.draw();
-    }
-
-    zoomInTo(x: number, y: number) {
-        this.parameters.centre = this.screenToComplex(x, y);
-        this.parameters.scale /= 1.25;
-
-        this.draw();
-    }
-
-    zoomOutTo(x: number, y: number) {
-        this.parameters.centre = this.screenToComplex(x, y);
-        this.parameters.scale *= 1.25;
-
         this.draw();
     }
 

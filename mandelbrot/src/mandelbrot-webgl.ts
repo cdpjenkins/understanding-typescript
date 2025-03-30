@@ -1,13 +1,5 @@
 import {MandelbrotParameters, MandelbrotRenderer} from "./mandelbrot";
 
-class Complex {
-    constructor(
-        public re: number,
-        public im: number
-    ) {
-    }
-}
-
 class MandelbrotWebGLRenderer implements MandelbrotRenderer {
     private gl: WebGL2RenderingContext;
     private program: WebGLProgram | null = null;
@@ -23,13 +15,11 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
 
     width: number;
     height: number;
-    private updateUICallback: (renderer: MandelbrotParameters) => void;
 
-    constructor(canvas: HTMLCanvasElement, updateUICallback: (renderer: MandelbrotParameters) => void, public parameters: MandelbrotParameters) {
+    constructor(canvas: HTMLCanvasElement, public parameters: MandelbrotParameters) {
         this.gl = canvas.getContext('webgl2')!;
         this.width = canvas.width;
         this.height = canvas.height;
-        this.updateUICallback = updateUICallback;
 
         this.initWebGL();
     }
@@ -188,59 +178,6 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
 
         const endTime = performance.now();
         this.timeToRender = endTime - startTime;
-    }
-
-    // Navigation methods
-    zoomInTo(x: number, y: number) {
-        const screenToComplex = (x: number, y: number): Complex => {
-            // Convert screen coordinates to complex plane coordinates
-            const uv = [
-                (x - this.width / 2) / (this.height * this.parameters.scale),
-                (y - this.height / 2) / (this.height * this.parameters.scale)
-            ];
-            
-            // Apply rotation
-            const cos_theta = Math.cos(this.parameters.theta);
-            const sin_theta = Math.sin(this.parameters.theta);
-            
-            return new Complex(
-                this.parameters.centre.re + uv[0] * cos_theta - uv[1] * sin_theta,
-                this.parameters.centre.im + uv[0] * sin_theta + uv[1] * cos_theta
-            );
-        };
-
-        this.parameters.centre = screenToComplex(x, y);
-        this.parameters.scale *= 1.25;
-        this.draw();
-        this.updateUI();
-    }
-
-    zoomOutTo(x: number, y: number) {
-        const screenToComplex = (x: number, y: number): Complex => {
-            // Convert screen coordinates to complex plane coordinates
-            const uv = [
-                (x - this.width / 2) / (this.height * this.parameters.scale),
-                (y - this.height / 2) / (this.height * this.parameters.scale)
-            ];
-            
-            // Apply rotation
-            const cos_theta = Math.cos(this.parameters.theta);
-            const sin_theta = Math.sin(this.parameters.theta);
-            
-            return new Complex(
-                this.parameters.centre.re + uv[0] * cos_theta - uv[1] * sin_theta,
-                this.parameters.centre.im + uv[0] * sin_theta + uv[1] * cos_theta
-            );
-        };
-
-        this.parameters.centre = screenToComplex(x, y);
-        this.parameters.scale /= 1.25;
-        this.draw();
-        this.updateUI();
-    }
-
-    private updateUI() {
-        this.updateUICallback(this.getParameters());
     }
 }
 
