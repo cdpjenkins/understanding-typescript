@@ -63,6 +63,16 @@ export class MandelbrotParameters {
         this.refreshGeometricTransformMatrix();
     }
 
+    zoomIn() {
+        this.scale /= 1.25;
+        this.refreshGeometricTransformMatrix();
+    }
+
+    zoomOut() {
+        this.scale *= 1.25;
+        this.refreshGeometricTransformMatrix();
+    }
+
     private refreshGeometricTransformMatrix(): void {
         this.geometricTransform = Matrix3D.translation(this.centre.re, this.centre.im)
             .transformMatrix(Matrix3D.scale(this.scale / this.canvasWidth ))

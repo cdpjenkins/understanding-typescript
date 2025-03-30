@@ -90,12 +90,12 @@ function decreaseIterationDepth() {
 }
 
 function zoomIn() {
-    parameters.scale *= 1.25;
+    parameters.zoomIn();
     parametersUpdated();
 }
 
 function zoomOut() {
-    parameters.scale /= 1.25;
+    parameters.zoomOut();
     parametersUpdated();
 }
 
@@ -143,9 +143,9 @@ imaginaryInput.onkeydown = (e) => {
     .addEventListener("click", (_) => increaseIterationDepth());
 
 (document.getElementById("zoomIn") as HTMLButtonElement)
-    .addEventListener("click", (_) => zoomOut());
-(document.getElementById("zoomOut") as HTMLButtonElement)
     .addEventListener("click", (_) => zoomIn());
+(document.getElementById("zoomOut") as HTMLButtonElement)
+    .addEventListener("click", (_) => zoomOut());
 
 function rotateLeft() {
     parameters.rotateLeft();
