@@ -7,14 +7,18 @@ let parameters: MandelbrotParameters = new MandelbrotParameters(
     4,
     0,
     new Complex(0, 0),
-    -1,
     640,
     480
 );
 
 let canvasWebGl = document.getElementById("mandieWebGlCanvas") as HTMLCanvasElement;
 canvasWebGl.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
-let mandieWebGl = new MandelbrotWebGLRenderer(canvasWebGl, parameters);
+let mandieWebGl =
+    new MandelbrotWebGLRenderer(
+        canvasWebGl,
+        parameters,
+        (result => timeToRenderOnWebGLSpan.textContent = `${result.timeToRenderMs.toFixed(2)}ms`)
+    );
 canvasWebGl.onmousedown = (e) => {
     const rect = canvasWebGl.getBoundingClientRect()
     const x = e.clientX - rect.left
@@ -31,7 +35,12 @@ canvasWebGl.onmousedown = (e) => {
 
 let canvasCpu = document.getElementById("mandieCpuCanvas") as HTMLCanvasElement;
 canvasCpu.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
-let mandieCpu = new MandelbrotCPURenderer(canvasCpu.getContext("2d")!, parameters);
+let mandieCpu =
+    new MandelbrotCPURenderer(
+        canvasCpu.getContext("2d")!,
+        parameters,
+        (result => timeToRenderOnCPUSpan.textContent = `${result.timeToRenderMs.toFixed(2)}ms`)
+        );
 canvasCpu.onmousedown = (e) => {
     const rect = canvasCpu.getBoundingClientRect()
     const x = e.clientX - rect.left
@@ -51,7 +60,8 @@ let scaleTextInput = <HTMLInputElement>document.getElementById("scale");
 let thetaTextInput = <HTMLInputElement>document.getElementById("theta");
 let realInput = <HTMLInputElement>document.getElementById("real");
 let imaginaryInput = <HTMLInputElement>document.getElementById("imaginary");
-// let timeToRenderSpan = <HTMLSpanElement>document.getElementById("timeToRenderSpan");
+let timeToRenderOnWebGLSpan = <HTMLSpanElement>document.getElementById("timeToRenderSpan");
+let timeToRenderOnCPUSpan = <HTMLSpanElement>document.getElementById("timeToRenderOnCPUSpan");
 
 function setIterationDepth(newIterationDepth: number) {
     parameters.iterationDepth = newIterationDepth;
@@ -204,12 +214,8 @@ function drawMandies() {
     window.requestAnimationFrame( (timestamp) => {
         console.log(timestamp);
         mandieWebGl.draw();
-        console.log("WebGL:")
-        console.log(mandieWebGl.getParameters());
 
         mandieCpu.draw();
-        console.log("CPU:")
-        console.log(mandieCpu.getParameters());
 
         updateUI(mandieWebGl.getParameters());
     });

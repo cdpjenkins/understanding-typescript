@@ -15,7 +15,6 @@ export class MandelbrotParameters {
         public scale: number,
         public theta: number,
         public centre: Complex,
-        public timeToRenderSpan: number,
         public canvasWidth: number,
         public canvasHeight: number
     ) {
@@ -95,7 +94,7 @@ export class MandelbrotParameters {
 
 export class RenderResult {
     constructor(
-        public timeToRenderSpan: number
+        public timeToRenderMs: number
     ) {}
 }
 

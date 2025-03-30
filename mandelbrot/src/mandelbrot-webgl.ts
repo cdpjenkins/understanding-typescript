@@ -1,4 +1,4 @@
-import {MandelbrotParameters, MandelbrotRenderer} from "./mandelbrot";
+import {MandelbrotParameters, MandelbrotRenderer, RenderResult} from "./mandelbrot";
 
 class MandelbrotWebGLRenderer implements MandelbrotRenderer {
     private gl: WebGL2RenderingContext;
@@ -16,7 +16,10 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
     width: number;
     height: number;
 
-    constructor(canvas: HTMLCanvasElement, public parameters: MandelbrotParameters) {
+    constructor(canvas: HTMLCanvasElement,
+                public parameters: MandelbrotParameters,
+                public renderResultCallback: (result: RenderResult) => void
+    ) {
         this.gl = canvas.getContext('webgl2')!;
         this.width = canvas.width;
         this.height = canvas.height;
@@ -178,6 +181,8 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
 
         const endTime = performance.now();
         this.timeToRender = endTime - startTime;
+
+        this.renderResultCallback(new RenderResult(this.timeToRender));
     }
 }
 

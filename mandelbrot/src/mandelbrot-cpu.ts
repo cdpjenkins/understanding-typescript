@@ -1,6 +1,6 @@
 import { Matrix3D } from "./linear-algebra";
 import { ColourSupplier } from "./colour";
-import {Complex, MandelbrotParameters, MandelbrotRenderer} from "./mandelbrot";
+import {Complex, MandelbrotParameters, MandelbrotRenderer, RenderResult} from "./mandelbrot";
 
 // @ts-ignore
 function hsvToRgb(h: number, s: number, v: number): [number, number, number] {
@@ -41,7 +41,9 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
 
     colourSupplier: ColourSupplier = new ColourSupplier();
 
-    constructor(ctx: CanvasRenderingContext2D, public parameters: MandelbrotParameters) {
+    constructor(ctx: CanvasRenderingContext2D,
+                public parameters: MandelbrotParameters,
+                public renderResultCallback: (result: RenderResult) => void) {
         this.ctx = ctx;
         this.canvasData = this.ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
 
@@ -102,6 +104,8 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
 
         const endTime = performance.now();
         this.timeToRender = endTime - startTime;
+
+        this.renderResultCallback(new RenderResult(this.timeToRender));
     }
 
     scrollLeft() {
