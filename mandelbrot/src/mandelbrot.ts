@@ -8,7 +8,7 @@ export class Complex {
 }
 
 export class MandelbrotParameters {
-    private geometricTransform: Matrix3D = Matrix3D.identity;
+    geometricTransform: Matrix3D = Matrix3D.identity;
 
     constructor(
         public iterationDepth: number,
@@ -99,7 +99,5 @@ export class RenderResult {
 }
 
 export interface MandelbrotRenderer {
-    getParameters(): MandelbrotParameters;
-    setParameters(parameters: MandelbrotParameters): void;
-    draw(): void;
+    draw(parameters: MandelbrotParameters): void;
 }

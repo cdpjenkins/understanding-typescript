@@ -17,7 +17,6 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
     height: number;
 
     constructor(canvas: HTMLCanvasElement,
-                public parameters: MandelbrotParameters,
                 public renderResultCallback: (result: RenderResult) => void
     ) {
         this.gl = canvas.getContext('webgl2')!;
@@ -25,13 +24,6 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
         this.height = canvas.height;
 
         this.initWebGL();
-    }
-
-    setParameters(parameters: MandelbrotParameters): void {
-        this.parameters = parameters;
-    }
-    getParameters(): MandelbrotParameters {
-        return this.parameters;
     }
 
     private initWebGL() {
@@ -153,7 +145,7 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
         return shader;
     }
 
-    draw() {
+    draw(parameters: MandelbrotParameters): void {
         const startTime = performance.now();
 
         if (!this.program) return;
@@ -166,10 +158,10 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
 
         // Set uniforms
         this.gl.uniform2f(this.resolutionUniformLocation!, this.width, this.height);
-        this.gl.uniform2f(this.centerUniformLocation!, this.parameters.centre.re, -this.parameters.centre.im);
-        this.gl.uniform1f(this.scaleUniformLocation!, this.parameters.scale);
-        this.gl.uniform1f(this.thetaUniformLocation!, this.parameters.theta);
-        this.gl.uniform1i(this.iterationDepthUniformLocation!, this.parameters.iterationDepth);
+        this.gl.uniform2f(this.centerUniformLocation!, parameters.centre.re, -parameters.centre.im);
+        this.gl.uniform1f(this.scaleUniformLocation!, parameters.scale);
+        this.gl.uniform1f(this.thetaUniformLocation!, parameters.theta);
+        this.gl.uniform1i(this.iterationDepthUniformLocation!, parameters.iterationDepth);
 
         // Set position attribute
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);

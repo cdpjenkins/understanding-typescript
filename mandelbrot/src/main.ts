@@ -1,6 +1,6 @@
 import { MandelbrotWebGLRenderer } from "./mandelbrot-webgl";
 import { MandelbrotCPURenderer } from "./mandelbrot-cpu";
-import {Complex, MandelbrotParameters} from "./mandelbrot";
+import { Complex, MandelbrotParameters } from "./mandelbrot";
 
 let parameters: MandelbrotParameters = new MandelbrotParameters(
     1000,
@@ -14,11 +14,7 @@ let parameters: MandelbrotParameters = new MandelbrotParameters(
 let canvasWebGl = document.getElementById("mandieWebGlCanvas") as HTMLCanvasElement;
 canvasWebGl.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
 let mandieWebGl =
-    new MandelbrotWebGLRenderer(
-        canvasWebGl,
-        parameters,
-        (result => timeToRenderOnWebGLSpan.textContent = `${result.timeToRenderMs.toFixed(2)}ms`)
-    );
+    new MandelbrotWebGLRenderer(canvasWebGl, (result => timeToRenderOnWebGLSpan.textContent = `${result.timeToRenderMs.toFixed(2)}ms`));
 canvasWebGl.onmousedown = (e) => {
     const rect = canvasWebGl.getBoundingClientRect()
     const x = e.clientX - rect.left
@@ -36,11 +32,7 @@ canvasWebGl.onmousedown = (e) => {
 let canvasCpu = document.getElementById("mandieCpuCanvas") as HTMLCanvasElement;
 canvasCpu.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
 let mandieCpu =
-    new MandelbrotCPURenderer(
-        canvasCpu.getContext("2d")!,
-        parameters,
-        (result => timeToRenderOnCPUSpan.textContent = `${result.timeToRenderMs.toFixed(2)}ms`)
-        );
+    new MandelbrotCPURenderer(canvasCpu.getContext("2d")!, (result => timeToRenderOnCPUSpan.textContent = `${result.timeToRenderMs.toFixed(2)}ms`));
 canvasCpu.onmousedown = (e) => {
     const rect = canvasCpu.getBoundingClientRect()
     const x = e.clientX - rect.left
@@ -83,9 +75,6 @@ function updateUI(mandie: MandelbrotParameters) {
 }
 
 function parametersUpdated() {
-    mandieWebGl.setParameters(parameters);
-    mandieCpu.setParameters(parameters);
-
     updateUI(parameters);
     drawMandies();
 }
@@ -142,7 +131,7 @@ realInput.onkeydown = (e) => {
 imaginaryInput.onkeydown = (e) => {
     if (e.key == "Enter") {
         const target = e.target as HTMLInputElement;
-        mandieWebGl.parameters.centre.im = parseFloat(target.value);
+        parameters.centre.im = parseFloat(target.value);
 
         parametersUpdated();
     }
@@ -213,10 +202,10 @@ parametersUpdated();
 function drawMandies() {
     window.requestAnimationFrame( (timestamp) => {
         console.log(timestamp);
-        mandieWebGl.draw();
+        mandieWebGl.draw(parameters);
 
-        mandieCpu.draw();
+        mandieCpu.draw(parameters);
 
-        updateUI(mandieWebGl.getParameters());
+        updateUI(parameters);
     });
 }
