@@ -10,12 +10,12 @@ export class Vector2D {
  */
 export class Matrix3D {
     constructor(
-        private m11: number,
-        private m21: number,
-        private m31: number,
-        private m12: number,
-        private m22: number,
-        private m32: number
+        public m11: number,
+        public m21: number,
+        public m31: number,
+        public m12: number,
+        public m22: number,
+        public m32: number
     ) {}
 
     static readonly identity = new Matrix3D(

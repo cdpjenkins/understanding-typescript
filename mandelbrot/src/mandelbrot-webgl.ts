@@ -5,11 +5,14 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
     private program: WebGLProgram | null = null;
     private positionBuffer: WebGLBuffer | null = null;
     private positionAttributeLocation: number = -1;
-    private resolutionUniformLocation: WebGLUniformLocation | null = null;
-    private centerUniformLocation: WebGLUniformLocation | null = null;
-    private scaleUniformLocation: WebGLUniformLocation | null = null;
-    private thetaUniformLocation: WebGLUniformLocation | null = null;
     private iterationDepthUniformLocation: WebGLUniformLocation | null = null;
+
+    private m11UniformLocation: WebGLUniformLocation | null = null;
+    private m21UniformLocation: WebGLUniformLocation | null = null;
+    private m31UniformLocation: WebGLUniformLocation | null = null;
+    private m12UniformLocation: WebGLUniformLocation | null = null;
+    private m22UniformLocation: WebGLUniformLocation | null = null;
+    private m32UniformLocation: WebGLUniformLocation | null = null;
 
     timeToRender: number = -1;
 
@@ -41,11 +44,14 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
             precision highp int;
             out vec4 fragColor;
 
-            uniform vec2 u_resolution;
-            uniform vec2 u_center;
-            uniform float u_scale;
-            uniform float u_theta;
             uniform int u_iterationDepth;
+            
+            uniform float u_m11;
+            uniform float u_m21;
+            uniform float u_m31;
+            uniform float u_m12;
+            uniform float u_m22;
+            uniform float u_m32;
 
             vec3 hsv2rgb(vec3 c) {
                 vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
@@ -54,17 +60,14 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
             }
 
             void main() {
-                vec2 uv = (gl_FragCoord.xy - u_resolution.xy * 0.5) / (u_resolution.y / u_scale);
+                float sx = gl_FragCoord.x;
+                float sy = gl_FragCoord.y;
                 
-                // Apply rotation
-                float cos_theta = cos(u_theta);
-                float sin_theta = sin(u_theta);
-                vec2 rotated_uv = vec2(
-                    uv.x * cos_theta - uv.y * sin_theta,
-                    uv.x * sin_theta + uv.y * cos_theta
-                );
-                
-                vec2 c = u_center + rotated_uv;
+                float re = u_m11 * sx + u_m21 * sy + u_m31;
+                float im = u_m12 * sx + u_m22 * sy + u_m32;
+            
+                vec2 c = vec2(re, im);
+
                 vec2 z = vec2(0.0);
                 int i = 0;
                 
@@ -112,11 +115,14 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
 
         // Get attribute and uniform locations
         this.positionAttributeLocation = this.gl.getAttribLocation(this.program, 'a_position');
-        this.resolutionUniformLocation = this.gl.getUniformLocation(this.program, 'u_resolution');
-        this.centerUniformLocation = this.gl.getUniformLocation(this.program, 'u_center');
-        this.scaleUniformLocation = this.gl.getUniformLocation(this.program, 'u_scale');
-        this.thetaUniformLocation = this.gl.getUniformLocation(this.program, 'u_theta');
         this.iterationDepthUniformLocation = this.gl.getUniformLocation(this.program, 'u_iterationDepth');
+
+        this.m11UniformLocation = this.gl.getUniformLocation(this.program, 'u_m11');
+        this.m21UniformLocation = this.gl.getUniformLocation(this.program, 'u_m21');
+        this.m31UniformLocation = this.gl.getUniformLocation(this.program, 'u_m31');
+        this.m12UniformLocation = this.gl.getUniformLocation(this.program, 'u_m12');
+        this.m22UniformLocation = this.gl.getUniformLocation(this.program, 'u_m22');
+        this.m32UniformLocation = this.gl.getUniformLocation(this.program, 'u_m32');
 
         // Create position buffer
         this.positionBuffer = this.gl.createBuffer();
@@ -157,11 +163,16 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
         this.gl.useProgram(this.program);
 
         // Set uniforms
-        this.gl.uniform2f(this.resolutionUniformLocation!, this.width, this.height);
-        this.gl.uniform2f(this.centerUniformLocation!, parameters.centre.re, -parameters.centre.im);
-        this.gl.uniform1f(this.scaleUniformLocation!, parameters.scale);
-        this.gl.uniform1f(this.thetaUniformLocation!, parameters.theta);
         this.gl.uniform1i(this.iterationDepthUniformLocation!, parameters.iterationDepth);
+
+        // Send the screen-complex transform matrix does as six uniform floats
+        // There is likely a better way to do this, but I don't know it yet.
+        this.gl.uniform1f(this.m11UniformLocation!, parameters.screenToComplexTransform.m11)
+        this.gl.uniform1f(this.m21UniformLocation!, parameters.screenToComplexTransform.m21)
+        this.gl.uniform1f(this.m31UniformLocation!, parameters.screenToComplexTransform.m31)
+        this.gl.uniform1f(this.m12UniformLocation!, parameters.screenToComplexTransform.m12)
+        this.gl.uniform1f(this.m22UniformLocation!, parameters.screenToComplexTransform.m22)
+        this.gl.uniform1f(this.m32UniformLocation!, parameters.screenToComplexTransform.m32)
 
         // Set position attribute
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);

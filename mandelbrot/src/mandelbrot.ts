@@ -103,9 +103,7 @@ export class MandelbrotParameters {
 }
 
 export class RenderResult {
-    constructor(
-        public timeToRenderMs: number
-    ) {}
+    constructor(public timeToRenderMs: number) {}
 }
 
 export interface MandelbrotRenderer {
