@@ -21,8 +21,8 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
         let i = 0;
         for (let y = 0; y < parameters.canvasHeight; y++) {
             for (let x = 0; x < parameters.canvasWidth; x++, i += 4) {
-                const re = parameters.geometricTransform.transformX(x, y);
-                const im = parameters.geometricTransform.transformY(x, y);
+                const re = parameters.screenToComplexTransform.transformX(x, y);
+                const im = parameters.screenToComplexTransform.transformY(x, y);
 
                 let iterations = this.mandelbrotIterations(re, im, parameters.iterationDepth);
                 if (iterations == -1) {

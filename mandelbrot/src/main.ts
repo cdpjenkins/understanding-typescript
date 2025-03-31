@@ -71,7 +71,6 @@ function updateUI(mandie: MandelbrotParameters) {
     thetaTextInput.value = mandie.theta.toString();
     realInput.value = `${mandie.centre.re.toString()}`;
     imaginaryInput.value = `${mandie.centre.im.toString()}`;
-    // timeToRenderSpan.textContent = `${mandie.timeToRender.toFixed(2)}ms`;
 }
 
 function parametersUpdated() {

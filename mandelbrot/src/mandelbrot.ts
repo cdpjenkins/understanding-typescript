@@ -8,7 +8,7 @@ export class Complex {
 }
 
 export class MandelbrotParameters {
-    geometricTransform: Matrix3D = Matrix3D.identity;
+    screenToComplexTransform: Matrix3D = Matrix3D.identity;
 
     constructor(
         public iterationDepth: number,
@@ -18,7 +18,7 @@ export class MandelbrotParameters {
         public canvasWidth: number,
         public canvasHeight: number
     ) {
-        this.refreshGeometricTransformMatrix();
+        this.refreshScreenToComplexTransformMatrix();
     }
 
     rotateLeft() {
@@ -27,7 +27,7 @@ export class MandelbrotParameters {
             this.theta += Math.PI * 2;
         }
 
-        this.refreshGeometricTransformMatrix();
+        this.refreshScreenToComplexTransformMatrix();
     }
 
     rotateRight() {
@@ -36,45 +36,45 @@ export class MandelbrotParameters {
             this.theta -= Math.PI * 2;
         }
 
-        this.refreshGeometricTransformMatrix();
+        this.refreshScreenToComplexTransformMatrix();
     }
 
     scrollLeft() {
         this.centre.re -= (1/4) * this.scale;
 
-        this.refreshGeometricTransformMatrix();
+        this.refreshScreenToComplexTransformMatrix();
     }
 
     scrollRight() {
         this.centre.re += (1/4) * this.scale;
 
-        this.refreshGeometricTransformMatrix();
+        this.refreshScreenToComplexTransformMatrix();
     }
 
     scrollDown() {
         this.centre.im -= (1/4) * this.scale;
 
-        this.refreshGeometricTransformMatrix();
+        this.refreshScreenToComplexTransformMatrix();
     }
 
     scrollUp() {
         this.centre.im += (1/4) * this.scale;
 
-        this.refreshGeometricTransformMatrix();
+        this.refreshScreenToComplexTransformMatrix();
     }
 
     zoomIn() {
         this.scale /= 1.25;
-        this.refreshGeometricTransformMatrix();
+        this.refreshScreenToComplexTransformMatrix();
     }
 
     zoomOut() {
         this.scale *= 1.25;
-        this.refreshGeometricTransformMatrix();
+        this.refreshScreenToComplexTransformMatrix();
     }
 
-    private refreshGeometricTransformMatrix(): void {
-        this.geometricTransform = Matrix3D.translation(this.centre.re, this.centre.im)
+    private refreshScreenToComplexTransformMatrix(): void {
+        this.screenToComplexTransform = Matrix3D.translation(this.centre.re, this.centre.im)
             .transformMatrix(Matrix3D.scale(this.scale / this.canvasWidth ))
             .transformMatrix(Matrix3D.rotation(-this.theta))
             .transformMatrix(Matrix3D.translation(-this.canvasWidth / 2, -this.canvasHeight / 2));
@@ -82,8 +82,8 @@ export class MandelbrotParameters {
 
     screenToComplex(x: number, y: number): Complex {
         return new Complex(
-            this.geometricTransform.transformX(x, y),
-            this.geometricTransform.transformY(x, y)
+            this.screenToComplexTransform.transformX(x, y),
+            this.screenToComplexTransform.transformY(x, y)
         );
     }
 
@@ -91,14 +91,14 @@ export class MandelbrotParameters {
         this.centre = this.screenToComplex(x, y);
         this.scale *= 1.25;
 
-        this.refreshGeometricTransformMatrix();
+        this.refreshScreenToComplexTransformMatrix();
     }
 
     zoomOutTo(x: number, y: number) {
         this.centre = this.screenToComplex(x, y);
         this.scale /= 1.25;
 
-        this.refreshGeometricTransformMatrix();
+        this.refreshScreenToComplexTransformMatrix();
     }
 }
 
