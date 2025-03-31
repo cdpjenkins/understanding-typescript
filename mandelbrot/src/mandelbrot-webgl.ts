@@ -6,6 +6,7 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
     private positionBuffer: WebGLBuffer | null = null;
     private positionAttributeLocation: number = -1;
     private iterationDepthUniformLocation: WebGLUniformLocation | null = null;
+    private resolutionUniformLocation: WebGLUniformLocation | null = null;
 
     private m11UniformLocation: WebGLUniformLocation | null = null;
     private m21UniformLocation: WebGLUniformLocation | null = null;
@@ -45,6 +46,7 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
             out vec4 fragColor;
 
             uniform int u_iterationDepth;
+            uniform vec2 u_resolution;
             
             uniform float u_m11;
             uniform float u_m21;
@@ -61,7 +63,7 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
 
             void main() {
                 float sx = gl_FragCoord.x;
-                float sy = gl_FragCoord.y;
+                float sy = u_resolution.y - gl_FragCoord.y;
                 
                 float re = u_m11 * sx + u_m21 * sy + u_m31;
                 float im = u_m12 * sx + u_m22 * sy + u_m32;
@@ -116,7 +118,7 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
         // Get attribute and uniform locations
         this.positionAttributeLocation = this.gl.getAttribLocation(this.program, 'a_position');
         this.iterationDepthUniformLocation = this.gl.getUniformLocation(this.program, 'u_iterationDepth');
-
+        this.resolutionUniformLocation = this.gl.getUniformLocation(this.program, 'u_resolution');
         this.m11UniformLocation = this.gl.getUniformLocation(this.program, 'u_m11');
         this.m21UniformLocation = this.gl.getUniformLocation(this.program, 'u_m21');
         this.m31UniformLocation = this.gl.getUniformLocation(this.program, 'u_m31');
@@ -124,15 +126,16 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
         this.m22UniformLocation = this.gl.getUniformLocation(this.program, 'u_m22');
         this.m32UniformLocation = this.gl.getUniformLocation(this.program, 'u_m32');
 
-        // Create position buffer
+        // Create a buffer for the vertex positions
         this.positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array([
-            -1, -1,
-             1, -1,
-            -1,  1,
-             1,  1
-        ]), this.gl.STATIC_DRAW);
+        const positions = new Float32Array([
+            -1, -1,  // Bottom left
+             1, -1,  // Bottom right
+            -1,  1,  // Top left
+             1,  1   // Top right
+        ]);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, positions, this.gl.STATIC_DRAW);
     }
 
     private createShader(type: number, source: string): WebGLShader | null {
@@ -164,6 +167,7 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
 
         // Set uniforms
         this.gl.uniform1i(this.iterationDepthUniformLocation!, parameters.iterationDepth);
+        this.gl.uniform2f(this.resolutionUniformLocation!, this.width, this.height);
 
         // Send the screen-complex transform matrix does as six uniform floats
         // There is likely a better way to do this, but I don't know it yet.
