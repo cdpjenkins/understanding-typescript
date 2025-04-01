@@ -59,15 +59,27 @@ let imaginaryInput = <HTMLInputElement>document.getElementById("imaginary");
 let timeToRenderOnWebGLSpan = <HTMLSpanElement>document.getElementById("timeToRenderSpan");
 let timeToRenderOnCPUSpan = <HTMLSpanElement>document.getElementById("timeToRenderOnCPUSpan");
 
-function updateUI(mandie: MandelbrotParameters) {
-    iterationDepthTextInput.value = mandie.iterationDepth.toString();
-    scaleTextInput.value = mandie.scale.toString();
-    thetaTextInput.value = mandie.theta.toString();
-    realInput.value = `${mandie.centre.re.toString()}`;
-    imaginaryInput.value = `${mandie.centre.im.toString()}`;
+function updateUI(parameters: MandelbrotParameters) {
+    iterationDepthTextInput.value = parameters.iterationDepth.toString();
+    scaleTextInput.value = parameters.scale.toString();
+    thetaTextInput.value = parameters.theta.toString();
+    realInput.value = `${parameters.centre.re.toString()}`;
+    imaginaryInput.value = `${parameters.centre.im.toString()}`;
 }
 
 function parametersUpdated() {
+
+    let url = new URL(window.location.href);
+
+
+    url.searchParams.set("iterationDepth", parameters.iterationDepth.toString());
+    url.searchParams.set("scale", parameters.scale.toString());
+    url.searchParams.set("theta", parameters.theta.toString());
+    url.searchParams.set("real", parameters.centre.re.toString());
+    url.searchParams.set("imaginary", parameters.centre.im.toString());
+
+    window.history.pushState({}, '', url);
+
     updateUI(parameters);
     drawMandies();
 }
