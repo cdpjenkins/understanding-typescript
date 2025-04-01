@@ -43,10 +43,10 @@ canvasCpu.onmousedown = (e) => {
     const y = e.clientY - rect.top
 
     if (e.button == 0) {
-        parameters.zoomOutTo(x, y);
+        parameters.zoomInTo(x, y);
         parametersUpdated();
     } else if (e.button == 2) {
-        parameters.zoomInTo(x, y);
+        parameters.zoomOutTo(x, y);
         parametersUpdated();
     }
 };
