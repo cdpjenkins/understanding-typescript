@@ -89,15 +89,30 @@ export class MandelbrotParameters {
 
     zoomInTo(x: number, y: number) {
         this.centre = this.screenToComplex(x, y);
-        this.scale *= 1.25;
-
-        this.refreshScreenToComplexTransformMatrix();
+        this.zoomIn();
     }
 
     zoomOutTo(x: number, y: number) {
         this.centre = this.screenToComplex(x, y);
-        this.scale /= 1.25;
+        this.zoomOut();
+    }
 
+    setScale(scale: number) {
+        this.scale = scale;
+        this.refreshScreenToComplexTransformMatrix();
+    }
+
+    setIterationDepth(iterationDepth: number) {
+        this.iterationDepth = iterationDepth;
+    }
+
+    moveTo(centre: Complex) {
+        this.centre = centre;
+        this.refreshScreenToComplexTransformMatrix();
+    }
+
+    setTheta(theta: number) {
+        this.theta = theta;
         this.refreshScreenToComplexTransformMatrix();
     }
 }
