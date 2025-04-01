@@ -211,6 +211,35 @@ function scrollUp() {
 (document.getElementById("scrollDown") as HTMLButtonElement)
     .addEventListener("click", (_) => scrollUp());
 
+// TODO move me into an onload method
+// which, incidentally, is where loads more startup stuff should go
+const params = new URLSearchParams(window.location.search);
+params.forEach((value, key) => {
+    switch (key) {
+        case "iterationDepth":
+            if (value != null) parameters.setIterationDepth(parseFloat(value));
+            break;
+        case "scale":
+            if (value != null) parameters.setScale(parseFloat(value));
+            break;
+        case "theta":
+            if (value != null) parameters.setTheta(parseFloat(value));
+            break;
+        case "real":
+            if (value != null) {
+                const re = parseFloat(value);
+                parameters.moveTo(new Complex(re, parameters.centre.im));
+            }
+            break;
+        case "imaginary":
+            if (value != null) {
+                const im = parseFloat(value);
+                    parameters.moveTo(new Complex(parameters.centre.re, im));
+            }
+            break;
+    }
+});
+
 parametersUpdated();
 
 function drawMandies() {
