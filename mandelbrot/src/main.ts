@@ -15,6 +15,18 @@ let parameters: MandelbrotParameters = new MandelbrotParameters(
     480
 );
 
+function resetParameters() {
+    parameters = new MandelbrotParameters(
+        1000,
+        4,
+        0,
+        new Complex(0, 0),
+        640,
+        480
+    );
+    parametersUpdated();
+}
+
 let canvasWebGl = document.getElementById("mandieWebGlCanvas") as HTMLCanvasElement;
 canvasWebGl.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
 let mandieWebGl =
@@ -152,6 +164,9 @@ imaginaryInput.onkeydown = (e) => {
         parametersUpdated();
     }
 }
+
+const resetButton = document.getElementById("resetButton") as HTMLButtonElement;
+resetButton.addEventListener("click", (_) => resetParameters());
 
 (document.getElementById("decreaseIterationDepth") as HTMLButtonElement)
     .addEventListener("click", (_) => decreaseIterationDepth());
