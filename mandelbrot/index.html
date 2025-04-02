@@ -11,7 +11,7 @@
   <canvas id="mandieWebGlCanvas"
           width="640"
           height="480"
-          style="border:1px solid #000000;">
+          style="border:1px solid #000000;display:none">
   </canvas>
   <canvas id="mandieCpuCanvas"
           width="640"
@@ -23,6 +23,20 @@
     <tr>
       <td>
         <table>
+          <tr>
+            <td>
+              Render type:
+            </td>
+            <td>
+              <input type="radio" id="cpuRadio" name="renderType" value="cpu" checked>
+              <label for="cpuRadio">CPU</label>
+            </td>
+            <td>
+              <input type="radio" id="webglRadio" name="renderType" value="webgl">
+              <label for="webglRadio">WebGL</label>
+            </td>
+          </tr>
+
           <tr>
             <td>Iteration depth</td>
             <td><input type="text" id="iterationDepth" name="Iteration depth"></td>
