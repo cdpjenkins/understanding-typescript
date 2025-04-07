@@ -17,3 +17,29 @@ export class CanvasComponent extends Component<HTMLCanvasElement> {
         super(element);
     }
 }
+
+export class InputComponent extends Component<HTMLInputElement> {
+    constructor(element: HTMLInputElement,
+                public onEnter: (input: number) => any) {
+        super(element);
+        this.element.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const target = e.target as HTMLInputElement;
+                const newValueString = target.value
+                const newValue = parseFloat(newValueString);
+        
+                this.onEnter(newValue);
+            }
+        });
+    }
+
+    setValue(value: string) {
+        this.element.value = value;
+    }
+
+    static of(document: Document,
+                id: string,
+                onEnter: (input: number) => any): InputComponent {
+        return new InputComponent(document.getElementById(id) as HTMLInputElement, onEnter);
+    }
+}

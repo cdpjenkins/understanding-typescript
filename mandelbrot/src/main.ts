@@ -1,6 +1,7 @@
 import {MandelbrotWebGLRenderer} from "./mandelbrot-webgl";
 import {MandelbrotCPURenderer} from "./mandelbrot-cpu";
 import {Complex, MandelbrotParameters, RenderMode} from "./mandelbrot";
+import { InputComponent } from "./components";
 
 // Although this file is called main.ts right now, its main responsibility is handling the UI.
 // a) Maybe UI stuff should be split out into another file with that specific responsibility
@@ -94,7 +95,12 @@ webglRadio.onchange = () => {
     drawMandies();
 };
 
-let iterationDepthTextInput = <HTMLInputElement>document.getElementById("iterationDepth");
+let iterationDepthTextInput = InputComponent.of(document, "iterationDepth",
+    (newIterationDepth) => {
+        parameters.setIterationDepth(newIterationDepth);
+        parametersUpdated();
+    });
+
 let scaleTextInput = <HTMLInputElement>document.getElementById("scale");
 let thetaTextInput = <HTMLInputElement>document.getElementById("theta");
 let realInput = <HTMLInputElement>document.getElementById("real");
@@ -103,7 +109,7 @@ let timeToRenderOnWebGLSpan = <HTMLSpanElement>document.getElementById("timeToRe
 let timeToRenderOnCPUSpan = <HTMLSpanElement>document.getElementById("timeToRenderOnCPUSpan");
 
 function updateUI(parameters: MandelbrotParameters) {
-    iterationDepthTextInput.value = parameters.iterationDepth.toString();
+    iterationDepthTextInput.setValue(parameters.iterationDepth.toString());
     scaleTextInput.value = parameters.scale.toString();
     thetaTextInput.value = parameters.theta.toString();
     realInput.value = `${parameters.centre.re.toString()}`;
@@ -153,16 +159,6 @@ function zoomOut() {
     parametersUpdated();
 }
 
-iterationDepthTextInput.onkeydown = (e) => {
-    if (e.key == "Enter") {
-        const target = e.target as HTMLInputElement;
-        const iterationDepthString = target.value
-        const newIterationDepth = parseInt(iterationDepthString);
-
-        parameters.setIterationDepth(newIterationDepth);
-        parametersUpdated();
-    }
-}
 
 scaleTextInput.onkeydown = (e) => {
     if (e.key == "Enter") {
