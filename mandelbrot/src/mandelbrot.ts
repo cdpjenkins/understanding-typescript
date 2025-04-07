@@ -7,6 +7,11 @@ export class Complex {
     ) {}
 }
 
+export enum RenderMode {
+    CPU,
+    WEB_GL
+}
+
 export class MandelbrotParameters {
     screenToComplexTransform: Matrix3D = Matrix3D.identity;
 
@@ -16,7 +21,8 @@ export class MandelbrotParameters {
         public theta: number,
         public centre: Complex,
         public canvasWidth: number,
-        public canvasHeight: number
+        public canvasHeight: number,
+        public renderMode: RenderMode
     ) {
         this.refreshScreenToComplexTransformMatrix();
     }

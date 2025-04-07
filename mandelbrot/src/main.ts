@@ -1,6 +1,6 @@
 import {MandelbrotWebGLRenderer} from "./mandelbrot-webgl";
 import {MandelbrotCPURenderer} from "./mandelbrot-cpu";
-import {Complex, MandelbrotParameters} from "./mandelbrot";
+import {Complex, MandelbrotParameters, RenderMode} from "./mandelbrot";
 
 // Although this file is called main.ts right now, its main responsibility is handling the UI.
 // a) Maybe UI stuff should be split out into another file with that specific responsibility
@@ -12,7 +12,8 @@ let parameters: MandelbrotParameters = new MandelbrotParameters(
     0,
     new Complex(0, 0),
     640,
-    480
+    480,
+    RenderMode.CPU
 );
 
 function resetParameters() {
@@ -22,9 +23,12 @@ function resetParameters() {
         0,
         new Complex(0, 0),
         640,
-        480
+        480,
+        RenderMode.CPU
     );
     parametersUpdated();
+
+    return parameters;
 }
 
 let canvasWebGl = document.getElementById("mandieWebGlCanvas") as HTMLCanvasElement;
@@ -63,6 +67,33 @@ canvasCpu.onmousedown = (e) => {
     }
 };
 
+function switchUIToCPURenderer() {
+    cpuRadio.checked = true;
+    webglRadio.checked = false;
+    canvasCpu.style.display = "";
+    canvasWebGl.style.display = "none";
+}
+
+function switchUIToWebGLRenderer() {
+    cpuRadio.checked = false;
+    webglRadio.checked = true;
+    canvasCpu.style.display = "none";
+    canvasWebGl.style.display = "";
+}
+
+let cpuRadio = <HTMLInputElement>document.getElementById("cpuRadio");
+cpuRadio.onchange = () => {
+    parameters.renderMode = RenderMode.CPU;
+    parametersUpdated();
+};
+
+let webglRadio = <HTMLInputElement>document.getElementById("webglRadio");
+webglRadio.onchange = () => {
+    parameters.renderMode = RenderMode.WEB_GL;
+    switchUIToWebGLRenderer();
+    drawMandies();
+};
+
 let iterationDepthTextInput = <HTMLInputElement>document.getElementById("iterationDepth");
 let scaleTextInput = <HTMLInputElement>document.getElementById("scale");
 let thetaTextInput = <HTMLInputElement>document.getElementById("theta");
@@ -77,19 +108,25 @@ function updateUI(parameters: MandelbrotParameters) {
     thetaTextInput.value = parameters.theta.toString();
     realInput.value = `${parameters.centre.re.toString()}`;
     imaginaryInput.value = `${parameters.centre.im.toString()}`;
+    switch (parameters.renderMode) {
+        case RenderMode.CPU:
+            switchUIToCPURenderer();
+            break;
+        case RenderMode.WEB_GL:
+            switchUIToWebGLRenderer();
+            break;
+    }
 }
 
 function parametersUpdated() {
-
     let url = new URL(window.location.href);
-
 
     url.searchParams.set("iterationDepth", parameters.iterationDepth.toString());
     url.searchParams.set("scale", parameters.scale.toString());
     url.searchParams.set("theta", parameters.theta.toString());
     url.searchParams.set("real", parameters.centre.re.toString());
     url.searchParams.set("imaginary", parameters.centre.im.toString());
-
+    url.searchParams.set("renderMode", parameters.renderMode.toString());
     window.history.pushState({}, '', url);
 
     updateUI(parameters);
@@ -252,6 +289,11 @@ params.forEach((value, key) => {
                     parameters.moveTo(new Complex(parameters.centre.re, im));
             }
             break;
+        case "renderMode":
+            if (value != null) {
+                parameters.renderMode = parseInt(value);
+            }
+            break;
     }
 });
 
@@ -260,8 +302,12 @@ parametersUpdated();
 function drawMandies() {
     window.requestAnimationFrame( (timestamp) => {
         console.log(timestamp);
-        mandieWebGl.draw(parameters);
-        mandieCpu.draw(parameters);
+
+        if (webglRadio.checked) {
+            mandieWebGl.draw(parameters);
+        } else {
+            mandieCpu.draw(parameters);
+        }
 
         updateUI(parameters);
     });

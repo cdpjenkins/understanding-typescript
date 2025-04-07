@@ -6,7 +6,9 @@ export class Vector2D {
 }
 
 /**
- * Homogeneous matrix implementing affine transformations in 2D
+ * Homogeneous matrix implementing affine transformations in 2D.
+ * 
+ * Note we don't bother with the bottom row, all elements of which we assume are always going to be 0, 0, 1.
  */
 export class Matrix3D {
     constructor(
