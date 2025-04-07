@@ -43,3 +43,35 @@ export class InputComponent extends Component<HTMLInputElement> {
         return new InputComponent(document.getElementById(id) as HTMLInputElement, onEnter);
     }
 }
+
+export class RadioComponent extends Component<HTMLInputElement> {
+    constructor(private elements: Map<string, HTMLInputElement>) {
+        super(elements.get("renderType-cpuRadio") as HTMLInputElement);
+    }
+
+    select(idToSelect: string) {
+        this.elements.forEach((element) => {
+            if (element.id == idToSelect) {
+                element.checked = true;
+            } else {
+                element.checked = false;
+            }
+        });
+    }
+
+    static of(document: Document,
+                ids: string[],
+                onSelected: (id: string) => void): RadioComponent {
+        let elements = ids.map(id => document.getElementById(id) as HTMLInputElement);
+
+        elements.forEach(element => {
+            element.onchange = (_) => {
+                onSelected(element.id);
+            };
+        });
+
+        const elementsMap = new Map(elements.map((element) => [element.id, element]));
+
+        return new RadioComponent(elementsMap);
+    }
+}

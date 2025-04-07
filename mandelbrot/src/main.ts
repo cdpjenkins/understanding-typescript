@@ -1,7 +1,7 @@
 import {MandelbrotWebGLRenderer} from "./mandelbrot-webgl";
 import {MandelbrotCPURenderer} from "./mandelbrot-cpu";
 import {Complex, MandelbrotParameters, RenderMode} from "./mandelbrot";
-import { InputComponent } from "./components";
+import { InputComponent, RadioComponent } from "./components";
 
 // Although this file is called main.ts right now, its main responsibility is handling the UI.
 // a) Maybe UI stuff should be split out into another file with that specific responsibility
@@ -69,30 +69,30 @@ canvasCpu.onmousedown = (e) => {
 };
 
 function switchUIToCPURenderer() {
-    cpuRadio.checked = true;
-    webglRadio.checked = false;
+    radioComponent.select("renderType-cpuRadio");
     canvasCpu.style.display = "";
     canvasWebGl.style.display = "none";
 }
 
 function switchUIToWebGLRenderer() {
-    cpuRadio.checked = false;
-    webglRadio.checked = true;
+    radioComponent.select("renderType-webglRadio");
     canvasCpu.style.display = "none";
     canvasWebGl.style.display = "";
 }
 
-let cpuRadio = <HTMLInputElement>document.getElementById("renderType-cpuRadio");
-cpuRadio.onchange = () => {
-    parameters.renderMode = RenderMode.CPU;
-    parametersUpdated();
-};
-
-let webglRadio = <HTMLInputElement>document.getElementById("renderType-webglRadio");
-webglRadio.onchange = () => {
-    parameters.renderMode = RenderMode.WEB_GL;
-    parametersUpdated();
-};
+const radioComponent = RadioComponent.of(document, ["renderType-cpuRadio", "renderType-webglRadio"],
+    (id) => {
+        switch (id) {
+            case "renderType-cpuRadio":
+                parameters.renderMode = RenderMode.CPU;
+                parametersUpdated();
+                break;
+            case "renderType-webglRadio":
+                parameters.renderMode = RenderMode.WEB_GL;
+                parametersUpdated();
+                break;
+        }
+    });
 
 let iterationDepthTextInput = InputComponent.of(document, "iterationDepth",
     (newIterationDepth) => {
@@ -281,7 +281,7 @@ function drawMandies() {
     window.requestAnimationFrame( (timestamp) => {
         console.log(timestamp);
 
-        if (webglRadio.checked) {
+        if (parameters.renderMode == RenderMode.WEB_GL) {
             mandieWebGl.draw(parameters);
         } else {
             mandieCpu.draw(parameters);
