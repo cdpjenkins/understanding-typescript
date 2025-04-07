@@ -82,17 +82,16 @@ function switchUIToWebGLRenderer() {
     canvasWebGl.style.display = "";
 }
 
-let cpuRadio = <HTMLInputElement>document.getElementById("cpuRadio");
+let cpuRadio = <HTMLInputElement>document.getElementById("renderType-cpuRadio");
 cpuRadio.onchange = () => {
     parameters.renderMode = RenderMode.CPU;
     parametersUpdated();
 };
 
-let webglRadio = <HTMLInputElement>document.getElementById("webglRadio");
+let webglRadio = <HTMLInputElement>document.getElementById("renderType-webglRadio");
 webglRadio.onchange = () => {
     parameters.renderMode = RenderMode.WEB_GL;
-    switchUIToWebGLRenderer();
-    drawMandies();
+    parametersUpdated();
 };
 
 let iterationDepthTextInput = InputComponent.of(document, "iterationDepth",
