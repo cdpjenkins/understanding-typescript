@@ -27,7 +27,6 @@ function resetParameters() {
         480,
         RenderMode.CPU
     );
-    parametersUpdated();
 
     return parameters;
 }
@@ -95,34 +94,29 @@ const radioComponent = RadioComponent.of(document, ["renderType-cpuRadio", "rend
     });
 
 let iterationDepthTextInput = InputComponent.of(document, "iterationDepth",
-    (newIterationDepth) => {
+    withUpdateParameters1((newIterationDepth) => {
         parameters.setIterationDepth(newIterationDepth);
-        parametersUpdated();
-    });
+    }));
 
 let scaleTextInput = InputComponent.of(document, "scale",
-    (newScale) => {
+    withUpdateParameters1((newScale) => {
         parameters.setScale(newScale);
-        parametersUpdated();
-    });
+    }));
 
 let thetaTextInput = InputComponent.of(document, "theta",
-    (newTheta) => {
+    withUpdateParameters1((newTheta) => {
         parameters.setTheta(newTheta);
-        parametersUpdated();
-    });
+    }));
 
 let realInput = InputComponent.of(document, "real",
-    (newReal) => {
+    withUpdateParameters1((newReal) => {
         parameters.moveTo(new Complex(newReal, parameters.centre.im));
-        parametersUpdated();
-    });
+    }));
 
 let imaginaryInput = InputComponent.of(document, "imaginary",
-    (newImaginary) => {
+    withUpdateParameters1((newImaginary) => {
         parameters.moveTo(new Complex(parameters.centre.re, newImaginary));
-        parametersUpdated();
-    });
+    }));
 
 let timeToRenderOnWebGLSpan = <HTMLSpanElement>document.getElementById("timeToRenderSpan");
 let timeToRenderOnCPUSpan = <HTMLSpanElement>document.getElementById("timeToRenderOnCPUSpan");
@@ -162,6 +156,13 @@ function parametersUpdated() {
 function withUpdateParameters(f: () => void): () => void {
     return () => {
         f();
+        parametersUpdated();
+    };
+}
+
+function withUpdateParameters1<T>(f: (x: T) => void): (x: T) => void {
+    return (x: T) => {
+        f(x);
         parametersUpdated();
     };
 }
