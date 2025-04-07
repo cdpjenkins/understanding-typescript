@@ -101,19 +101,40 @@ let iterationDepthTextInput = InputComponent.of(document, "iterationDepth",
         parametersUpdated();
     });
 
-let scaleTextInput = <HTMLInputElement>document.getElementById("scale");
-let thetaTextInput = <HTMLInputElement>document.getElementById("theta");
-let realInput = <HTMLInputElement>document.getElementById("real");
-let imaginaryInput = <HTMLInputElement>document.getElementById("imaginary");
+let scaleTextInput = InputComponent.of(document, "scale",
+    (newScale) => {
+        parameters.setScale(newScale);
+        parametersUpdated();
+    });
+
+let thetaTextInput = InputComponent.of(document, "theta",
+    (newTheta) => {
+        parameters.setTheta(newTheta);
+        parametersUpdated();
+    });
+
+let realInput = InputComponent.of(document, "real",
+    (newReal) => {
+        parameters.moveTo(new Complex(newReal, parameters.centre.im));
+        parametersUpdated();
+    });
+
+let imaginaryInput = InputComponent.of(document, "imaginary",
+    (newImaginary) => {
+        parameters.moveTo(new Complex(parameters.centre.re, newImaginary));
+        parametersUpdated();
+    });
+
 let timeToRenderOnWebGLSpan = <HTMLSpanElement>document.getElementById("timeToRenderSpan");
 let timeToRenderOnCPUSpan = <HTMLSpanElement>document.getElementById("timeToRenderOnCPUSpan");
 
 function updateUI(parameters: MandelbrotParameters) {
-    iterationDepthTextInput.setValue(parameters.iterationDepth.toString());
-    scaleTextInput.value = parameters.scale.toString();
-    thetaTextInput.value = parameters.theta.toString();
-    realInput.value = `${parameters.centre.re.toString()}`;
-    imaginaryInput.value = `${parameters.centre.im.toString()}`;
+    iterationDepthTextInput.setValue(parameters.iterationDepth);
+    scaleTextInput.setValue(parameters.scale);
+    thetaTextInput.setValue(parameters.theta);
+    realInput.setValue(parameters.centre.re);
+    imaginaryInput.setValue(parameters.centre.im);
+
     switch (parameters.renderMode) {
         case RenderMode.CPU:
             switchUIToCPURenderer();
@@ -159,44 +180,6 @@ function zoomOut() {
     parametersUpdated();
 }
 
-
-scaleTextInput.onkeydown = (e) => {
-    if (e.key == "Enter") {
-        const target = e.target as HTMLInputElement;
-        const scaleString = target.value
-        const newScale = parseFloat(scaleString);
-
-        parameters.setScale(newScale);
-        parametersUpdated();
-    }
-}
-
-thetaTextInput.onkeydown = (e) => {
-    if (e.key == "Enter") {
-        const target = e.target as HTMLInputElement;
-        let theta = parseFloat(target.value);
-        parameters.setTheta(theta);
-        parametersUpdated();
-    }
-}
-
-realInput.onkeydown = (e) => {
-    if (e.key == "Enter") {
-        const target = e.target as HTMLInputElement;
-        let re = parseFloat(target.value);
-        parameters.moveTo(new Complex(re, parameters.centre.im));
-        parametersUpdated();
-    }
-}
-
-imaginaryInput.onkeydown = (e) => {
-    if (e.key == "Enter") {
-        const target = e.target as HTMLInputElement;
-        let im = parseFloat(target.value);
-        parameters.moveTo(new Complex(parameters.centre.re, im));
-        parametersUpdated();
-    }
-}
 
 const resetButton = document.getElementById("resetButton") as HTMLButtonElement;
 resetButton.addEventListener("click", (_) => resetParameters());

@@ -33,8 +33,8 @@ export class InputComponent extends Component<HTMLInputElement> {
         });
     }
 
-    setValue(value: string) {
-        this.element.value = value;
+    setValue(value: number) {
+        this.element.value = value.toString();
     }
 
     static of(document: Document,
