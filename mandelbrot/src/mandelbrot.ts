@@ -27,6 +27,14 @@ export class MandelbrotParameters {
         this.refreshScreenToComplexTransformMatrix();
     }
 
+    decreaseIterationDepth() {
+        this.iterationDepth -= 100;
+    }
+
+    increaseIterationDepth() {
+        this.iterationDepth += 100;
+    }
+
     rotateLeft() {
         this.theta += 1/16;
         if (this.theta < 0) {
@@ -58,13 +66,13 @@ export class MandelbrotParameters {
     }
 
     scrollDown() {
-        this.centre.im -= (1/4) * this.scale;
+        this.centre.im += (1/4) * this.scale;
 
         this.refreshScreenToComplexTransformMatrix();
     }
 
     scrollUp() {
-        this.centre.im += (1/4) * this.scale;
+        this.centre.im -= (1/4) * this.scale;
 
         this.refreshScreenToComplexTransformMatrix();
     }

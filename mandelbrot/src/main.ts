@@ -1,7 +1,7 @@
 import {MandelbrotWebGLRenderer} from "./mandelbrot-webgl";
 import {MandelbrotCPURenderer} from "./mandelbrot-cpu";
 import {Complex, MandelbrotParameters, RenderMode} from "./mandelbrot";
-import { InputComponent, RadioComponent } from "./components";
+import { ButtonComponent, InputComponent, RadioComponent } from "./components";
 
 // Although this file is called main.ts right now, its main responsibility is handling the UI.
 // a) Maybe UI stuff should be split out into another file with that specific responsibility
@@ -159,87 +159,24 @@ function parametersUpdated() {
     drawMandies();
 }
 
-function increaseIterationDepth() {
-    parameters.iterationDepth += 100;
-    parametersUpdated();
+function withUpdateParameters(f: () => void): () => void {
+    return () => {
+        f();
+        parametersUpdated();
+    };
 }
 
-function decreaseIterationDepth() {
-    parameters.iterationDepth -= 100;
-    parametersUpdated();
-}
-
-function zoomIn() {
-    parameters.zoomIn();
-    parametersUpdated();
-}
-
-function zoomOut() {
-    parameters.zoomOut();
-    parametersUpdated();
-}
-
-
-const resetButton = document.getElementById("resetButton") as HTMLButtonElement;
-resetButton.addEventListener("click", (_) => resetParameters());
-
-(document.getElementById("decreaseIterationDepth") as HTMLButtonElement)
-    .addEventListener("click", (_) => decreaseIterationDepth());
-(document.getElementById("increaseIterationDepth") as HTMLButtonElement)
-    .addEventListener("click", (_) => increaseIterationDepth());
-
-(document.getElementById("zoomIn") as HTMLButtonElement)
-    .addEventListener("click", (_) => zoomIn());
-(document.getElementById("zoomOut") as HTMLButtonElement)
-    .addEventListener("click", (_) => zoomOut());
-
-function rotateLeft() {
-    parameters.rotateLeft();
-    parametersUpdated();
-}
-
-function rotateRight() {
-    parameters.rotateRight();
-    parametersUpdated();
-}
-
-(document.getElementById("rotateLeft") as HTMLButtonElement)
-    .addEventListener("click", (_) => rotateLeft());
-(document.getElementById("rotateRight") as HTMLButtonElement)
-    .addEventListener("click", (_) => rotateRight());
-
-function scrollDown() {
-    parameters.scrollDown();
-    parametersUpdated();
-}
-
-function scrollLeft() {
-    parameters.scrollLeft();
-    parametersUpdated();
-}
-
-function scrollRight() {
-    parameters.scrollRight();
-    parametersUpdated();
-}
-function scrollUp() {
-    parameters.scrollUp();
-    parametersUpdated();
-}
-
-(document.getElementById("scrollUp") as HTMLButtonElement)
-    .addEventListener("click", (_) => scrollDown());
-
-
-(document.getElementById("scrollLeft") as HTMLButtonElement)
-    .addEventListener("click", (_) => scrollLeft());
-
-(document.getElementById("scrollRight") as HTMLButtonElement)
-    .addEventListener("click", (_) => scrollRight());
-
-
-(document.getElementById("scrollDown") as HTMLButtonElement)
-    .addEventListener("click", (_) => scrollUp());
+ButtonComponent.of(document, "decreaseIterationDepth", withUpdateParameters(() => parameters.decreaseIterationDepth()));
+ButtonComponent.of(document, "increaseIterationDepth", withUpdateParameters(() => parameters.increaseIterationDepth()));
+ButtonComponent.of(document, "zoomIn", withUpdateParameters(() => parameters.zoomIn()));
+ButtonComponent.of(document, "zoomOut", withUpdateParameters(() => parameters.zoomOut()));
+ButtonComponent.of(document, "rotateLeft", withUpdateParameters(() => parameters.rotateLeft()));
+ButtonComponent.of(document, "rotateRight", withUpdateParameters(() => parameters.rotateRight()));
+ButtonComponent.of(document, "scrollDown", withUpdateParameters(() => parameters.scrollDown()));
+ButtonComponent.of(document, "scrollLeft", withUpdateParameters(() => parameters.scrollLeft()));
+ButtonComponent.of(document, "scrollRight", withUpdateParameters(() => parameters.scrollRight()));
+ButtonComponent.of(document, "scrollUp", withUpdateParameters(() => parameters.scrollUp()));
+ButtonComponent.of(document, "resetButton", withUpdateParameters(() => resetParameters()));
 
 // TODO move me into an onload method
 // which, incidentally, is where loads more startup stuff should go

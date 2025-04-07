@@ -11,6 +11,12 @@ export class ButtonComponent extends Component<HTMLButtonElement> {
         super(element);
         this.element.addEventListener('click', onClick);
     }
+
+    static of(document: Document,
+                id: string,
+                onClick: () => void): ButtonComponent {
+        return new ButtonComponent(document.getElementById(id) as HTMLButtonElement, onClick);
+    }
 }
 export class CanvasComponent extends Component<HTMLCanvasElement> {
     constructor(element: HTMLCanvasElement) {
