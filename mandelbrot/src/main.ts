@@ -1,7 +1,12 @@
-import {MandelbrotWebGLRenderer} from "./mandelbrot-webgl";
 import {MandelbrotCPURenderer} from "./mandelbrot-cpu";
-import {Complex, MandelbrotParameters, RenderMode} from "./mandelbrot";
-import { ButtonComponent, InputComponent, RadioComponent } from "./components";
+import {Complex, MandelbrotParameters, RenderMode, RenderResult} from "./mandelbrot";
+import {
+    ButtonComponent,
+    InputComponent,
+    MouseButton,
+    RadioComponent,
+    WebGLCanvasComponent
+} from "./components";
 
 // Although this file is called main.ts right now, its main responsibility is handling the UI.
 // a) Maybe UI stuff should be split out into another file with that specific responsibility
@@ -31,23 +36,29 @@ function resetParameters() {
     return parameters;
 }
 
-let canvasWebGl = document.getElementById("mandieWebGlCanvas") as HTMLCanvasElement;
-canvasWebGl.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
-let mandieWebGl =
-    new MandelbrotWebGLRenderer(canvasWebGl, (result => timeToRenderOnWebGLSpan.textContent = `${result.timeToRenderMs.toFixed(2)}ms`));
-canvasWebGl.onmousedown = (e) => {
-    const rect = canvasWebGl.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-
-    if (e.button == 0) {
-        parameters.zoomInTo(x, y);
-        parametersUpdated();
-    } else if (e.button == 2) {
-        parameters.zoomOutTo(x, y);
-        parametersUpdated();
+let onMouseClick = (x: number, y: number, button: MouseButton) => {
+    console.log(`click me do in main ${x}, ${y}`);
+    switch (button) {
+        case MouseButton.LEFT:
+            parameters.zoomInTo(x, y);
+            break;
+        case MouseButton.RIGHT:
+            parameters.zoomOutTo(x, y);
+            break;
     }
+
+    parametersUpdated();
 };
+
+let onRenderResult = (result: RenderResult) => {
+    return timeToRenderOnWebGLSpan.textContent = `${result.timeToRenderMs.toFixed(2)}ms`;
+};
+
+let canvasWebGl = new WebGLCanvasComponent(
+    document.getElementById("mandieWebGlCanvas") as HTMLCanvasElement,
+    onRenderResult,
+    onMouseClick
+);
 
 let canvasCpu = document.getElementById("mandieCpuCanvas") as HTMLCanvasElement;
 canvasCpu.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
@@ -70,13 +81,13 @@ canvasCpu.onmousedown = (e) => {
 function switchUIToCPURenderer() {
     radioComponent.select("renderType-cpuRadio");
     canvasCpu.style.display = "";
-    canvasWebGl.style.display = "none";
+    canvasWebGl.hide();
 }
 
 function switchUIToWebGLRenderer() {
     radioComponent.select("renderType-webglRadio");
     canvasCpu.style.display = "none";
-    canvasWebGl.style.display = "";
+    canvasWebGl.show();
 }
 
 const radioComponent = RadioComponent.of(document, ["renderType-cpuRadio", "renderType-webglRadio"],
@@ -220,7 +231,7 @@ function drawMandies() {
         console.log(timestamp);
 
         if (parameters.renderMode == RenderMode.WEB_GL) {
-            mandieWebGl.draw(parameters);
+            canvasWebGl.mandieWebGl.draw(parameters);
         } else {
             mandieCpu.draw(parameters);
         }

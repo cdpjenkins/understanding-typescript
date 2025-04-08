@@ -1,3 +1,11 @@
+import {MandelbrotWebGLRenderer} from "./mandelbrot-webgl";
+import {RenderResult} from "./mandelbrot";
+
+export enum MouseButton {
+    LEFT = 0,
+    RIGHT= 2
+}
+
 export abstract class Component<T extends HTMLElement> {
     constructor(protected element: T) {}
 
@@ -18,9 +26,53 @@ export class ButtonComponent extends Component<HTMLButtonElement> {
         return new ButtonComponent(document.getElementById(id) as HTMLButtonElement, onClick);
     }
 }
-export class CanvasComponent extends Component<HTMLCanvasElement> {
-    constructor(element: HTMLCanvasElement) {
+
+export abstract class CanvasComponent extends Component<HTMLCanvasElement> {
+    constructor(element: HTMLCanvasElement,
+                private onMouseClick: (x: number, y: number, button: MouseButton) => void) {
         super(element);
+
+        element.onmousedown = (e) => {
+            const rect = element.getBoundingClientRect()
+            const x = e.clientX - rect.left
+            const y = e.clientY - rect.top
+
+            var button: MouseButton
+            if (e.button == 0) {
+                button = MouseButton.LEFT;
+            } else if (e.button == 2) {
+                button = MouseButton.RIGHT;
+            } else {
+                throw new Error("arghghghggh");
+            }
+
+            console.log(`click me do ${x}, ${y}`);
+
+            this.onMouseClick(x, y, button);
+        }
+    }
+
+    public show() {
+        this.element.style.display = "";
+    }
+
+    public hide() {
+        this.element.style.display = "none";
+    }
+}
+
+export class WebGLCanvasComponent extends CanvasComponent {
+    mandieWebGl: MandelbrotWebGLRenderer;
+
+    constructor(element: HTMLCanvasElement, onRenderResult: (result: RenderResult) => void,
+                onMouseClick: (x: number, y: number, button: MouseButton) => void) {
+        super(element, onMouseClick);
+
+        element.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
+
+        this.mandieWebGl =
+            new MandelbrotWebGLRenderer(element, onRenderResult);
+
     }
 }
 
