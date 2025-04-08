@@ -34,9 +34,9 @@ let onMouseClick = (x: number, y: number, button: MouseButton) => {
     parametersUpdated();
 };
 
-let onRenderResult = (result: RenderResult) => {
+function onRenderResult(result: RenderResult) {
     return timeToRenderSpan.textContent = `${result.timeToRenderMs.toFixed(2)}ms`;
-};
+}
 
 let canvasWebGl = new WebGLCanvasComponent(
     document.getElementById("mandieWebGlCanvas") as HTMLCanvasElement,
@@ -77,29 +77,19 @@ const radioComponent = RadioComponent.of(document, ["renderType-cpuRadio", "rend
     });
 
 let iterationDepthTextInput = InputComponent.of(document, "iterationDepth",
-    withUpdateParameters1((newIterationDepth) => {
-        parameters.setIterationDepth(newIterationDepth);
-    }));
+    withUpdateParameters1((newIterationDepth) => parameters.setIterationDepth(newIterationDepth)));
 
 let scaleTextInput = InputComponent.of(document, "scale",
-    withUpdateParameters1((newScale) => {
-        parameters.setScale(newScale);
-    }));
+    withUpdateParameters1((newScale) => parameters.setScale(newScale)));
 
 let thetaTextInput = InputComponent.of(document, "theta",
-    withUpdateParameters1((newTheta) => {
-        parameters.setTheta(newTheta);
-    }));
+    withUpdateParameters1((newTheta) => parameters.setTheta(newTheta)));
 
 let realInput = InputComponent.of(document, "real",
-    withUpdateParameters1((newReal) => {
-        parameters.moveTo(new Complex(newReal, parameters.centre.im));
-    }));
+    withUpdateParameters1((newReal) => parameters.moveTo(new Complex(newReal, parameters.centre.im))));
 
 let imaginaryInput = InputComponent.of(document, "imaginary",
-    withUpdateParameters1((newImaginary) => {
-        parameters.moveTo(new Complex(parameters.centre.re, newImaginary));
-    }));
+    withUpdateParameters1((newImaginary) => parameters.moveTo(new Complex(parameters.centre.re, newImaginary))));
 
 let timeToRenderSpan = <HTMLSpanElement>document.getElementById("timeToRenderSpan");
 
