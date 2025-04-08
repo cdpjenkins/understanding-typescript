@@ -1,9 +1,11 @@
 import {MandelbrotWebGLRenderer} from "./mandelbrot-webgl";
-import {RenderResult} from "./mandelbrot";
+import {MandelbrotParameters, MandelbrotRenderer, RenderResult} from "./mandelbrot";
+import {MandelbrotCPURenderer} from "./mandelbrot-cpu";
 
 export enum MouseButton {
     LEFT = 0,
-    RIGHT= 2
+    RIGHT = 2,
+    UNKNOWN = -1
 }
 
 export abstract class Component<T extends HTMLElement> {
@@ -29,8 +31,11 @@ export class ButtonComponent extends Component<HTMLButtonElement> {
 
 export abstract class CanvasComponent extends Component<HTMLCanvasElement> {
     constructor(element: HTMLCanvasElement,
+                private mandie: MandelbrotRenderer,
                 private onMouseClick: (x: number, y: number, button: MouseButton) => void) {
         super(element);
+
+        element.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
 
         element.onmousedown = (e) => {
             const rect = element.getBoundingClientRect()
@@ -43,10 +48,8 @@ export abstract class CanvasComponent extends Component<HTMLCanvasElement> {
             } else if (e.button == 2) {
                 button = MouseButton.RIGHT;
             } else {
-                throw new Error("arghghghggh");
+                button = MouseButton.UNKNOWN;
             }
-
-            console.log(`click me do ${x}, ${y}`);
 
             this.onMouseClick(x, y, button);
         }
@@ -59,20 +62,24 @@ export abstract class CanvasComponent extends Component<HTMLCanvasElement> {
     public hide() {
         this.element.style.display = "none";
     }
+
+    public draw(parameters: MandelbrotParameters) {
+        this.mandie.draw(parameters);
+    }
 }
 
 export class WebGLCanvasComponent extends CanvasComponent {
-    mandieWebGl: MandelbrotWebGLRenderer;
+    constructor(element: HTMLCanvasElement,
+                onRenderResult: (result: RenderResult) => void,
+                onMouseClick: (x: number, y: number, button: MouseButton) => void) {
+        super(element, new MandelbrotWebGLRenderer(element, onRenderResult), onMouseClick);
+    }
+}
 
+export class CPUCanvasComponent extends CanvasComponent {
     constructor(element: HTMLCanvasElement, onRenderResult: (result: RenderResult) => void,
                 onMouseClick: (x: number, y: number, button: MouseButton) => void) {
-        super(element, onMouseClick);
-
-        element.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
-
-        this.mandieWebGl =
-            new MandelbrotWebGLRenderer(element, onRenderResult);
-
+        super(element, new MandelbrotCPURenderer(element, onRenderResult), onMouseClick);
     }
 }
 
@@ -109,11 +116,7 @@ export class RadioComponent extends Component<HTMLInputElement> {
 
     select(idToSelect: string) {
         this.elements.forEach((element) => {
-            if (element.id == idToSelect) {
-                element.checked = true;
-            } else {
-                element.checked = false;
-            }
+            element.checked = element.id == idToSelect;
         });
     }
 

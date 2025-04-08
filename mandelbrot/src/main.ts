@@ -1,7 +1,6 @@
-import {MandelbrotCPURenderer} from "./mandelbrot-cpu";
 import {Complex, MandelbrotParameters, RenderMode, RenderResult} from "./mandelbrot";
 import {
-    ButtonComponent,
+    ButtonComponent, CPUCanvasComponent,
     InputComponent,
     MouseButton,
     RadioComponent,
@@ -37,7 +36,6 @@ function resetParameters() {
 }
 
 let onMouseClick = (x: number, y: number, button: MouseButton) => {
-    console.log(`click me do in main ${x}, ${y}`);
     switch (button) {
         case MouseButton.LEFT:
             parameters.zoomInTo(x, y);
@@ -51,7 +49,7 @@ let onMouseClick = (x: number, y: number, button: MouseButton) => {
 };
 
 let onRenderResult = (result: RenderResult) => {
-    return timeToRenderOnWebGLSpan.textContent = `${result.timeToRenderMs.toFixed(2)}ms`;
+    return timeToRenderSpan.textContent = `${result.timeToRenderMs.toFixed(2)}ms`;
 };
 
 let canvasWebGl = new WebGLCanvasComponent(
@@ -60,33 +58,21 @@ let canvasWebGl = new WebGLCanvasComponent(
     onMouseClick
 );
 
-let canvasCpu = document.getElementById("mandieCpuCanvas") as HTMLCanvasElement;
-canvasCpu.oncontextmenu = (e) => { e.preventDefault(); e.stopPropagation() };
-let mandieCpu =
-    new MandelbrotCPURenderer(canvasCpu.getContext("2d")!, (result => timeToRenderOnCPUSpan.textContent = `${result.timeToRenderMs.toFixed(2)}ms`));
-canvasCpu.onmousedown = (e) => {
-    const rect = canvasCpu.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-
-    if (e.button == 0) {
-        parameters.zoomInTo(x, y);
-        parametersUpdated();
-    } else if (e.button == 2) {
-        parameters.zoomOutTo(x, y);
-        parametersUpdated();
-    }
-};
+let canvasCPU = new CPUCanvasComponent(
+    document.getElementById("mandieCpuCanvas") as HTMLCanvasElement,
+    onRenderResult,
+    onMouseClick
+)
 
 function switchUIToCPURenderer() {
     radioComponent.select("renderType-cpuRadio");
-    canvasCpu.style.display = "";
+    canvasCPU.show();
     canvasWebGl.hide();
 }
 
 function switchUIToWebGLRenderer() {
     radioComponent.select("renderType-webglRadio");
-    canvasCpu.style.display = "none";
+    canvasCPU.hide();
     canvasWebGl.show();
 }
 
@@ -129,8 +115,7 @@ let imaginaryInput = InputComponent.of(document, "imaginary",
         parameters.moveTo(new Complex(parameters.centre.re, newImaginary));
     }));
 
-let timeToRenderOnWebGLSpan = <HTMLSpanElement>document.getElementById("timeToRenderSpan");
-let timeToRenderOnCPUSpan = <HTMLSpanElement>document.getElementById("timeToRenderOnCPUSpan");
+let timeToRenderSpan = <HTMLSpanElement>document.getElementById("timeToRenderSpan");
 
 function updateUI(parameters: MandelbrotParameters) {
     iterationDepthTextInput.setValue(parameters.iterationDepth);
@@ -230,10 +215,13 @@ function drawMandies() {
     window.requestAnimationFrame( (timestamp) => {
         console.log(timestamp);
 
-        if (parameters.renderMode == RenderMode.WEB_GL) {
-            canvasWebGl.mandieWebGl.draw(parameters);
-        } else {
-            mandieCpu.draw(parameters);
+        switch (parameters.renderMode) {
+            case RenderMode.WEB_GL:
+                canvasWebGl.draw(parameters);
+                break;
+            default:
+                canvasCPU.draw(parameters);
+                break;
         }
 
         updateUI(parameters);

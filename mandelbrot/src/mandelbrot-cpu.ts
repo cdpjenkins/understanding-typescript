@@ -7,12 +7,11 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
     canvasData: ImageData;
     colourSupplier: ColourSupplier = new ColourSupplier();
 
-    constructor(ctx: CanvasRenderingContext2D,
+    constructor(canvasElement: HTMLCanvasElement,
                 public renderResultCallback: (result: RenderResult) => void
     ) {
-        this.ctx = ctx;
-        this.canvasData = this.ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
-
+        this.ctx = canvasElement.getContext("2d")!;
+        this.canvasData = this.ctx.getImageData(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     }
 
     draw(parameters: MandelbrotParameters): void {
