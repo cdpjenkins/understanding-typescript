@@ -16,13 +16,13 @@ export class MandelbrotParameters {
     screenToComplexTransform: Matrix3D = Matrix3D.identity;
 
     constructor(
-        public iterationDepth: number,
-        public scale: number,
-        public theta: number,
-        public centre: Complex,
-        public canvasWidth: number,
-        public canvasHeight: number,
-        public renderMode: RenderMode
+        public iterationDepth: number = 1000,
+        public scale: number = 4,
+        public theta: number = 0,
+        public centre: Complex = new Complex(0, 0),
+        public canvasWidth: number = 640,
+        public canvasHeight: number = 480,
+        public renderMode: RenderMode = RenderMode.CPU
     ) {
         this.refreshScreenToComplexTransformMatrix();
     }
@@ -128,6 +128,45 @@ export class MandelbrotParameters {
     setTheta(theta: number) {
         this.theta = theta;
         this.refreshScreenToComplexTransformMatrix();
+    }
+
+    static of(urlSearchParams: URLSearchParams): MandelbrotParameters {
+        const params = urlSearchParams;
+
+        const parameters = new MandelbrotParameters();
+
+        params.forEach((value, key) => {
+            switch (key) {
+                case "iterationDepth":
+                    if (value != null) parameters.setIterationDepth(parseFloat(value));
+                    break;
+                case "scale":
+                    if (value != null) parameters.setScale(parseFloat(value));
+                    break;
+                case "theta":
+                    if (value != null) parameters.setTheta(parseFloat(value));
+                    break;
+                case "real":
+                    if (value != null) {
+                        const re = parseFloat(value);
+                        parameters.moveTo(new Complex(re, parameters.centre.im));
+                    }
+                    break;
+                case "imaginary":
+                    if (value != null) {
+                        const im = parseFloat(value);
+                        parameters.moveTo(new Complex(parameters.centre.re, im));
+                    }
+                    break;
+                case "renderMode":
+                    if (value != null) {
+                        parameters.renderMode = parseInt(value);
+                    }
+                    break;
+            }
+        });
+
+        return parameters;
     }
 }
 

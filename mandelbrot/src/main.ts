@@ -7,20 +7,6 @@ import {
     WebGLCanvasComponent
 } from "./components";
 
-// Although this file is called main.ts right now, its main responsibility is handling the UI.
-// a) Maybe UI stuff should be split out into another file with that specific responsibility
-// b) Maybe we should just use React or Vue or something...
-
-let parameters: MandelbrotParameters = new MandelbrotParameters(
-    1000,
-    4,
-    0,
-    new Complex(0, 0),
-    640,
-    480,
-    RenderMode.CPU
-);
-
 function resetParameters() {
     parameters = new MandelbrotParameters(
         1000,
@@ -175,42 +161,6 @@ ButtonComponent.of(document, "scrollRight", withUpdateParameters(() => parameter
 ButtonComponent.of(document, "scrollUp", withUpdateParameters(() => parameters.scrollUp()));
 ButtonComponent.of(document, "resetButton", withUpdateParameters(() => resetParameters()));
 
-// TODO move me into an onload method
-// which, incidentally, is where loads more startup stuff should go
-const params = new URLSearchParams(window.location.search);
-params.forEach((value, key) => {
-    switch (key) {
-        case "iterationDepth":
-            if (value != null) parameters.setIterationDepth(parseFloat(value));
-            break;
-        case "scale":
-            if (value != null) parameters.setScale(parseFloat(value));
-            break;
-        case "theta":
-            if (value != null) parameters.setTheta(parseFloat(value));
-            break;
-        case "real":
-            if (value != null) {
-                const re = parseFloat(value);
-                parameters.moveTo(new Complex(re, parameters.centre.im));
-            }
-            break;
-        case "imaginary":
-            if (value != null) {
-                const im = parseFloat(value);
-                    parameters.moveTo(new Complex(parameters.centre.re, im));
-            }
-            break;
-        case "renderMode":
-            if (value != null) {
-                parameters.renderMode = parseInt(value);
-            }
-            break;
-    }
-});
-
-parametersUpdated();
-
 function drawMandies() {
     window.requestAnimationFrame( (timestamp) => {
         console.log(timestamp);
@@ -227,3 +177,6 @@ function drawMandies() {
         updateUI(parameters);
     });
 }
+
+let parameters: MandelbrotParameters =  MandelbrotParameters.of(new URLSearchParams(window.location.search));
+parametersUpdated();
