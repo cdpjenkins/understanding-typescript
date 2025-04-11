@@ -1,8 +1,10 @@
 import {MandelbrotParameters, MandelbrotRenderer, RenderResult} from "./mandelbrot";
+import { MandelbrotService } from "./mandelbrot-service";
 
 class MandelbrotWebGLRenderer implements MandelbrotRenderer {
     private gl: WebGL2RenderingContext;
     private program: WebGLProgram | null = null;
+    private currentMaxIterations: number = 10000;
     private positionBuffer: WebGLBuffer | null = null;
     private positionAttributeLocation: number = -1;
     private iterationDepthUniformLocation: WebGLUniformLocation | null = null;
@@ -30,24 +32,15 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
         this.initWebGL();
     }
 
-    private initWebGL() {
-        // Vertex shader source
-        const vertexShaderSource = `#version 300 es
-            in vec2 a_position;
-            void main() {
-                gl_Position = vec4(a_position, 0.0, 1.0);
-            }
-        `;
-
-        // Fragment shader source
-        const fragmentShaderSource = `#version 300 es
+    private getFragmentShaderSource(maxIterations: number = 10000): string {
+        return `#version 300 es
             precision highp float;
             precision highp int;
             out vec4 fragColor;
 
             uniform int u_iterationDepth;
             uniform vec2 u_resolution;
-            
+
             uniform float u_m11;
             uniform float u_m21;
             uniform float u_m31;
@@ -64,27 +57,14 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
             void main() {
                 float sx = gl_FragCoord.x;
                 float sy = u_resolution.y - gl_FragCoord.y;
-                
+
                 float re = u_m11 * sx + u_m21 * sy + u_m31;
                 float im = u_m12 * sx + u_m22 * sy + u_m32;
-            
+
                 vec2 c = vec2(re, im);
 
-                vec2 z = vec2(0.0);
-                int i = 0;
-                
-                for(int j = 0; j < 10000; j++) {
-                    z = vec2(
-                        z.x * z.x - z.y * z.y + c.x,
-                        2.0 * z.x * z.y + c.y
-                    );
-                    if(dot(z, z) > 4.0) {
-                        i = j;
-                        break;
-                    }
-                    i = j;
-                }
-                
+                ${MandelbrotService.getShaderCode(maxIterations)}
+
                 if(i >= u_iterationDepth - 1) {
                     fragColor = vec4(0.0, 0.0, 0.0, 1.0);
                 } else {
@@ -95,6 +75,19 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
                 }
             }
         `;
+    }
+
+    private initWebGL() {
+        // Vertex shader source
+        const vertexShaderSource = `#version 300 es
+            in vec2 a_position;
+            void main() {
+                gl_Position = vec4(a_position, 0.0, 1.0);
+            }
+        `;
+
+        // Fragment shader source
+        const fragmentShaderSource = this.getFragmentShaderSource(this.currentMaxIterations);
 
         // Create and compile shaders
         const vertexShader = this.createShader(this.gl.VERTEX_SHADER, vertexShaderSource);
@@ -156,6 +149,12 @@ class MandelbrotWebGLRenderer implements MandelbrotRenderer {
 
     draw(parameters: MandelbrotParameters): void {
         const startTime = performance.now();
+
+        // Check if we need to recreate the shader program with a new max iterations value
+        if (parameters.iterationDepth > this.currentMaxIterations) {
+            this.currentMaxIterations = Math.max(parameters.iterationDepth, this.currentMaxIterations * 2);
+            this.initWebGL();
+        }
 
         if (!this.program) return;
 

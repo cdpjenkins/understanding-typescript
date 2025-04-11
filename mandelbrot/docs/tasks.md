@@ -6,7 +6,7 @@ This document contains a prioritized list of tasks for improving the Mandelbrot 
 
 1. [ ] Refactor the project to use a more modular architecture (e.g., MVC or component-based)
 2. [ ] Create a dedicated configuration module for managing application settings
-3. [ ] Extract the Mandelbrot calculation logic into a separate service that can be shared between renderers
+3. [x] Extract the Mandelbrot calculation logic into a separate service that can be shared between renderers
 4. [ ] Implement a proper state management solution instead of using global variables
 5. [ ] Create interfaces for all major components to improve code clarity and maintainability
 6. [ ] Remove the @ts-ignore comment in mandelbrot-cpu.ts and fix the underlying issue

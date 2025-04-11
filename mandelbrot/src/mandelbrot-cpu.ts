@@ -1,7 +1,7 @@
 import { ColourSupplier } from "./colour";
 import { MandelbrotParameters, MandelbrotRenderer, RenderResult } from "./mandelbrot";
+import { MandelbrotService } from "./mandelbrot-service";
 
-// @ts-ignore
 export class MandelbrotCPURenderer implements MandelbrotRenderer {
     ctx: CanvasRenderingContext2D;
     canvasData: ImageData;
@@ -23,7 +23,7 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
                 const re = parameters.screenToComplexTransform.transformX(x, y);
                 const im = parameters.screenToComplexTransform.transformY(x, y);
 
-                let iterations = this.mandelbrotIterations(re, im, parameters.iterationDepth);
+                let iterations = MandelbrotService.calculateIterations(re, im, parameters.iterationDepth);
                 if (iterations == -1) {
                     this.canvasData.data[i + 0] = 0x00;
                     this.canvasData.data[i + 1] = 0x00;
@@ -48,28 +48,4 @@ export class MandelbrotCPURenderer implements MandelbrotRenderer {
         this.renderResultCallback(new RenderResult(timeToRender));
     }
 
-    private mandelbrotIterations(kre: number, kim: number, iterationDepth: number): number {
-        let zre = 0;
-        let zim = 0;
-
-        let zReSquared = 0;
-        let zImSquared = 0;
-
-        for (let i = 0; i < iterationDepth; i++) {
-            let z2re = zReSquared - zImSquared + kre;
-            let z2im = 2 * zre * zim + kim;
-
-            zre = z2re;
-            zim = z2im;
-
-            zReSquared = zre * zre;
-            zImSquared = zim * zim;
-
-            if (zReSquared + zImSquared >= 4) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
 }
