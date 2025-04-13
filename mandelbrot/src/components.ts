@@ -1,6 +1,7 @@
 import {MandelbrotWebGLRenderer} from "./mandelbrot-webgl";
 import {MandelbrotParameters, MandelbrotRenderer, RenderResult} from "./mandelbrot";
 import {MandelbrotCPURenderer} from "./mandelbrot-cpu";
+import {MandelbrotCPUParallelRenderer} from "./mandelbrot-cpu-parallel";
 
 export enum MouseButton {
     LEFT = 0,
@@ -83,6 +84,13 @@ export class CPUCanvasComponent extends CanvasComponent {
     }
 }
 
+export class CPUParallelCanvasComponent extends CanvasComponent {
+    constructor(element: HTMLCanvasElement, onRenderResult: (result: RenderResult) => void,
+                onMouseClick: (x: number, y: number, button: MouseButton) => void) {
+        super(element, new MandelbrotCPUParallelRenderer(element, onRenderResult), onMouseClick);
+    }
+}
+
 export class InputComponent extends Component<HTMLInputElement> {
     constructor(element: HTMLInputElement,
                 public onEnter: (input: number) => any) {
@@ -92,7 +100,7 @@ export class InputComponent extends Component<HTMLInputElement> {
                 const target = e.target as HTMLInputElement;
                 const newValueString = target.value
                 const newValue = parseFloat(newValueString);
-        
+
                 this.onEnter(newValue);
             }
         });

@@ -1,6 +1,6 @@
 import {Complex, MandelbrotParameters, RenderMode, RenderResult} from "./mandelbrot";
 import {
-    ButtonComponent, CPUCanvasComponent,
+    ButtonComponent, CPUCanvasComponent, CPUParallelCanvasComponent,
     InputComponent,
     MouseButton,
     RadioComponent,
@@ -50,23 +50,42 @@ let canvasCPU = new CPUCanvasComponent(
     onMouseClick
 )
 
+let canvasCPUParallel = new CPUParallelCanvasComponent(
+    document.getElementById("mandieCpuParallelCanvas") as HTMLCanvasElement,
+    onRenderResult,
+    onMouseClick
+)
+
 function switchUIToCPURenderer() {
     radioComponent.select("renderType-cpuRadio");
     canvasCPU.show();
+    canvasCPUParallel.hide();
+    canvasWebGl.hide();
+}
+
+function switchUIToCPUParallelRenderer() {
+    radioComponent.select("renderType-cpuParallelRadio");
+    canvasCPUParallel.show();
+    canvasCPU.hide();
     canvasWebGl.hide();
 }
 
 function switchUIToWebGLRenderer() {
     radioComponent.select("renderType-webglRadio");
     canvasCPU.hide();
+    canvasCPUParallel.hide();
     canvasWebGl.show();
 }
 
-const radioComponent = RadioComponent.of(document, ["renderType-cpuRadio", "renderType-webglRadio"],
+const radioComponent = RadioComponent.of(document, ["renderType-cpuRadio", "renderType-cpuParallelRadio", "renderType-webglRadio"],
     (id) => {
         switch (id) {
             case "renderType-cpuRadio":
                 parameters.renderMode = RenderMode.CPU;
+                parametersUpdated();
+                break;
+            case "renderType-cpuParallelRadio":
+                parameters.renderMode = RenderMode.CPU_PARALLEL;
                 parametersUpdated();
                 break;
             case "renderType-webglRadio":
@@ -103,6 +122,9 @@ function updateUI(parameters: MandelbrotParameters) {
     switch (parameters.renderMode) {
         case RenderMode.CPU:
             switchUIToCPURenderer();
+            break;
+        case RenderMode.CPU_PARALLEL:
+            switchUIToCPUParallelRenderer();
             break;
         case RenderMode.WEB_GL:
             switchUIToWebGLRenderer();
@@ -158,6 +180,9 @@ function drawMandies() {
         switch (parameters.renderMode) {
             case RenderMode.WEB_GL:
                 canvasWebGl.draw(parameters);
+                break;
+            case RenderMode.CPU_PARALLEL:
+                canvasCPUParallel.draw(parameters);
                 break;
             default:
                 canvasCPU.draw(parameters);

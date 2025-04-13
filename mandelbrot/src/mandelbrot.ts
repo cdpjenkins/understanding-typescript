@@ -9,7 +9,8 @@ export class Complex {
 
 export enum RenderMode {
     CPU,
-    WEB_GL
+    WEB_GL,
+    CPU_PARALLEL
 }
 
 export class MandelbrotParameters {
