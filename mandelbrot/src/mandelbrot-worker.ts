@@ -1,7 +1,6 @@
 // Web Worker for Mandelbrot set calculations
 // This worker processes a strip of the canvas
 
-// Import Matrix3D class
 import { Matrix3D } from './linear-algebra';
 
 // Define interfaces for messages
@@ -106,6 +105,8 @@ function createMatrix3D(matrix: WorkerInput['transformMatrix']): Matrix3D {
 
 // Process message from main thread
 self.onmessage = (e: MessageEvent<WorkerInput>) => {
+    console.log("onmessage");
+
     const { startY, endY, width, iterationDepth, transformMatrix } = e.data;
 
     // Calculate the height of this strip
