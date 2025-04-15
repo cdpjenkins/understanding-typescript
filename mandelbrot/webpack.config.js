@@ -2,7 +2,7 @@ const path = require("path");
 
 module.exports = {
     mode: "development",
-    entry: "./src/main.ts",
+    entry: "./src/index.tsx",
     devServer: {
         static: [
             {
@@ -19,13 +19,13 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.ts$/,
+                test: /\.(ts|tsx)$/,
                 use: "ts-loader",
                 exclude: /node_modules/
             }
         ]
     },
     resolve: {
-        extensions: [".ts", ".js"]
+        extensions: [".ts", ".tsx", ".js", ".jsx"]
     },
 };
